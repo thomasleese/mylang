@@ -1,0 +1,803 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\definecolor{code-bg}{gray}{0.95}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 2
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "backgroundcolor={\color{code-bg}},frame=single"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Language Specification
+\end_layout
+
+\begin_layout Date
+Version 0.1.0
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Source Code
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Lexical Elements
+\end_layout
+
+\begin_layout Subsection
+Comments
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Comment = SingleLineComment | MultiLineComment ;
+\end_layout
+
+\begin_layout Plain Layout
+
+SingleLineComment = "//" line ;
+\end_layout
+
+\begin_layout Plain Layout
+
+MultiLineComment = "/*" any-test "*/" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Literals
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+LiteralToken = IntegerLiteralToken | BooleanLiteralToken | FloatLiteralToken
+\end_layout
+
+\begin_layout Plain Layout
+
+                | StringLiteralToken | ImaginaryLiteralToken | CharLiteralToken
+ ;
+\end_layout
+
+\begin_layout Plain Layout
+
+IntegerLiteralToken = { integer } ;
+\end_layout
+
+\begin_layout Plain Layout
+
+BooleanLiteralToken = "true" | "false" ;
+\end_layout
+
+\begin_layout Plain Layout
+
+FloatLiteralToken = IntegerLiteralToken "." IntegerLiteralToken ;
+\end_layout
+
+\begin_layout Plain Layout
+
+StringLiteralToken = `"` { unicode_letter } `"` ;
+\end_layout
+
+\begin_layout Plain Layout
+
+ImaginaryLiteralToken = FloatLiteralToken "i" FloatLiteralToken ;
+\end_layout
+
+\begin_layout Plain Layout
+
+CharLiteralToken = "'" unicode_letter "'" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+OperatorToken = "+" | "-" | "*" | "/" | "%" | "!" | "&" | "|" | "^" | ">"
+ | "<"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "==" | "!=" | "<=" | ">=" | "<<" | ">>" | "&^" | "++"
+ | "--"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "&&" | "||" | "+=" | "-=" | "*=" | "/=" | "%=" | "&="
+ | "|="
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "^=" | ">>=" | "<<=" | "&^=" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Delimiters
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DelimiterToken = "." | ";" | ":" | "," | "(" | ")" | "[" | "]" | "{" | "}"
+ ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Keywords
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+KeywordToken = "package" | "import" | "type" | "struct" | "interface" |
+ "var"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "if" | "else" | "for" | "switch" | "case" | "fallthrough"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "break" | "continue" | "const" | "exported" | "default"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "def" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Identifiers
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+IdentiferToken = Letter { Letter | Digit } ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+AST Elements
+\end_layout
+
+\begin_layout Subsection
+Operators
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Operator = UnaryOperator | BinaryOperator ;
+\end_layout
+
+\begin_layout Plain Layout
+
+UnaryOperator = "+" | "-" | "!" | "++" | "--" ;
+\end_layout
+
+\begin_layout Plain Layout
+
+BinaryOperator = "+" | "-" | "*" | "/" | "%" | "!" | "&" | "|" | "^" | ">"
+ | "<"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "==" | "!=" | "<=" | ">=" | "<<" | ">>" | "&^" | "&&"
+ | "||"
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "+=" | "-=" | "*=" | "/=" | "%=" | "&=" | "|=" | "^="
+ | ">>="
+\end_layout
+
+\begin_layout Plain Layout
+
+                | "<<=" | "&^=" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Expressions
+\end_layout
+
+\begin_layout Subsubsection
+General
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Expression = UnaryExpression | BinaryExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Unary
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+UnaryExpression = OperandExpression | UnaryOperator UnaryExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Binary
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+BinaryExpression = Expression BinaryOperator UnaryExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Operand
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+OperandExpression = LiteralExpression | IdentifierExpression
+\end_layout
+
+\begin_layout Plain Layout
+
+                        | OperandExpression SelectorExpression
+\end_layout
+
+\begin_layout Plain Layout
+
+                        | OperandExpression CallExpression 
+\end_layout
+
+\begin_layout Plain Layout
+
+                        | OperandExpression SliceExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Literal
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+LiteralExpression = LiteralToken ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Identifier
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+IdentifierExpression = IdentifierToken ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Qualified Identifier
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+QualifiedIdentifierExpression = IdentifierExpression { SelectorExpression
+ } ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Selector
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+SelectorExpression = "." IdentifierExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Call
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+CallExpression = "(" [ Expression { "," Expression } ] ")" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Slice
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+SliceExpression = "[" Expression "]" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Statements
+\end_layout
+
+\begin_layout Subsubsection
+General
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Statement = ExpressionStatement | AssignmentStatement | DeclarationStatement
+ | ControlStatement | OtherStatement ;
+\end_layout
+
+\begin_layout Plain Layout
+
+Block = "{" { Statement ";" } "}" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Expression
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExpressionStatement = Expression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Assignment
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+AssignmentStatement = Expression "=" Expression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Declaration
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DeclarationStatement = PackageDeclarationStatement | VariableDeclarationStatemen
+t | TypeDeclarationStatement | FunctionDeclarationStatement ;
+\end_layout
+
+\begin_layout Plain Layout
+
+PackageDeclarationStatement = "package" Identifier ;
+\end_layout
+
+\begin_layout Plain Layout
+
+VariableDeclarationStatement = "var" Type Identifier [ "=" Expression ]
+ ;
+\end_layout
+
+\begin_layout Plain Layout
+
+TypeDeclarationStatement = "type" Type Identifier [ Block ] ;
+\end_layout
+
+\begin_layout Plain Layout
+
+FunctionDeclarationStatement = "def" Type Identifier Block ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Control
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ControlStatement = IfStatement | SwitchStatement | ForStatement
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+IfStatement = "if" "(" Expression ")" Block [ "Else" ( Block | IfStatement
+ ) ] ;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+SwitchStatement = "switch" "(" Expression ")" "{" [ { SwitchCase } ] [ SwitchDef
+ault ] "}" ;
+\end_layout
+
+\begin_layout Plain Layout
+
+SwitchCase = "case" "(" Expression ")" Block ;
+\end_layout
+
+\begin_layout Plain Layout
+
+SwitchDefault = "default" Block ;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+ForStatement = "for" "(" Expression | ForClause ")" Block ;
+\end_layout
+
+\begin_layout Plain Layout
+
+ForClause = ForInitStatement ";" ExpressionStatement ";" ForDeinitStatement
+ ;
+\end_layout
+
+\begin_layout Plain Layout
+
+ForInitStatement = ExpressionStatement | VariableDeclarationStatement |
+ AssignmentStatement
+\end_layout
+
+\begin_layout Plain Layout
+
+ForDeinitStatement = ExpressionStatement | VariableDeclarationStatement
+ | AssignmentStatement
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Other
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+OtherStatement = FallthroughStatement | ImportStatement
+\end_layout
+
+\begin_layout Plain Layout
+
+ImportStatement = "import" Identifier ;
+\end_layout
+
+\begin_layout Plain Layout
+
+FallthroughStatement = "fallthrough" ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

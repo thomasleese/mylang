@@ -1,0 +1,15 @@
+package maths;
+
+type struct exported Vector {
+	
+	var exported float x, y, z;
+	
+	def exported float len2() {
+		return this.x * this.x + this.y * this.y;
+	}
+	
+	def exported float len() {
+		return sqrt(this.len2());
+	}
+	
+}

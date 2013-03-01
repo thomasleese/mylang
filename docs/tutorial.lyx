@@ -1,0 +1,578 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\definecolor{code-bg}{gray}{0.95}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 2cm
+\secnumdepth 3
+\tocdepth 2
+\paragraph_separation skip
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "backgroundcolor={\color{code-bg}},frame=single"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+MyLang Tutorial
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Hello, World
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+package main;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+import console;
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def void main() {
+\end_layout
+
+\begin_layout Plain Layout
+
+	console.println("Hello, World.");
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+The Type System
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The MyLang Type System is quite different to many other languages, although
+ it shares a lot of similarities with Go (
+\begin_inset CommandInset href
+LatexCommand href
+name "golang.org"
+target "http://golang.org/"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Subsection
+Defining Types
+\end_layout
+
+\begin_layout Standard
+Using the `type` keyword, it is very easy to define a new type for use in
+ your applications.
+ Take, for example, this new `Duration` type which is an integer (techinally
+ an unsigned 32-bit integer, but that is covered in the next section) representi
+ng `x` number of seconds.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type uint32 Duration {
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	def string toString() {
+\end_layout
+
+\begin_layout Plain Layout
+
+		return (this / 60) + " mins";
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We start by declaring that we are creating a new type based on an integer.
+ Not all types will have a body, in which case the braces can be omitted,
+ however our new type also defines a method which converts our duration
+ into a string, but not just any string, it returns the duration represented
+ in minutes.
+ This new type can be used in a program such as this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+var Duration d = 120;
+\end_layout
+
+\begin_layout Plain Layout
+
+console.println(d.toString());
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This would print 
+\begin_inset Quotes eld
+\end_inset
+
+2 mins
+\begin_inset Quotes erd
+\end_inset
+
+ as expected.
+\end_layout
+
+\begin_layout Standard
+More interestingly, this code below would compile and do exactly the same
+ thing:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+console.println(d);
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Interfaces
+\end_layout
+
+\begin_layout Standard
+Interfaces play a very crucial role in this language.
+ In the example above we can see that the `toString` method of our `Duration`
+ type is being called by the `println` function, and yet we didn't do anything
+ special.
+ This is main difference between interfaces here and in other languages
+ (such as Java, C#, etc).
+\end_layout
+
+\begin_layout Standard
+If we take a look at the `console` package source code, we can see that
+ `println` is defined as follows:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+type interface ToStringer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	def string toString();
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+def exported void println(ToStringer s) {
+\end_layout
+
+\begin_layout Plain Layout
+
+	// ...
+ code that uses s.toString() ...
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The console package defines an interface with a single method inside, `toString`.
+ When we call `println` and pass it our `Duration` type, the compiler has
+ noticed that the `Duration` type satisifies all the conditions that would
+ make it a valid `ToStringer` (i.e.
+ a single method `toString` which returns a `string`).
+\end_layout
+
+\begin_layout Standard
+In other languages, such as Java, we would have had to do something like
+ this which explicitly states that the `Duration` is a `ToStringer`:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+class Duration implements ToStringer {
+\end_layout
+
+\begin_layout Plain Layout
+
+	int i;
+\end_layout
+
+\begin_layout Plain Layout
+
+	
+\end_layout
+
+\begin_layout Plain Layout
+
+	String toString() {
+\end_layout
+
+\begin_layout Plain Layout
+
+		return (this.i / 60) + " mins";
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+None of this is necessary, as an implicit connection is made if the `type`
+ satisifies all the methods in the interface.
+\end_layout
+
+\begin_layout Section
+Builtin Types
+\end_layout
+
+\begin_layout Standard
+In the example in the previous chapter, you may have noticed that our `Duration`
+ type is based upon an integer.
+ All types in this language are based upon a structure, interface or builtin
+ primitive.
+\end_layout
+
+\begin_layout Subsection
+Structures
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+struct		contains fields as well as methods
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Interfaces
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+interface	contains only method definitions
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Primitives
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+bool		true or false
+\end_layout
+
+\begin_layout Plain Layout
+
+char		a unicode code point in utf8 (varies in size)
+\end_layout
+
+\begin_layout Plain Layout
+
+int8		an 8-bit integer
+\end_layout
+
+\begin_layout Plain Layout
+
+int16		a 16-bit integer
+\end_layout
+
+\begin_layout Plain Layout
+
+int32		a 32-bit integer
+\end_layout
+
+\begin_layout Plain Layout
+
+int64		a 64-bit integer
+\end_layout
+
+\begin_layout Plain Layout
+
+float32		a 32-bit floating point number
+\end_layout
+
+\begin_layout Plain Layout
+
+float64		a 64-bit floating point number
+\end_layout
+
+\begin_layout Plain Layout
+
+string		a sequence of characters
+\end_layout
+
+\begin_layout Plain Layout
+
+uint8		an unsigned version of int8
+\end_layout
+
+\begin_layout Plain Layout
+
+uint16		an unsigned version of int16
+\end_layout
+
+\begin_layout Plain Layout
+
+uint32		an unsigned version of int32
+\end_layout
+
+\begin_layout Plain Layout
+
+uint64		an unsigned version of int64
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+These primitive types are all immutable and have no methods, but they form
+ the basis of every other type.
+\end_layout
+
+\end_body
+\end_document

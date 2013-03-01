@@ -1,0 +1,6 @@
+build/
+old/
+
+*.lyx~
+\#*.lyx\#
+

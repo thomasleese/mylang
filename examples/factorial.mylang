@@ -1,0 +1,15 @@
+package main;
+
+import console; // import my console thing :)
+
+def int factorial(int n) {
+	if (n == 0) {
+		return 1;
+	} else {
+		return n * factorial(n - 1);
+	}
+}
+
+def void main() {
+	console.println(factorial(20));
+}
