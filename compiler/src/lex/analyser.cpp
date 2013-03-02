@@ -4,10 +4,8 @@
 
 using namespace Lex;
 
-Analyser::Analyser(std::string filename) {
+Analyser::Analyser() {
 	loadRules();
-	readFile(filename);
-	tokeniseBuffer();
 }
 
 Analyser::~Analyser() {
@@ -20,6 +18,17 @@ Analyser::~Analyser() {
 	}
 }
 
+void Analyser::parseFile(std::string filename) {
+	readFile(filename);
+	tokeniseBuffer();
+}
+
+void Analyser::dump() const {
+	for (Token *token : this->tokens) {
+		std::cout << token->toString() << std::endl;
+	}
+}
+
 std::vector<Token *> &Analyser::getTokens() {
 	return this->tokens;
 }
@@ -27,7 +36,7 @@ std::vector<Token *> &Analyser::getTokens() {
 void Analyser::loadRules() {
 	this->rules.push_back(new Rule(Rule::Comment, "//[^\n\r]+"));
 	
-	this->rules.push_back(new Rule(Rule::Keyword, "package|import|type|struct|interface|var|if|else|for|switch|case|fallthrough|break|continue|const|exported|default|def"));
+	this->rules.push_back(new Rule(Rule::Keyword, "import|type|struct|interface|var|if|else|for|switch|case|fallthrough|break|continue|const|exported|default|def"));
 	
 	this->rules.push_back(new Rule(Rule::BooleanLiteral, "true|false"));
 	this->rules.push_back(new Rule(Rule::IntegerLiteral, "[0-9]+"));
@@ -43,6 +52,8 @@ void Analyser::loadRules() {
 }
 
 void Analyser::readFile(std::string filename) {
+	this->buffer = "";
+	
 	std::ifstream in(filename.c_str());
 	while (in.good()) {
 		std::string line;

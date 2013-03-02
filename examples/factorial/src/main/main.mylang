@@ -1,5 +1,3 @@
-package main;
-
 import console; // import my console thing :)
 
 def int factorial(int n) {

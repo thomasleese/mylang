@@ -5,6 +5,7 @@
 class Compiler {
     
 public:
-	void compile(std::string filename);
+	void compileProject(std::string dir);
+	void compilePackage(std::string name, std::string dir);
     
 };

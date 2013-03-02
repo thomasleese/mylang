@@ -1,5 +1,6 @@
 #include "lex/rule.h"
 #include "lex/token.h"
+#include "formatting.h"
 
 using namespace Lex;
 
@@ -26,12 +27,12 @@ int Token::getLineNumber() {
 
 std::string Token::toString() const {
 	std::stringstream ss;
-	ss << "Token(";
-
-	ss << "rule=" << this->rule->toString() << " ";
-	ss << "value=" << this->value << " ";
-	ss << "lineno=" << this->lineNumber;
-
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Token" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "rule" FORMAT_NONE "=" << this->rule->toString() << "\t";
+	ss << FORMAT_YELLOW "lineno" FORMAT_NONE "=" << FORMAT_RED << this->lineNumber << FORMAT_NONE "\t";
+	ss << FORMAT_YELLOW "value" FORMAT_NONE "=" << FORMAT_RED "'" << this->value << "'" FORMAT_NONE;
 	ss << ")";
+	
 	return ss.str();
 }

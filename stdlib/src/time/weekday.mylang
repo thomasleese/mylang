@@ -1,5 +1,3 @@
-package time;
-
 type int Weekday {
 	
 	def string toString() {

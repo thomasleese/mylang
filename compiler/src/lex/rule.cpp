@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "lex/rule.h"
+#include "formatting.h"
 
 using namespace Lex;
 
@@ -25,8 +26,9 @@ boost::u32regex Rule::getRegex() const {
 std::string Rule::toString() const {
 	std::stringstream ss;
 	
-	ss << "Rule(";
+	ss << FORMAT_BOLD FORMAT_BLUE "Rule" FORMAT_NONE "(";
 	
+	ss << FORMAT_RED;
 	switch (this->type) {
 		case Identifier:			ss << "Identifier"; break;
 		case Operator:				ss << "Operator"; break;
@@ -40,6 +42,7 @@ std::string Rule::toString() const {
 		case BooleanLiteral:		ss << "BooleanLiteral"; break;
 		case StringLiteral:			ss << "StringLiteral"; break;
 	}
+	ss << FORMAT_NONE;
 	
 	ss << ")";
 	

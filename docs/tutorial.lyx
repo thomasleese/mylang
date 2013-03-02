@@ -126,15 +126,6 @@ status open
 
 \begin_layout Plain Layout
 
-package main;
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
 import console;
 \end_layout
 

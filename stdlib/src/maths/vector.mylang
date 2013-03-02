@@ -1,5 +1,3 @@
-package maths;
-
 type struct exported Vector {
 	
 	var exported float x, y, z;

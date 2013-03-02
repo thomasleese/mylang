@@ -275,8 +275,7 @@ status open
 
 \begin_layout Plain Layout
 
-KeywordToken = "package" | "import" | "type" | "struct" | "interface" |
- "var"
+KeywordToken = "import" | "type" | "struct" | "interface" | "var"
 \end_layout
 
 \begin_layout Plain Layout
@@ -797,6 +796,38 @@ FallthroughStatement = "fallthrough" ;
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part
+Packages
+\end_layout
+
+\begin_layout Section
+Source Code Location
+\end_layout
+
+\begin_layout Standard
+Packages are stored in their own directory inside the source directory,
+ for instance:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+PackageSourceFiles = "src/" PackageName + "/"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+All the source files inside there are used to build the package.
 \end_layout
 
 \end_body

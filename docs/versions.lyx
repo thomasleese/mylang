@@ -111,7 +111,7 @@ Future Releases
 \end_layout
 
 \begin_layout Subsection
-Version 0.1.0
+Version 0.1
 \end_layout
 
 \begin_layout Itemize
@@ -148,6 +148,14 @@ Add struct methods
 
 \begin_layout Itemize
 Add `this` keyword
+\end_layout
+
+\begin_layout Subsection
+Version 0.2
+\end_layout
+
+\begin_layout Itemize
+Remove semi-colons?
 \end_layout
 
 \end_body

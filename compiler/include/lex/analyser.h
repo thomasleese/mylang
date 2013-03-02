@@ -10,8 +10,11 @@ namespace Lex {
 	class Analyser {
 		
 	public:
-		Analyser(std::string filename);
+		Analyser();
 		~Analyser();
+		
+		void parseFile(std::string filename);
+		void dump() const;
 		
 		std::vector<Token *> &getTokens();
 		
