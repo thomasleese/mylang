@@ -20,8 +20,10 @@ namespace Lex {
 		
 	private:
 		void loadRules();
+		
 		void readFile(std::string filename);
-		void tokeniseBuffer();
+		void tokeniseBuffer(std::string filename);
+		
 		int getLineFromIndex(int index);
 		
 	private:

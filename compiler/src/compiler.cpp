@@ -1,6 +1,7 @@
 #include <dirent.h>
 
 #include "lex/analyser.h"
+#include "syntax/parser.h"
 #include "compiler.h"
 
 void Compiler::compileProject(std::string dir) {
@@ -39,9 +40,9 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	}
 	
 	analyser.dump();
-	
-	//Syntax::Parser parser;
-	//parser.parseTokens(analyser.getTokens());
-	
 	std::cout << std::endl;
+	
+	Syntax::Parser parser;
+	parser.parseTokens(analyser.getTokens());
+	parser.dump();
 }

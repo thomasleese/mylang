@@ -14,6 +14,9 @@ namespace Lex {
 		Rule *getRule() const;
 		std::string getValue() const;
 		
+		void setFilename(std::string filename);
+		std::string getFilename();
+		
 		void setLineNumber(int no);
 		int getLineNumber();
 		
@@ -22,6 +25,8 @@ namespace Lex {
 	private:
 		Rule *rule;
 		std::string value;
+		
+		std::string filename;
 		int lineNumber;
 		
 	};

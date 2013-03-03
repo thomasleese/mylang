@@ -20,7 +20,7 @@ Analyser::~Analyser() {
 
 void Analyser::parseFile(std::string filename) {
 	readFile(filename);
-	tokeniseBuffer();
+	tokeniseBuffer(filename);
 }
 
 void Analyser::dump() const {
@@ -63,7 +63,7 @@ void Analyser::readFile(std::string filename) {
 	}
 }
 
-void Analyser::tokeniseBuffer() {
+void Analyser::tokeniseBuffer(std::string filename) {
 	int pos = 0;
 	int end = buffer.length();
 
@@ -78,6 +78,7 @@ void Analyser::tokeniseBuffer() {
 				if (substr.substr(0, value.length()) == value) {
 					Token *token = new Token(rule, value);
 					token->setLineNumber(getLineFromIndex(pos));
+					token->setFilename(filename);
 					
 					this->tokens.push_back(token);
 					pos += value.length() - 1; // -1 because there is the pos++ below

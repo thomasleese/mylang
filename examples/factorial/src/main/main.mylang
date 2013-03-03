@@ -1,13 +1,6 @@
-import console; // import my console thing :)
-
-def int factorial(int n) {
-	if (n == 0) {
-		return 1;
-	} else {
-		return n * factorial(n - 1);
-	}
-}
+import console;
 
 def void main() {
+	// `factorial` is in the `factorial.mylang` file
 	console.println(factorial(20));
 }
