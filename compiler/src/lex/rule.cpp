@@ -38,7 +38,7 @@ std::string Rule::toString() const {
 		
 		case IntegerLiteral:		ss << "IntegerLiteral"; break;
 		case FloatLiteral:			ss << "FloatLiteral"; break;
-		case ImaginaryLiteral:		ss << "ImaginaryLiteral"; break;
+		case ComplexLiteral:		ss << "ComplexLiteral"; break;
 		case BooleanLiteral:		ss << "BooleanLiteral"; break;
 		case StringLiteral:			ss << "StringLiteral"; break;
 	}

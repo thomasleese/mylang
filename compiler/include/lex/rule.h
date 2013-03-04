@@ -19,7 +19,7 @@ namespace Lex {
 			
 			IntegerLiteral,
 			FloatLiteral,
-			ImaginaryLiteral,
+			ComplexLiteral,
 			BooleanLiteral,
 			StringLiteral,
 			

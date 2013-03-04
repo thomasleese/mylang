@@ -42,7 +42,7 @@ void Analyser::loadRules() {
 	this->rules.push_back(new Rule(Rule::IntegerLiteral, "[0-9]+"));
 	this->rules.push_back(new Rule(Rule::FloatLiteral, "[0-9]+\\.[0-9]+"));
 	this->rules.push_back(new Rule(Rule::StringLiteral, "\"(.*)\""));
-	this->rules.push_back(new Rule(Rule::ImaginaryLiteral, "([0-9]+)|([0-9]+\\.[0-9]+)i([0-9]+)|([0-9]+\\.[0-9]+)"));
+	this->rules.push_back(new Rule(Rule::ComplexLiteral, "([0-9]+)|([0-9]+\\.[0-9]+)i([0-9]+)|([0-9]+\\.[0-9]+)"));
 	
 	this->rules.push_back(new Rule(Rule::Identifier, "[[:L*:]_][[:L*:]|[:Nd:]|_]*"));
 	
