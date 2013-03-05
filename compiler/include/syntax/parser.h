@@ -2,6 +2,10 @@
 
 #include <vector>
 
+#include "syntax/expressions.h"
+#include "syntax/operators.h"
+#include "syntax/statements.h"
+
 namespace Lex {
 	class Token;
 }
@@ -10,6 +14,12 @@ namespace Syntax {
 	
 	namespace Statements {
 		class Statement;
+		class Expression;
+	}
+	
+	namespace Expressions {
+		class Expression;
+		class Unary;
 	}
 	
 	class Parser {
@@ -25,6 +35,42 @@ namespace Syntax {
 	private:
 		void readTokens(std::vector<Lex::Token *> tokens);
 		void generateAST();
+		
+		// Statements
+		bool isStatement(int *index);
+		Statements::Statement *readStatement(int *index);
+		
+		bool isExpressionStatement(int *index);
+		Statements::Statement *readExpressionStatement(int *index);
+		
+		// Expressions
+		bool isExpression(int *index);
+		Expressions::Expression *readExpression(int *index);
+		
+		bool isUnaryExpression(int *index);
+		Expressions::Unary *readUnaryExpression(int *index);
+	
+		bool isOperandExpression(int *index);
+		Expressions::Operand *readOperandExpression(int *index);
+		
+		bool isLiteralExpression(int *index);
+		Expressions::Literal *readLiteralExpression(int *index);
+		
+		bool isIdentifierExpression(int *index);
+		Expressions::Identifier *readIdentifierExpression(int *index);
+		
+		bool isSelectorExpression(int *index);
+		Expressions::Selector *readSelectorExpression(int *index, Expressions::Operand *operand);
+		
+		bool isCallExpression(int *index);
+		Expressions::Call *readCallExpression(int *index, Expressions::Operand *operand);
+		
+		bool isSliceExpression(int *index);
+		Expressions::Slice *readSliceExpression(int *index, Expressions::Operand *operand);
+		
+		// Operators
+		bool isUnaryOperator(int *index);
+		Operators::Unary readUnaryOperator(int *index);
 		
 		// Tokens
 		bool isToken(int *index, Lex::Rule::Type type, std::string value);
@@ -42,20 +88,8 @@ namespace Syntax {
 		bool isKeywordToken(int *index, std::string keyword);
 		Lex::Token *readKeywordToken(int *index, std::string keyword);
 		
-		bool isIntegerLiteralToken(int *index);
-		Lex::Token *readIntegerLiteralToken(int *index);
-		
-		bool isFloatLiteralToken(int *index);
-		Lex::Token *readFloatLiteralToken(int *index);
-		
-		bool isComplexLiteralToken(int *index);
-		Lex::Token *readComplexLiteralToken(int *index);
-		
-		bool isBooleanLiteralToken(int *index);
-		Lex::Token *readBooleanLiteralToken(int *index);
-		
-		bool isStringLiteralToken(int *index);
-		Lex::Token *readStringLiteralToken(int *index);
+		bool isLiteralToken(int *index);
+		Lex::Token *readLiteralToken(int *index);
 		
 	private:
 		std::vector<Lex::Token *> tokens;

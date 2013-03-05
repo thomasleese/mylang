@@ -509,26 +509,6 @@ IdentifierExpression = IdentifierToken ;
 \end_layout
 
 \begin_layout Subsubsection
-Qualified Identifier
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-QualifiedIdentifierExpression = IdentifierExpression { SelectorExpression
- } ;
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
 Selector
 \end_layout
 

@@ -43,6 +43,12 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	std::cout << std::endl;
 	
 	Syntax::Parser parser;
-	parser.parseTokens(analyser.getTokens());
+	
+	try {
+		parser.parseTokens(analyser.getTokens());
+	} catch (const char *s) {
+		std::cout << s << std::endl;
+	}
+	
 	parser.dump();
 }
