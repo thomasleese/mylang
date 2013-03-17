@@ -49,9 +49,15 @@ namespace Syntax {
 		
 		bool isUnaryExpression(int *index);
 		Expressions::Unary *readUnaryExpression(int *index);
-	
+		
+		bool isBinaryExpression(int *index);
+		Expressions::Binary *readBinaryExpression(int *index, Expressions::Expression *lhs, int minPrecedence);
+		
 		bool isOperandExpression(int *index);
 		Expressions::Operand *readOperandExpression(int *index);
+		
+		bool isExpressionExpression(int *index);
+		Expressions::Expr *readExpressionExpression(int *index);
 		
 		bool isLiteralExpression(int *index);
 		Expressions::Literal *readLiteralExpression(int *index);
@@ -71,6 +77,10 @@ namespace Syntax {
 		// Operators
 		bool isUnaryOperator(int *index);
 		Operators::Unary readUnaryOperator(int *index);
+		
+		bool isBinaryOperator(int *index);
+		Operators::Binary *getBinaryOperator(int *index);
+		Operators::Binary *readBinaryOperator(int *index);
 		
 		// Tokens
 		bool isToken(int *index, Lex::Rule::Type type, std::string value);

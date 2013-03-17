@@ -349,8 +349,7 @@ UnaryOperator = "+" | "-" | "!" | "++" | "--" ;
 
 \begin_layout Plain Layout
 
-BinaryOperator = "+" | "-" | "*" | "/" | "%" | "!" | "&" | "|" | "^" | ">"
- | "<"
+BinaryOperator = "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^" | ">" | "<"
 \end_layout
 
 \begin_layout Plain Layout
@@ -447,7 +446,8 @@ status open
 
 \begin_layout Plain Layout
 
-OperandExpression = LiteralExpression | IdentifierExpression
+OperandExpression = ExpressionExpression | LiteralExpression | IdentifierExpress
+ion
 \end_layout
 
 \begin_layout Plain Layout
@@ -463,6 +463,25 @@ OperandExpression = LiteralExpression | IdentifierExpression
 \begin_layout Plain Layout
 
                         | OperandExpression SliceExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Expression
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ExpressionExpression = "(" Expression ")" ;
 \end_layout
 
 \end_inset
@@ -778,8 +797,22 @@ FallthroughStatement = "fallthrough" ;
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
 \begin_layout Part
 Packages
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

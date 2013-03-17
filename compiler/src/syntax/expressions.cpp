@@ -33,6 +33,56 @@ std::string Unary::toString() const {
 	return ss.str();
 }
 
+void Binary::setOperator(Operators::Binary *op) {
+	this->op = op;
+}
+
+Operators::Binary *Binary::getOperator() {
+	return this->op;
+}
+
+void Binary::setLeft(Expression *expr) {
+	this->lhs = expr;
+}
+
+Expression *Binary::getLeft() {
+	return this->lhs;
+}
+
+void Binary::setRight(Expression *expr) {
+	this->rhs = expr;
+}
+
+Expression *Binary::getRight() {
+	return this->rhs;
+}
+
+std::string Binary::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Binary" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "op" FORMAT_NONE "=" << this->op->toString() << " ";
+	ss << FORMAT_YELLOW "lhs" FORMAT_NONE "=" << this->lhs->toString() << " ";
+	ss << FORMAT_YELLOW "rhs" FORMAT_NONE "=" << this->rhs->toString();
+	ss << ")";
+	
+	return ss.str();
+}
+
+void Expr::setExpression(Expression *expr) {
+	this->expr = expr;
+}
+
+std::string Expr::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Expression" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "expr" FORMAT_NONE "=" << this->expr->toString();
+	ss << ")";
+	
+	return ss.str();
+}
+
 void Literal::setValue(std::string value) {
 	this->value = value;
 }

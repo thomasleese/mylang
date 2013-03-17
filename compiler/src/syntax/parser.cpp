@@ -69,7 +69,12 @@ bool Parser::isExpression(int *index) {
 }
 
 Expressions::Expression *Parser::readExpression(int *index) {
-	return readUnaryExpression(index);
+	Expressions::Unary *unary = readUnaryExpression(index);
+	if (isBinaryOperator(index)) {
+		return readBinaryExpression(index, unary, 0);
+	}
+	
+	return unary;
 }
 
 bool Parser::isUnaryExpression(int *index) {
@@ -90,6 +95,29 @@ Expressions::Unary *Parser::readUnaryExpression(int *index) {
 	return unary;
 }
 
+bool Parser::isBinaryExpression(int *index) {
+	return false;
+}
+
+Expressions::Binary *Parser::readBinaryExpression(int *index, Expressions::Expression *lhs, int minPrecedence) {
+	while (isBinaryOperator(index) && getBinaryOperator(index)->getPrecedence() >= minPrecedence) {
+		Operators::Binary *op = readBinaryOperator(index);
+		Expressions::Expression *rhs = readOperandExpression(index);
+		
+		while (isBinaryOperator(index) && getBinaryOperator(index)->getPrecedence() > op->getPrecedence()) {
+			rhs = readBinaryExpression(index, rhs, getBinaryOperator(index)->getPrecedence());
+		}
+		
+		Expressions::Binary *b = new Expressions::Binary();
+		b->setOperator(op);
+		b->setLeft(lhs);
+		b->setRight(rhs);
+		lhs = b;
+	}
+	
+	return static_cast<Expressions::Binary *>(lhs);
+}
+
 bool Parser::isOperandExpression(int *index) {
 	return isLiteralExpression(index)
 		&& isIdentifierExpression(index);
@@ -98,7 +126,9 @@ bool Parser::isOperandExpression(int *index) {
 Expressions::Operand *Parser::readOperandExpression(int *index) {
 	Expressions::Operand *operand = NULL;
 	
-	if (isLiteralExpression(index)) {
+	if (isExpressionExpression(index)) {
+		operand = readExpressionExpression(index);
+	} else if (isLiteralExpression(index)) {
 		operand = readLiteralExpression(index);
 	} else if (isIdentifierExpression(index)) {
 		operand = readIdentifierExpression(index);
@@ -121,6 +151,18 @@ Expressions::Operand *Parser::readOperandExpression(int *index) {
 	}
 	
 	throw "Operand";
+}
+
+bool Parser::isExpressionExpression(int *index) {
+	return isDelimiterToken(index, "(");
+}
+
+Expressions::Expr *Parser::readExpressionExpression(int *index) {
+	readDelimiterToken(index, "(");
+	Expressions::Expr *expr = new Expressions::Expr();
+	expr->setExpression(readExpression(index));
+	readDelimiterToken(index, ")");
+	return expr;
 }
 
 bool Parser::isLiteralExpression(int *index) {
@@ -217,6 +259,75 @@ Operators::Unary Parser::readUnaryOperator(int *index) {
 	}
 	
 	throw "UnaryOperator";
+}
+
+bool Parser::isBinaryOperator(int *index) {
+	const int opsLength = 31;
+	const char *ops[opsLength] = { "+", "-", "*", "/", "%", "!", "&", "|", "^",
+		">", "<", "==", "!=", "<=", ">=", "<<", ">>", "&^", "&&", "||", "+=",
+		"-=", "*=", "/=", "%=", "&=", "|=", "^=", ">>=", "<<=", "&^=" };
+	
+	for (int i = 0; i < opsLength; i++) {
+		if (isOperatorToken(index, ops[i])) {
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+Operators::Binary *Parser::getBinaryOperator(int *index) {
+	Operators::Binary *op = new Operators::Binary();
+	
+	if (isOperatorToken(index, "+")) {
+		op->setType(Operators::Binary::Add);
+	} else if (isOperatorToken(index, "-")) {
+		op->setType(Operators::Binary::Subtract);
+	} else if (isOperatorToken(index, "*")) {
+		op->setType(Operators::Binary::Multiply);
+	} else if (isOperatorToken(index, "/")) {
+		op->setType(Operators::Binary::Divide);
+	} else if (isOperatorToken(index, "%")) {
+		op->setType(Operators::Binary::Modulus);
+	} else if (isOperatorToken(index, "&")) {
+		op->setType(Operators::Binary::BitwiseAnd);
+	} else if (isOperatorToken(index, "|")) {
+		op->setType(Operators::Binary::BitwiseOr);
+	} else if (isOperatorToken(index, "^")) {
+		op->setType(Operators::Binary::BitwiseNot);
+	} else if (isOperatorToken(index, ">")) {
+		op->setType(Operators::Binary::GreaterThan);
+	} else if (isOperatorToken(index, "<")) {
+		op->setType(Operators::Binary::LessThan);
+	} else if (isOperatorToken(index, "==")) {
+		op->setType(Operators::Binary::Equals);
+	} else if (isOperatorToken(index, "!=")) {
+		op->setType(Operators::Binary::NotEquals);
+	} else if (isOperatorToken(index, "<=")) {
+		op->setType(Operators::Binary::LessThanEquals);
+	} else if (isOperatorToken(index, ">=")) {
+		op->setType(Operators::Binary::GreaterThanEquals);
+	} else if (isOperatorToken(index, "<<")) {
+		op->setType(Operators::Binary::LeftShift);
+	} else if (isOperatorToken(index, ">>")) {
+		op->setType(Operators::Binary::RightShift);
+	} else if (isOperatorToken(index, "&^")) {
+		op->setType(Operators::Binary::BitwiseAndOr);
+	} else if (isOperatorToken(index, "&&")) {
+		op->setType(Operators::Binary::And);
+	} else if (isOperatorToken(index, "||")) {
+		op->setType(Operators::Binary::Or);
+	} else {
+		throw "BinaryOperator";
+	}
+	
+	return op;
+}
+
+Operators::Binary *Parser::readBinaryOperator(int *index) {
+	Operators::Binary *op = getBinaryOperator(index);
+	(*index)++;
+	return op;
 }
 
 // Tokens

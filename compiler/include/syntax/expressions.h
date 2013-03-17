@@ -32,7 +32,39 @@ namespace Syntax {
 			
 		};
 		
+		class Binary : public Expression {
+			
+		public:
+			void setOperator(Operators::Binary *op);
+			Operators::Binary *getOperator();
+			
+			void setLeft(Expression *expr);
+			Expression *getLeft();
+			
+			void setRight(Expression *expr);
+			Expression *getRight();
+			
+			std::string toString() const;
+			
+		private:
+			Operators::Binary *op;
+			Expression *lhs, *rhs;
+			
+		};
+		
 		class Operand : public Expression {
+			
+		};
+		
+		class Expr : public Operand {
+			
+		public:
+			void setExpression(Expression *expr);
+			
+			std::string toString() const;
+			
+		private:
+			Expression *expr;
 			
 		};
 		

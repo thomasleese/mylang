@@ -46,7 +46,7 @@ void Analyser::loadRules() {
 	
 	this->rules.push_back(new Rule(Rule::Identifier, "[[:L*:]_][[:L*:]|[:Nd:]|_]*"));
 	
-	this->rules.push_back(new Rule(Rule::Operator, "&^=|<<=|>>=|\\^=|\\|=|&=|%=|/=|\\*=|-=|\\+=|\\|\\||&&|\\-\\-|\\+\\+|&\\^|>>|<<|>=|<=|!=|==|\\+|\\-|\\*|/|%|!|&|\\||\\^|>|<"));
+	this->rules.push_back(new Rule(Rule::Operator, "\\|\\||&&|\\-\\-|\\+\\+|&\\^|>>|<<|>=|<=|!=|==|\\+|\\-|\\*|/|%|!|&|\\||\\^|>|<"));
 	
 	this->rules.push_back(new Rule(Rule::Delimiter, ";|\\.|\\(|\\)|\\[|\\]|\\{|\\}"));
 }
@@ -59,7 +59,8 @@ void Analyser::readFile(std::string filename) {
 		std::string line;
 		std::getline(in, line);
 		
-		this->buffer += line + "\n";
+		this->buffer += line;
+		this->buffer += "\n";
 	}
 }
 
