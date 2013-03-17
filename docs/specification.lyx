@@ -662,13 +662,8 @@ status open
 
 \begin_layout Plain Layout
 
-DeclarationStatement = PackageDeclarationStatement | VariableDeclarationStatemen
-t | TypeDeclarationStatement | FunctionDeclarationStatement ;
-\end_layout
-
-\begin_layout Plain Layout
-
-PackageDeclarationStatement = "package" Identifier ;
+DeclarationStatement = VariableDeclarationStatement | TypeDeclarationStatement
+ | FunctionDeclarationStatement ;
 \end_layout
 
 \begin_layout Plain Layout

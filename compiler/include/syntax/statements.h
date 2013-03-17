@@ -29,6 +29,18 @@ namespace Syntax {
 			
 		};
 		
+		class Import : public Statement {
+			
+		public:
+			void setIdentifier(Expressions::Identifier *identifier);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Identifier *identifier;
+			
+		};
+		
 	}
 	
 }

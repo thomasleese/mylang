@@ -46,8 +46,8 @@ bool Parser::isStatement(int *index) {
 }
 
 Statements::Statement *Parser::readStatement(int *index) {
-	if (/*isVariableStatement...*/false) {
-		return NULL;
+	if (isImportStatement(index)) {
+		return readImportStatement(index);
 	} else {
 		return readExpressionStatement(index);
 	}
@@ -61,6 +61,18 @@ Statements::Statement *Parser::readExpressionStatement(int *index) {
 	Statements::Expression *stat = new Statements::Expression();
 	stat->setExpression(readExpression(index));
 	return stat;
+}
+
+bool Parser::isImportStatement(int *index) {
+	return isKeywordToken(index, "import");
+}
+
+Statements::Import *Parser::readImportStatement(int *index) {
+	readKeywordToken(index, "import");
+	
+	Statements::Import *import = new Statements::Import();
+	import->setIdentifier(readIdentifierExpression(index));
+	return import;
 }
 
 // Expressions

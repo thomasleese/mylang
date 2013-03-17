@@ -43,6 +43,9 @@ namespace Syntax {
 		bool isExpressionStatement(int *index);
 		Statements::Statement *readExpressionStatement(int *index);
 		
+		bool isImportStatement(int *index);
+		Statements::Import *readImportStatement(int *index);
+		
 		// Expressions
 		bool isExpression(int *index);
 		Expressions::Expression *readExpression(int *index);

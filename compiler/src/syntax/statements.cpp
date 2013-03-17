@@ -19,3 +19,17 @@ std::string Expression::toString() const {
 	
 	return ss.str();
 }
+
+void Import::setIdentifier(Expressions::Identifier *identifier) {
+	this->identifier = identifier;
+}
+
+std::string Import::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Import" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "identifier" FORMAT_NONE "=" << this->identifier->toString();
+	ss << ")";
+	
+	return ss.str();
+}
