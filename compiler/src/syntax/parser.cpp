@@ -46,7 +46,9 @@ bool Parser::isStatement(int *index) {
 }
 
 Statements::Statement *Parser::readStatement(int *index) {
-	if (isImportStatement(index)) {
+	if (isBlockStatement(index)) {
+		return readBlockStatement(index);
+	} else if (isImportStatement(index)) {
 		return readImportStatement(index);
 	} else {
 		return readExpressionStatement(index);
@@ -57,7 +59,31 @@ bool Parser::isExpressionStatement(int *index) {
 	return isExpression(index);
 }
 
-Statements::Statement *Parser::readExpressionStatement(int *index) {
+bool Parser::isBlockStatement(int *index) {
+	return isDelimiterToken(index, "{");
+}
+
+Statements::Block *Parser::readBlockStatement(int *index) {
+	readDelimiterToken(index, "{");
+	
+	Statements::Block *block = new Statements::Block();
+	
+	while (true) {
+		block->addStatement(readStatement(index));
+		
+		if (isDelimiterToken(index, ";")) {
+			readDelimiterToken(index, ";");
+		} else {
+			break;
+		}
+	}
+	
+	readDelimiterToken(index, "}");
+	
+	return block;
+}
+
+Statements::Expression *Parser::readExpressionStatement(int *index) {
 	Statements::Expression *stat = new Statements::Expression();
 	stat->setExpression(readExpression(index));
 	return stat;

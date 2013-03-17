@@ -6,6 +6,31 @@
 
 using namespace Syntax::Statements;
 
+void Block::addStatement(Statement *stat) {
+	this->statements.push_back(stat);
+}
+
+std::string Block::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Block" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "statements" FORMAT_NONE "= [";
+	
+	for (int i = 0; i < this->statements.size(); i++) {
+		ss << this->statements[i]->toString();
+		
+		if (i < this->statements.size() - 1) {
+			ss << ", ";
+		}
+	}
+	
+	ss << "]";
+	
+	ss << ")";
+	
+	return ss.str();
+}
+
 void Expression::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
 }

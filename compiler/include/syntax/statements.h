@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
 namespace Syntax {
 	
@@ -14,6 +15,18 @@ namespace Syntax {
 			
 		public:
 			virtual std::string toString() const = 0;
+			
+		};
+		
+		class Block : public Statement {
+			
+		public:
+			void addStatement(Statement *stat);
+			
+			std::string toString() const;
+			
+		private:
+			std::vector<Statement *> statements;
 			
 		};
 		

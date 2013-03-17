@@ -599,13 +599,13 @@ status open
 
 \begin_layout Plain Layout
 
-Statement = ExpressionStatement | AssignmentStatement | DeclarationStatement
- | ControlStatement | OtherStatement ;
+Statement = BlockStatement | ExpressionStatement | AssignmentStatement |
+ DeclarationStatement | ControlStatement | OtherStatement ;
 \end_layout
 
 \begin_layout Plain Layout
 
-Block = "{" { Statement ";" } "}" ;
+BlockStatement = "{" { Statement ";" } "}" ;
 \end_layout
 
 \end_inset

@@ -40,8 +40,11 @@ namespace Syntax {
 		bool isStatement(int *index);
 		Statements::Statement *readStatement(int *index);
 		
+		bool isBlockStatement(int *index);
+		Statements::Block *readBlockStatement(int *index);
+		
 		bool isExpressionStatement(int *index);
-		Statements::Statement *readExpressionStatement(int *index);
+		Statements::Expression *readExpressionStatement(int *index);
 		
 		bool isImportStatement(int *index);
 		Statements::Import *readImportStatement(int *index);
