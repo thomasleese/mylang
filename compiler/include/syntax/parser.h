@@ -12,6 +12,21 @@ namespace Lex {
 
 namespace Syntax {
 	
+	class ParserError {
+		
+	public:
+		ParserError(Lex::Token *got, std::string expected);
+		ParserError(int line, std::string filename, std::string message);
+		
+		void print();
+		
+	private:
+		int line;
+		std::string filename;
+		std::string message;
+		
+	};
+	
 	class Parser {
 		
 	public:

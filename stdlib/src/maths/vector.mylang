@@ -1,12 +1,12 @@
-type struct exported Vector {
+type exported Struct Vector {
 	
-	var exported float x, y, z;
+	var exported Float x, y, z;
 	
-	def exported float len2() {
-		return this.x * this.x + this.y * this.y;
+	def exported Float len2() {
+		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 	
-	def exported float len() {
+	def exported Float len() {
 		return sqrt(this.len2());
 	}
 	

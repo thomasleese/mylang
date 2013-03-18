@@ -3,6 +3,23 @@
 
 using namespace Syntax;
 
+ParserError::ParserError(Lex::Token *got, std::string expected) {
+	this->line = got->getLineNumber();
+	this->filename = got->getFilename();
+	this->message = "Expected '" + expected + "', got '" + got->getValue() + "'";
+}
+
+ParserError::ParserError(int line, std::string filename, std::string message) {
+	this->line = line;
+	this->filename = filename;
+	this->message = message;
+}
+
+void ParserError::print() {
+	std::cout << "Parser error: " << this->filename << ":" << this->line << std::endl;
+	std::cout << "\t" << this->message << std::endl;
+}
+
 Parser::Parser() {
 	
 }
@@ -122,7 +139,7 @@ Statements::Control *Parser::readControlStatement(int *index) {
 		return readIfStatement(index);
 	}
 	
-	throw "Control";
+	throw ParserError(this->tokens[*index], "control");
 }
 
 bool Parser::isIfStatement(int *index) {
@@ -161,7 +178,7 @@ Statements::Declaration *Parser::readDeclarationStatement(int *index) {
 		return readFunctionDeclarationStatement(index);
 	}
 	
-	throw "Declaration";
+	throw ParserError(this->tokens[*index], "declaration");
 }
 
 bool Parser::isFunctionDeclarationStatement(int *index) {
@@ -281,7 +298,7 @@ Expressions::Operand *Parser::readOperandExpression(int *index) {
 		return operand;
 	}
 	
-	throw "Operand";
+	throw ParserError(this->tokens[*index], "operand");
 }
 
 bool Parser::isExpressionExpression(int *index) {
@@ -429,7 +446,7 @@ Operators::Unary Parser::readUnaryOperator(int *index) {
 		return Operators::Decrement;
 	}
 	
-	throw "UnaryOperator";
+	throw ParserError(this->tokens[*index], "unary operator");
 }
 
 bool Parser::isBinaryOperator(int *index) {
@@ -489,7 +506,7 @@ Operators::Binary *Parser::getBinaryOperator(int *index) {
 	} else if (isOperatorToken(index, "||")) {
 		op->setType(Operators::Binary::Or);
 	} else {
-		throw "BinaryOperator";
+		throw ParserError(this->tokens[*index], "binary operator");
 	}
 	
 	return op;
@@ -522,7 +539,11 @@ Lex::Token *Parser::readToken(int *index, Lex::Rule::Type type, std::string valu
 		return token;
 	}
 	
-	throw ("Token (" + value + ")").c_str();
+	if (value.empty()) {
+		throw ParserError(token, "token");
+	} else {
+		throw ParserError(token, value);
+	}
 }
 
 bool Parser::isIdentifierToken(int *index) {
@@ -578,5 +599,5 @@ Lex::Token *Parser::readLiteralToken(int *index) {
 		return readToken(index, Lex::Rule::StringLiteral, "");
 	}
 	
-	throw "Literal";
+	throw ParserError(this->tokens[*index], "literal");
 }

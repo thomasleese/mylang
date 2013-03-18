@@ -46,8 +46,8 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	
 	try {
 		parser.parseTokens(analyser.getTokens());
-	} catch (const char *s) {
-		std::cout << s << std::endl;
+	} catch (Syntax::ParserError err) {
+		err.print();
 	}
 	
 	parser.dump();

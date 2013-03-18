@@ -1,6 +1,6 @@
-type int Weekday {
+type Int Weekday {
 	
-	def string toString() {
+	def String toString() {
 		switch (this) {
 			case (0) {
 				return "Sunday";
