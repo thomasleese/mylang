@@ -9,6 +9,10 @@ void Binary::setType(Type t) {
 	this->type = t;
 	
 	switch (this->type) {
+		case Assignment:
+			this->setPrecedence(6);
+			break;
+			
 		case Multiply:
 		case Divide:
 		case Modulus:

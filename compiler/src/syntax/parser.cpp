@@ -131,12 +131,14 @@ Statements::Return *Parser::readReturnStatement(int *index) {
 }
 
 bool Parser::isControlStatement(int *index) {
-	return isIfStatement(index);
+	return isIfStatement(index) || isSwitchStatement(index);
 }
 
 Statements::Control *Parser::readControlStatement(int *index) {
 	if (isIfStatement(index)) {
 		return readIfStatement(index);
+	} else if (isSwitchStatement(index)) {
+		return readSwitchStatement(index);
 	}
 	
 	throw ParserError(this->tokens[*index], "control");
@@ -169,16 +171,145 @@ Statements::If *Parser::readIfStatement(int *index) {
 	return stat;
 }
 
+bool Parser::isCaseStatement(int *index) {
+	return isKeywordToken(index, "case") || isKeywordToken(index, "default");
+}
+
+Statements::Case *Parser::readCaseStatement(int *index) {
+	Statements::Case *statement = new Statements::Case();
+	if (isKeywordToken(index, "case")) {
+		readKeywordToken(index, "case");
+		readDelimiterToken(index, "(");
+		statement->setExpression(readExpression(index));
+		readDelimiterToken(index, ")");
+	} else if (isKeywordToken(index, "default")) {
+		readKeywordToken(index, "default");
+		statement->setExpression(NULL);
+	} else {
+		throw ParserError(this->tokens[*index], "case/default");
+	}
+	
+	statement->setBlock(readBlockStatement(index));
+	return statement;
+}
+
+bool Parser::isSwitchStatement(int *index) {
+	return isKeywordToken(index, "switch");
+}
+
+Statements::Switch *Parser::readSwitchStatement(int *index) {
+	readKeywordToken(index, "switch");
+	
+	Statements::Switch *statement = new Statements::Switch();
+	
+	readDelimiterToken(index, "(");
+	statement->setExpression(readExpression(index));
+	readDelimiterToken(index, ")");
+	
+	readDelimiterToken(index, "{");
+	
+	while (isCaseStatement(index)) {
+		statement->addCase(readCaseStatement(index));
+	}
+	
+	readDelimiterToken(index, "}");
+	
+	return statement;
+}
+
 bool Parser::isDeclarationStatement(int *index) {
-	return isFunctionDeclarationStatement(index);
+	return isFunctionDeclarationStatement(index)
+			|| isTypeDeclarationStatement(index)
+			|| isVariableDeclarationStatement(index)
+			|| isConstantDeclarationStatement(index);
 }
 
 Statements::Declaration *Parser::readDeclarationStatement(int *index) {
 	if (isFunctionDeclarationStatement(index)) {
 		return readFunctionDeclarationStatement(index);
+	} else if (isTypeDeclarationStatement(index)) {
+		return readTypeDeclarationStatement(index);
+	} else if (isVariableDeclarationStatement(index)) {
+		return readVariableDeclarationStatement(index);
+	} else if (isConstantDeclarationStatement(index)) {
+		return readConstantDeclarationStatement(index);
 	}
 	
 	throw ParserError(this->tokens[*index], "declaration");
+}
+
+bool Parser::isVariableDeclarationStatement(int *index) {
+	return isKeywordToken(index, "var");
+}
+
+Statements::VariableDeclaration *Parser::readVariableDeclarationStatement(int *index) {
+	readKeywordToken(index, "var");
+	
+	Statements::VariableDeclaration *decl = new Statements::VariableDeclaration();
+	
+	if (isKeywordToken(index, "exported")) {
+		readKeywordToken(index, "exported");
+		decl->setExported(true);
+	}
+	
+	decl->setType(readTypeExpression(index));
+	decl->setName(readIdentifierExpression(index));
+	
+	if (isOperatorToken(index, "=")) {
+		readOperatorToken(index, "=");
+		decl->setAssignment(readExpression(index));
+	}
+	
+	readDelimiterToken(index, ";");
+	
+	return decl;
+}
+
+bool Parser::isConstantDeclarationStatement(int *index) {
+	return isKeywordToken(index, "const");
+}
+
+Statements::ConstantDeclaration *Parser::readConstantDeclarationStatement(int *index) {
+	readKeywordToken(index, "const");
+	
+	Statements::ConstantDeclaration *decl = new Statements::ConstantDeclaration();
+	
+	if (isKeywordToken(index, "exported")) {
+		readKeywordToken(index, "exported");
+		decl->setExported(true);
+	}
+	
+	decl->setType(readTypeExpression(index));
+	decl->setName(readIdentifierExpression(index));
+	
+	if (isOperatorToken(index, "=")) {
+		readOperatorToken(index, "=");
+		decl->setAssignment(readExpression(index));
+	}
+	
+	readDelimiterToken(index, ";");
+	
+	return decl;
+}
+
+bool Parser::isTypeDeclarationStatement(int *index) {
+	return isKeywordToken(index, "type");
+}
+
+Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
+	readKeywordToken(index, "type");
+	
+	Statements::TypeDeclaration *decl = new Statements::TypeDeclaration();
+	
+	if (isKeywordToken(index, "exported")) {
+		readKeywordToken(index, "exported");
+		decl->setExported(true);
+	}
+	
+	decl->setType(readTypeExpression(index));
+	decl->setName(readIdentifierExpression(index));
+	decl->setBlock(readBlockStatement(index));
+	return decl;
 }
 
 bool Parser::isFunctionDeclarationStatement(int *index) {
@@ -189,8 +320,14 @@ Statements::FunctionDeclaration *Parser::readFunctionDeclarationStatement(int *i
 	readKeywordToken(index, "def");
 	
 	Statements::FunctionDeclaration *decl = new Statements::FunctionDeclaration();
+	
+	if (isKeywordToken(index, "exported")) {
+		readKeywordToken(index, "exported");
+		decl->setExported(true);
+	}
+	
 	decl->setType(readTypeExpression(index));
-	decl->setIdentifier(readIdentifierExpression(index));
+	decl->setName(readIdentifierExpression(index));
 	
 	readDelimiterToken(index, "(");
 	
@@ -395,7 +532,7 @@ bool Parser::isTypeExpression(int *index) {
 Expressions::Type *Parser::readTypeExpression(int *index) {
 	Expressions::Type *type = new Expressions::Type();
 	
-	type->setIdentifier(readIdentifierExpression(index));
+	type->setName(readIdentifierExpression(index));
 	
 	while (isSelectorExpression(index)) {
 		type->addSelector(readSelectorExpression(index, NULL));
@@ -450,10 +587,10 @@ Operators::Unary Parser::readUnaryOperator(int *index) {
 }
 
 bool Parser::isBinaryOperator(int *index) {
-	const int opsLength = 31;
-	const char *ops[opsLength] = { "+", "-", "*", "/", "%", "!", "&", "|", "^",
-		">", "<", "==", "!=", "<=", ">=", "<<", ">>", "&^", "&&", "||", "+=",
-		"-=", "*=", "/=", "%=", "&=", "|=", "^=", ">>=", "<<=", "&^=" };
+	const int opsLength = 32;
+	const char *ops[opsLength] = { "=", "+", "-", "*", "/", "%", "!", "&", "|",
+		"^", ">", "<", "==", "!=", "<=", ">=", "<<", ">>", "&^", "&&", "||",
+		"+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", ">>=", "<<=", "&^=" };
 	
 	for (int i = 0; i < opsLength; i++) {
 		if (isOperatorToken(index, ops[i])) {
@@ -505,6 +642,8 @@ Operators::Binary *Parser::getBinaryOperator(int *index) {
 		op->setType(Operators::Binary::And);
 	} else if (isOperatorToken(index, "||")) {
 		op->setType(Operators::Binary::Or);
+	} else if (isOperatorToken(index, "=")) {
+		op->setType(Operators::Binary::Assignment);
 	} else {
 		throw ParserError(this->tokens[*index], "binary operator");
 	}

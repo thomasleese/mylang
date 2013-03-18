@@ -29,6 +29,10 @@ type Int Weekday {
 			case (6) {
 				return "Saturday";
 			}
+			
+			default {
+				return "Unknown Weekday";
+			}
 		}
 	}
 	

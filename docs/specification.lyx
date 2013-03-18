@@ -224,19 +224,19 @@ OperatorToken = "+" | "-" | "*" | "/" | "%" | "!" | "&" | "|" | "^" | ">"
 
 \begin_layout Plain Layout
 
-                | "==" | "!=" | "<=" | ">=" | "<<" | ">>" | "&^" | "++"
- | "--"
+                | "=" | "==" | "!=" | "<=" | ">=" | "<<" | ">>" | "&^" |
+ "++"
 \end_layout
 
 \begin_layout Plain Layout
 
-                | "&&" | "||" | "+=" | "-=" | "*=" | "/=" | "%=" | "&="
- | "|="
+                | "--" | "&&" | "||" | "+=" | "-=" | "*=" | "/=" | "%="
+ | "&="
 \end_layout
 
 \begin_layout Plain Layout
 
-                | "^=" | ">>=" | "<<=" | "&^=" ;
+                | "|=" | "^=" | ">>=" | "<<=" | "&^=" ;
 \end_layout
 
 \end_inset
@@ -255,8 +255,7 @@ status open
 
 \begin_layout Plain Layout
 
-DelimiterToken = "." | ";" | ":" | "," | "(" | ")" | "[" | "]" | "{" | "}"
- ;
+DelimiterToken = "." | ";" | "," | "(" | ")" | "[" | "]" | "{" | "}" ;
 \end_layout
 
 \end_inset
@@ -349,7 +348,8 @@ UnaryOperator = "+" | "-" | "!" | "++" | "--" ;
 
 \begin_layout Plain Layout
 
-BinaryOperator = "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^" | ">" | "<"
+BinaryOperator = "=" | "+" | "-" | "*" | "/" | "%" | "&" | "|" | "^" | ">"
+ | "<"
 \end_layout
 
 \begin_layout Plain Layout
@@ -642,8 +642,8 @@ status open
 
 \begin_layout Plain Layout
 
-Statement = ExpressionStatement | AssignmentStatement | DeclarationStatement
- | ControlStatement | OtherStatement ;
+Statement = ExpressionStatement | DeclarationStatement | ControlStatement
+ | OtherStatement ;
 \end_layout
 
 \end_inset
@@ -671,25 +671,6 @@ ExpressionStatement = Expression ;
 \end_layout
 
 \begin_layout Subsubsection
-Assignment
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-AssignmentStatement = Expression "=" Expression ;
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsubsection
 Declaration
 \end_layout
 
@@ -700,26 +681,32 @@ status open
 
 \begin_layout Plain Layout
 
-DeclarationStatement = VariableDeclarationStatement | TypeDeclarationStatement
- | FunctionDeclarationStatement ;
+DeclarationStatement = VariableDeclarationStatement | ConstDeclarationStatement
+ | TypeDeclarationStatement | FunctionDeclarationStatement ;
 \end_layout
 
 \begin_layout Plain Layout
 
-VariableDeclarationStatement = "var" TypeExpression IdentifierExpression
- [ "=" Expression ] ;
+VariableDeclarationStatement = "var" [ "exported" ] TypeExpression IdentifierExp
+ression [ "=" Expression ] ;
 \end_layout
 
 \begin_layout Plain Layout
 
-TypeDeclarationStatement = "type" TypeExpression IdentifierExpression [
- Block ] ;
+ConstDeclarationStatement = "const"[ "exported" ] TypeExpression IdentiferExpres
+sion [ "=" Expression ] ;
 \end_layout
 
 \begin_layout Plain Layout
 
-FunctionDeclarationStatement = "def" TypeExpression IdentifierExpression
- "(" ArgumentList ")" Block ;
+TypeDeclarationStatement = "type"[ "exported" ] TypeExpression IdentifierExpress
+ion [ Block ] ;
+\end_layout
+
+\begin_layout Plain Layout
+
+FunctionDeclarationStatement = "def"[ "exported" ] TypeExpression IdentifierExpr
+ession "(" ArgumentList ")" Block ;
 \end_layout
 
 \end_inset
@@ -747,7 +734,7 @@ ControlStatement = IfStatement | SwitchStatement | ForStatement
 
 \begin_layout Plain Layout
 
-IfStatement = "if" ExpressionExpression Block [ "Else" ( Block | IfStatement
+IfStatement = "if" "(" Expression ")" Block [ "Else" ( Block | IfStatement
  ) ] ;
 \end_layout
 

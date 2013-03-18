@@ -39,6 +39,7 @@ namespace Syntax {
 				BitwiseAndOr,
 				And,
 				Or,
+				Assignment,
 			};
 			
 			void setType(Type t);

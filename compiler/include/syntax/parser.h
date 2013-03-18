@@ -63,8 +63,23 @@ namespace Syntax {
 		bool isIfStatement(int *index);
 		Statements::If *readIfStatement(int *index);
 		
+		bool isCaseStatement(int *index);
+		Statements::Case *readCaseStatement(int *index);
+		
+		bool isSwitchStatement(int *index);
+		Statements::Switch *readSwitchStatement(int *index);
+		
 		bool isDeclarationStatement(int *index);
 		Statements::Declaration *readDeclarationStatement(int *index);
+		
+		bool isVariableDeclarationStatement(int *index);
+		Statements::VariableDeclaration *readVariableDeclarationStatement(int *index);
+		
+		bool isConstantDeclarationStatement(int *index);
+		Statements::ConstantDeclaration *readConstantDeclarationStatement(int *index);
+		
+		bool isTypeDeclarationStatement(int *index);
+		Statements::TypeDeclaration *readTypeDeclarationStatement(int *index);
 		
 		bool isFunctionDeclarationStatement(int *index);
 		Statements::FunctionDeclaration *readFunctionDeclarationStatement(int *index);

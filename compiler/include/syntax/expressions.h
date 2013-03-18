@@ -142,14 +142,14 @@ namespace Syntax {
 		class Type : public Expression {
 			
 		public:
-			void setIdentifier(Identifier *identifier);
+			void setName(Identifier *name);
 			void addSelector(Selector *selector);
 			void addSlice(Slice *slice);
 			
 			std::string toString() const;
 			
 		private:
-			Identifier *identifier;
+			Identifier *name;
 			std::vector<Selector *> selectors;
 			std::vector<Slice *> slices;
 			

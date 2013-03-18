@@ -1,6 +1,14 @@
 type exported Struct Vector {
 	
-	var exported Float x, y, z;
+	var exported Float x = 0;
+	var exported Float y = 0;
+	var exported Float z = 0;
+	
+	def exported void set(Float x, Float y, Float z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 	
 	def exported Float len2() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;

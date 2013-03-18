@@ -39,8 +39,8 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		closedir(dp);
 	}
 	
-	analyser.dump();
-	std::cout << std::endl;
+	//analyser.dump();
+	//std::cout << std::endl;
 	
 	Syntax::Parser parser;
 	

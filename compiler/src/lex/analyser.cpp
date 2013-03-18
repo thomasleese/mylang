@@ -41,14 +41,14 @@ void Analyser::loadRules() {
 	this->rules.push_back(new Rule(Rule::BooleanLiteral, "true|false"));
 	this->rules.push_back(new Rule(Rule::IntegerLiteral, "[0-9]+"));
 	this->rules.push_back(new Rule(Rule::FloatLiteral, "[0-9]+\\.[0-9]+"));
-	this->rules.push_back(new Rule(Rule::StringLiteral, "\"(.*)\""));
+	this->rules.push_back(new Rule(Rule::StringLiteral, "\"(\\.|[^\"])*\""));
 	this->rules.push_back(new Rule(Rule::ComplexLiteral, "([0-9]+)|([0-9]+\\.[0-9]+)i([0-9]+)|([0-9]+\\.[0-9]+)"));
 	
 	this->rules.push_back(new Rule(Rule::Identifier, "[[:L*:]_][[:L*:]|[:Nd:]|_]*"));
 	
-	this->rules.push_back(new Rule(Rule::Operator, "\\|\\||&&|\\-\\-|\\+\\+|&\\^|>>|<<|>=|<=|!=|==|\\+|\\-|\\*|/|%|!|&|\\||\\^|>|<"));
+	this->rules.push_back(new Rule(Rule::Operator, "\\|\\||&&|\\-\\-|\\+\\+|&\\^|>>|<<|>=|<=|!=|==|\\+|\\-|\\*|/|%|!|&|\\||\\^|>|<|="));
 	
-	this->rules.push_back(new Rule(Rule::Delimiter, ";|\\.|\\(|\\)|\\[|\\]|\\{|\\}"));
+	this->rules.push_back(new Rule(Rule::Delimiter, ";|\\.|,|\\(|\\)|\\[|\\]|\\{|\\}"));
 }
 
 void Analyser::readFile(std::string filename) {

@@ -91,7 +91,93 @@ namespace Syntax {
 			
 		};
 		
+		class Case : public Control {
+			
+		public:
+			Case();
+			
+			void setExpression(Expressions::Expression *expr);
+			void setBlock(Block *block);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Expression *expression;
+			Block *block;
+			
+		};
+		
+		class Switch : public Control {
+			
+		public:
+			void setExpression(Expressions::Expression *expr);
+			void addCase(Case *statement);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Expression *expression;
+			std::vector<Case *> cases;
+			
+		};
+		
 		class Declaration : public Statement {
+			
+		public:
+			Declaration();
+			
+			void setExported(bool exported);
+			void setName(Expressions::Identifier *name);
+			
+		protected:
+			bool exported;
+			Expressions::Identifier *name;
+			
+		};
+		
+		class VariableDeclaration : public Declaration {
+			
+		public:
+			VariableDeclaration();
+			
+			void setType(Expressions::Type *type);
+			void setAssignment(Expressions::Expression *expr);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Type *type;
+			Expressions::Expression *assignment;
+			
+		};
+		
+		class ConstantDeclaration : public Declaration {
+			
+		public:
+			ConstantDeclaration();
+			
+			void setType(Expressions::Type *type);
+			void setAssignment(Expressions::Expression *expr);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Type *type;
+			Expressions::Expression *assignment;
+			
+		};
+		
+		class TypeDeclaration : public Declaration {
+			
+		public:
+			void setType(Expressions::Type *type);
+			void setBlock(Block *block);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Type *type;
+			Block *block;
 			
 		};
 		
@@ -99,7 +185,6 @@ namespace Syntax {
 			
 		public:
 			void setType(Expressions::Type *type);
-			void setIdentifier(Expressions::Identifier *identifier);
 			void addParameter(Expressions::Parameter *param);
 			void setBlock(Block *block);
 			
@@ -107,7 +192,6 @@ namespace Syntax {
 			
 		private:
 			Expressions::Type *type;
-			Expressions::Identifier *identifier;
 			std::vector<Expressions::Parameter *> parameters;
 			Block *block;
 			

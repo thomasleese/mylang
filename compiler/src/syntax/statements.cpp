@@ -104,12 +104,150 @@ std::string If::toString() const {
 	return ss.str();
 }
 
-void FunctionDeclaration::setType(Expressions::Type *type) {
+Case::Case() {
+	this->expression = NULL;
+}
+
+void Case::setExpression(Expressions::Expression *expr) {
+	this->expression = expr;
+}
+
+void Case::setBlock(Block *block) {
+	this->block = block;
+}
+
+std::string Case::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Case" FORMAT_NONE "(";
+	
+	if (this->expression != NULL) {
+		ss << FORMAT_YELLOW "expression" FORMAT_NONE "=" << this->expression->toString() << " ";
+	}
+	
+	ss << FORMAT_YELLOW "block" FORMAT_NONE "=" << this->block->toString();
+	ss << ")";
+	
+	return ss.str();
+}
+
+void Switch::setExpression(Expressions::Expression *expr) {
+	this->expression = expr;
+}
+
+void Switch::addCase(Case *statement) {
+	this->cases.push_back(statement);
+}
+
+std::string Switch::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Switch" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "expression" FORMAT_NONE "=" << this->expression->toString() << " ";
+	
+	ss << FORMAT_YELLOW "cases" FORMAT_NONE "=[";
+	for (int i = 0; i < this->cases.size(); i++) {
+		ss << this->cases[i]->toString();
+		
+		if (i < this->cases.size() - 1) {
+			ss << ", ";
+		}
+	}
+	ss << "])";
+	
+	return ss.str();
+}
+
+Declaration::Declaration() {
+	this->exported = false;
+}
+
+void Declaration::setExported(bool exported) {
+	this->exported = exported;
+}
+
+void Declaration::setName(Expressions::Identifier *name) {
+	this->name = name;
+}
+
+VariableDeclaration::VariableDeclaration() {
+	this->assignment = NULL;
+}
+
+void VariableDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
-void FunctionDeclaration::setIdentifier(Expressions::Identifier *identifier) {
-	this->identifier = identifier;
+void VariableDeclaration::setAssignment(Expressions::Expression *expr) {
+	this->assignment = expr;
+}
+
+std::string VariableDeclaration::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Variable" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" << this->type->toString() << " ";
+	ss << FORMAT_YELLOW "name" FORMAT_NONE "=" << this->name->toString() << " ";
+	
+	if (this->assignment != NULL) {
+		ss << FORMAT_YELLOW "assignment" FORMAT_NONE "=" << this->assignment->toString();
+	}
+	
+	ss << ")";
+	
+	return ss.str();
+}
+
+ConstantDeclaration::ConstantDeclaration() {
+	this->assignment = NULL;
+}
+
+void ConstantDeclaration::setType(Expressions::Type *type) {
+	this->type = type;
+}
+
+void ConstantDeclaration::setAssignment(Expressions::Expression *expr) {
+	this->assignment = expr;
+}
+
+std::string ConstantDeclaration::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Constant" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" << this->type->toString() << " ";
+	ss << FORMAT_YELLOW "name" FORMAT_NONE "=" << this->name->toString() << " ";
+	
+	if (this->assignment != NULL) {
+		ss << FORMAT_YELLOW "assignment" FORMAT_NONE "=" << this->assignment->toString();
+	}
+	
+	ss << ")";
+	
+	return ss.str();
+}
+
+void TypeDeclaration::setType(Expressions::Type *type) {
+	this->type = type;
+}
+
+void TypeDeclaration::setBlock(Block *block) {
+	this->block = block;
+}
+
+std::string TypeDeclaration::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "TypeDeclaration" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" << this->type->toString() << " ";
+	ss << FORMAT_YELLOW "name" FORMAT_NONE "=" << this->name->toString() << " ";
+	ss << FORMAT_YELLOW "block" FORMAT_NONE "=" << this->block->toString();
+	ss << ")";
+	
+	return ss.str();
+}
+
+void FunctionDeclaration::setType(Expressions::Type *type) {
+	this->type = type;
 }
 
 void FunctionDeclaration::addParameter(Expressions::Parameter *param) {
@@ -125,7 +263,7 @@ std::string FunctionDeclaration::toString() const {
 	
 	ss << FORMAT_BOLD FORMAT_BLUE "FunctionDeclaration" FORMAT_NONE "(";
 	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" << this->type->toString() << " ";
-	ss << FORMAT_YELLOW "identifier" FORMAT_NONE "=" << this->identifier->toString() << " ";
+	ss << FORMAT_YELLOW "name" FORMAT_NONE "=" << this->name->toString() << " ";
 	
 	ss << FORMAT_YELLOW "parameters" FORMAT_NONE "=[";
 	for (int i = 0; i < this->parameters.size(); i++) {
