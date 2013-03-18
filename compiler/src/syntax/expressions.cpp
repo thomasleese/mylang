@@ -134,12 +134,26 @@ void Call::setOperand(Operand *expr) {
 	this->operand = expr;
 }
 
+void Call::addArgument(Expression *arg) {
+	this->arguments.push_back(arg);
+}
+
 std::string Call::toString() const {
 	std::stringstream ss;
 	
 	ss << FORMAT_BOLD FORMAT_BLUE "Call" FORMAT_NONE "(";
-	ss << FORMAT_YELLOW "operand" FORMAT_NONE "=" << this->operand->toString();
-	ss << ")";
+	ss << FORMAT_YELLOW "operand" FORMAT_NONE "=" << this->operand->toString() << " ";
+	ss << FORMAT_YELLOW "arguments" FORMAT_NONE "=[";
+	
+	for (int i = 0; i < this->arguments.size(); i++) {
+		ss << this->arguments[i]->toString();
+		
+		if (i < this->arguments.size() - 1) {
+			ss << ", ";
+		}
+	}
+	
+	ss << "])";
 	
 	return ss.str();
 }
@@ -158,6 +172,57 @@ std::string Slice::toString() const {
 	ss << FORMAT_BOLD FORMAT_BLUE "Slice" FORMAT_NONE "(";
 	ss << FORMAT_YELLOW "operand" FORMAT_NONE "=" << this->operand->toString() << " ";
 	ss << FORMAT_YELLOW "index" FORMAT_NONE "=" << this->index->toString();
+	ss << ")";
+	
+	return ss.str();
+}
+
+void Type::setIdentifier(Identifier *identifier) {
+	this->identifier = identifier;
+}
+
+void Type::addSelector(Selector *selector) {
+	this->selectors.push_back(selector);
+}
+
+void Type::addSlice(Slice *slice) {
+	this->slices.push_back(slice);
+}
+
+std::string Type::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Type" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "identifier" FORMAT_NONE "=" << this->identifier->toString() << " ";
+	ss << FORMAT_YELLOW "slice" FORMAT_NONE "=[";
+	
+	for (int i = 0; i < this->slices.size(); i++) {
+		ss << this->slices[i]->toString();
+		
+		if (i < this->slices.size() - 1) {
+			ss << ", ";
+		}
+	}
+	
+	ss << "])";
+	
+	return ss.str();
+}
+
+void Parameter::setType(Type *type) {
+	this->type = type;
+}
+
+void Parameter::setIdentifier(Identifier *identifier) {
+	this->identifier = identifier;
+}
+
+std::string Parameter::toString() const {
+	std::stringstream ss;
+	
+	ss << FORMAT_BOLD FORMAT_BLUE "Parameter" FORMAT_NONE "(";
+	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" << this->type->toString() << " ";
+	ss << FORMAT_YELLOW "identifier" FORMAT_NONE "=" << this->identifier->toString();
 	ss << ")";
 	
 	return ss.str();

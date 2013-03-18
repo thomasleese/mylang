@@ -9,6 +9,10 @@ namespace Syntax {
 		class Expression;
 	}
 	
+	namespace Lists {
+		class ParameterExpressions;
+	}
+	
 	namespace Statements {
 		
 		class Statement {
@@ -51,6 +55,61 @@ namespace Syntax {
 			
 		private:
 			Expressions::Identifier *identifier;
+			
+		};
+		
+		class Return : public Statement {
+			
+		public:
+			void setExpression(Expressions::Expression *expr);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Expression *expression;
+			
+		};
+		
+		class Control : public Statement {
+			
+		};
+		
+		class If : public Control {
+			
+		public:
+			If();
+			
+			void setExpression(Expressions::Expression *expr);
+			void setTrueStatement(Statement *statement);
+			void setFalseStatement(Statement *statement);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Expression *expression;
+			Statement *trueStatement, *falseStatement;
+			
+		};
+		
+		class Declaration : public Statement {
+			
+		};
+		
+		class FunctionDeclaration : public Declaration {
+			
+		public:
+			void setType(Expressions::Type *type);
+			void setIdentifier(Expressions::Identifier *identifier);
+			void addParameter(Expressions::Parameter *param);
+			void setBlock(Block *block);
+			
+			std::string toString() const;
+			
+		private:
+			Expressions::Type *type;
+			Expressions::Identifier *identifier;
+			std::vector<Expressions::Parameter *> parameters;
+			Block *block;
 			
 		};
 		

@@ -446,8 +446,12 @@ status open
 
 \begin_layout Plain Layout
 
-OperandExpression = ExpressionExpression | LiteralExpression | IdentifierExpress
-ion
+OperandExpression = ExpressionExpression | LiteralExpression
+\end_layout
+
+\begin_layout Plain Layout
+
+                        | IdentifierExpression
 \end_layout
 
 \begin_layout Plain Layout
@@ -557,7 +561,7 @@ status open
 
 \begin_layout Plain Layout
 
-CallExpression = "(" [ Expression { "," Expression } ] ")" ;
+CallExpression = ExpressionsList ;
 \end_layout
 
 \end_inset
@@ -584,6 +588,45 @@ SliceExpression = "[" Expression "]" ;
 
 \end_layout
 
+\begin_layout Subsubsection
+Type
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+TypeExpression = IdentifierExpression [ { SelectorExpression } ] [ SliceExpressi
+on ] ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Parameter
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+ParameterExpression = TypeExpression IdentifierExpression ;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Statements
 \end_layout
@@ -599,13 +642,8 @@ status open
 
 \begin_layout Plain Layout
 
-Statement = BlockStatement | ExpressionStatement | AssignmentStatement |
- DeclarationStatement | ControlStatement | OtherStatement ;
-\end_layout
-
-\begin_layout Plain Layout
-
-BlockStatement = "{" { Statement ";" } "}" ;
+Statement = ExpressionStatement | AssignmentStatement | DeclarationStatement
+ | ControlStatement | OtherStatement ;
 \end_layout
 
 \end_inset
@@ -668,18 +706,20 @@ DeclarationStatement = VariableDeclarationStatement | TypeDeclarationStatement
 
 \begin_layout Plain Layout
 
-VariableDeclarationStatement = "var" Type Identifier [ "=" Expression ]
- ;
+VariableDeclarationStatement = "var" TypeExpression IdentifierExpression
+ [ "=" Expression ] ;
 \end_layout
 
 \begin_layout Plain Layout
 
-TypeDeclarationStatement = "type" Type Identifier [ Block ] ;
+TypeDeclarationStatement = "type" TypeExpression IdentifierExpression [
+ Block ] ;
 \end_layout
 
 \begin_layout Plain Layout
 
-FunctionDeclarationStatement = "def" Type Identifier Block ;
+FunctionDeclarationStatement = "def" TypeExpression IdentifierExpression
+ "(" ArgumentList ")" Block ;
 \end_layout
 
 \end_inset
@@ -707,7 +747,7 @@ ControlStatement = IfStatement | SwitchStatement | ForStatement
 
 \begin_layout Plain Layout
 
-IfStatement = "if" "(" Expression ")" Block [ "Else" ( Block | IfStatement
+IfStatement = "if" ExpressionExpression Block [ "Else" ( Block | IfStatement
  ) ] ;
 \end_layout
 
@@ -780,6 +820,11 @@ OtherStatement = FallthroughStatement | ImportStatement
 \begin_layout Plain Layout
 
 ImportStatement = "import" Identifier ;
+\end_layout
+
+\begin_layout Plain Layout
+
+ReturnStatement = "return" Expression ;
 \end_layout
 
 \begin_layout Plain Layout

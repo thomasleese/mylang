@@ -1,10 +1,15 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
 #include "syntax/operators.h"
 
 namespace Syntax {
+	
+	namespace Lists {
+		class Expressions;
+	}
 	
 	namespace Expressions {
 		
@@ -110,11 +115,13 @@ namespace Syntax {
 			
 		public:
 			void setOperand(Operand *expr);
+			void addArgument(Expression *arg);
 			
 			std::string toString() const;
 			
 		private:
 			Operand *operand;
+			std::vector<Expression *> arguments;
 			
 		};
 		
@@ -129,6 +136,36 @@ namespace Syntax {
 		private:
 			Operand *operand;
 			Expression *index;
+			
+		};
+		
+		class Type : public Expression {
+			
+		public:
+			void setIdentifier(Identifier *identifier);
+			void addSelector(Selector *selector);
+			void addSlice(Slice *slice);
+			
+			std::string toString() const;
+			
+		private:
+			Identifier *identifier;
+			std::vector<Selector *> selectors;
+			std::vector<Slice *> slices;
+			
+		};
+		
+		class Parameter : public Expression {
+			
+		public:
+			void setType(Type *type);
+			void setIdentifier(Identifier *identifier);
+			
+			std::string toString() const;
+			
+		private:
+			Type *type;
+			Identifier *identifier;
 			
 		};
 		

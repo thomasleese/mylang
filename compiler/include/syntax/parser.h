@@ -12,16 +12,6 @@ namespace Lex {
 
 namespace Syntax {
 	
-	namespace Statements {
-		class Statement;
-		class Expression;
-	}
-	
-	namespace Expressions {
-		class Expression;
-		class Unary;
-	}
-	
 	class Parser {
 		
 	public:
@@ -48,6 +38,21 @@ namespace Syntax {
 		
 		bool isImportStatement(int *index);
 		Statements::Import *readImportStatement(int *index);
+		
+		bool isReturnStatement(int *index);
+		Statements::Return *readReturnStatement(int *index);
+		
+		bool isControlStatement(int *index);
+		Statements::Control *readControlStatement(int *index);
+		
+		bool isIfStatement(int *index);
+		Statements::If *readIfStatement(int *index);
+		
+		bool isDeclarationStatement(int *index);
+		Statements::Declaration *readDeclarationStatement(int *index);
+		
+		bool isFunctionDeclarationStatement(int *index);
+		Statements::FunctionDeclaration *readFunctionDeclarationStatement(int *index);
 		
 		// Expressions
 		bool isExpression(int *index);
@@ -79,6 +84,12 @@ namespace Syntax {
 		
 		bool isSliceExpression(int *index);
 		Expressions::Slice *readSliceExpression(int *index, Expressions::Operand *operand);
+		
+		bool isTypeExpression(int *index);
+		Expressions::Type *readTypeExpression(int *index);
+		
+		bool isParameterExpression(int *index);
+		Expressions::Parameter *readParameterExpression(int *index);
 		
 		// Operators
 		bool isUnaryOperator(int *index);

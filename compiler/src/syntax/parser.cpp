@@ -36,7 +36,6 @@ void Parser::generateAST() {
 	int index = 0;
 	for (; index < this->tokens.size(); ) {
 		this->statements.push_back(readStatement(&index));
-		readDelimiterToken(&index, ";");
 	}
 }
 
@@ -50,13 +49,15 @@ Statements::Statement *Parser::readStatement(int *index) {
 		return readBlockStatement(index);
 	} else if (isImportStatement(index)) {
 		return readImportStatement(index);
+	} else if (isReturnStatement(index)) {
+		return readReturnStatement(index);
+	} else if (isControlStatement(index)) {
+		return readControlStatement(index);
+	} else if (isDeclarationStatement(index)) {
+		return readDeclarationStatement(index);
 	} else {
 		return readExpressionStatement(index);
 	}
-}
-
-bool Parser::isExpressionStatement(int *index) {
-	return isExpression(index);
 }
 
 bool Parser::isBlockStatement(int *index) {
@@ -64,28 +65,25 @@ bool Parser::isBlockStatement(int *index) {
 }
 
 Statements::Block *Parser::readBlockStatement(int *index) {
-	readDelimiterToken(index, "{");
-	
 	Statements::Block *block = new Statements::Block();
 	
-	while (true) {
+	readDelimiterToken(index, "{");
+	while (!isDelimiterToken(index, "}")) {
 		block->addStatement(readStatement(index));
-		
-		if (isDelimiterToken(index, ";")) {
-			readDelimiterToken(index, ";");
-		} else {
-			break;
-		}
 	}
-	
 	readDelimiterToken(index, "}");
 	
 	return block;
 }
 
+bool Parser::isExpressionStatement(int *index) {
+	return isExpression(index);
+}
+
 Statements::Expression *Parser::readExpressionStatement(int *index) {
 	Statements::Expression *stat = new Statements::Expression();
 	stat->setExpression(readExpression(index));
+	readDelimiterToken(index, ";");
 	return stat;
 }
 
@@ -98,12 +96,106 @@ Statements::Import *Parser::readImportStatement(int *index) {
 	
 	Statements::Import *import = new Statements::Import();
 	import->setIdentifier(readIdentifierExpression(index));
+	readDelimiterToken(index, ";");
 	return import;
+}
+
+bool Parser::isReturnStatement(int *index) {
+	return isKeywordToken(index, "return");
+}
+
+Statements::Return *Parser::readReturnStatement(int *index) {
+	readKeywordToken(index, "return");
+	
+	Statements::Return *ret = new Statements::Return();
+	ret->setExpression(readExpression(index));
+	readDelimiterToken(index, ";");
+	return ret;
+}
+
+bool Parser::isControlStatement(int *index) {
+	return isIfStatement(index);
+}
+
+Statements::Control *Parser::readControlStatement(int *index) {
+	if (isIfStatement(index)) {
+		return readIfStatement(index);
+	}
+	
+	throw "Control";
+}
+
+bool Parser::isIfStatement(int *index) {
+	return isKeywordToken(index, "if");
+}
+
+Statements::If *Parser::readIfStatement(int *index) {
+	readKeywordToken(index, "if");
+	
+	Statements::If *stat = new Statements::If();
+	
+	readDelimiterToken(index, "(");
+	stat->setExpression(readExpression(index));
+	readDelimiterToken(index, ")");
+	
+	stat->setTrueStatement(readBlockStatement(index));
+	
+	if (isKeywordToken(index, "else")) {
+		readKeywordToken(index, "else");
+		if (isIfStatement(index)) {
+			stat->setFalseStatement(readIfStatement(index));
+		} else {
+			stat->setFalseStatement(readBlockStatement(index));
+		}
+	}
+	
+	return stat;
+}
+
+bool Parser::isDeclarationStatement(int *index) {
+	return isFunctionDeclarationStatement(index);
+}
+
+Statements::Declaration *Parser::readDeclarationStatement(int *index) {
+	if (isFunctionDeclarationStatement(index)) {
+		return readFunctionDeclarationStatement(index);
+	}
+	
+	throw "Declaration";
+}
+
+bool Parser::isFunctionDeclarationStatement(int *index) {
+	return isKeywordToken(index, "def");
+}
+
+Statements::FunctionDeclaration *Parser::readFunctionDeclarationStatement(int *index) {
+	readKeywordToken(index, "def");
+	
+	Statements::FunctionDeclaration *decl = new Statements::FunctionDeclaration();
+	decl->setType(readTypeExpression(index));
+	decl->setIdentifier(readIdentifierExpression(index));
+	
+	readDelimiterToken(index, "(");
+	
+	while (!isDelimiterToken(index, ")")) {
+		decl->addParameter(readParameterExpression(index));
+		
+		if (isDelimiterToken(index, ",")) {
+			readDelimiterToken(index, ",");
+		} else {
+			break;
+		}
+	}
+	
+	readDelimiterToken(index, ")");
+	
+	decl->setBlock(readBlockStatement(index));
+	return decl;
 }
 
 // Expressions
 bool Parser::isExpression(int *index) {
-	return isUnaryExpression(index);
+	return isUnaryExpression(index) || isBinaryExpression(index);
 }
 
 Expressions::Expression *Parser::readExpression(int *index) {
@@ -116,7 +208,7 @@ Expressions::Expression *Parser::readExpression(int *index) {
 }
 
 bool Parser::isUnaryExpression(int *index) {
-	return false;
+	return isUnaryOperator(index) || isOperandExpression(index);
 }
 
 Expressions::Unary *Parser::readUnaryExpression(int *index) {
@@ -134,7 +226,7 @@ Expressions::Unary *Parser::readUnaryExpression(int *index) {
 }
 
 bool Parser::isBinaryExpression(int *index) {
-	return false;
+	return isBinaryOperator(index);
 }
 
 Expressions::Binary *Parser::readBinaryExpression(int *index, Expressions::Expression *lhs, int minPrecedence) {
@@ -158,7 +250,8 @@ Expressions::Binary *Parser::readBinaryExpression(int *index, Expressions::Expre
 
 bool Parser::isOperandExpression(int *index) {
 	return isLiteralExpression(index)
-		&& isIdentifierExpression(index);
+		|| isIdentifierExpression(index)
+		|| isExpressionExpression(index);
 }
 
 Expressions::Operand *Parser::readOperandExpression(int *index) {
@@ -242,11 +335,20 @@ bool Parser::isCallExpression(int *index) {
 }
 
 Expressions::Call *Parser::readCallExpression(int *index, Expressions::Operand *operand) {
+	Expressions::Call *call = new Expressions::Call();
+	call->setOperand(operand);
+	
 	readDelimiterToken(index, "(");
 	
-	Expressions::Call *call = new Expressions::Call();
-	//call->setArguments(readExpressionsList());
-	call->setOperand(operand);
+	while (!isDelimiterToken(index, ")")) {
+		call->addArgument(readExpression(index));
+		
+		if (isDelimiterToken(index, ",")) {
+			readDelimiterToken(index, ",");
+		} else {
+			break;
+		}
+	}
 	
 	readDelimiterToken(index, ")");
 	
@@ -267,6 +369,37 @@ Expressions::Slice *Parser::readSliceExpression(int *index, Expressions::Operand
 	readDelimiterToken(index, "]");
 	
 	return slice;
+}
+
+bool Parser::isTypeExpression(int *index) {
+	return isIdentifierExpression(index);
+}
+
+Expressions::Type *Parser::readTypeExpression(int *index) {
+	Expressions::Type *type = new Expressions::Type();
+	
+	type->setIdentifier(readIdentifierExpression(index));
+	
+	while (isSelectorExpression(index)) {
+		type->addSelector(readSelectorExpression(index, NULL));
+	}
+	
+	while (isSliceExpression(index)) {
+		type->addSlice(readSliceExpression(index, NULL));
+	}
+	
+	return type;
+}
+
+bool Parser::isParameterExpression(int *index) {
+	return isTypeExpression(index);
+}
+
+Expressions::Parameter *Parser::readParameterExpression(int *index) {
+	Expressions::Parameter *param = new Expressions::Parameter();
+	param->setType(readTypeExpression(index));
+	param->setIdentifier(readIdentifierExpression(index));
+	return param;
 }
 
 // Operators
@@ -389,7 +522,7 @@ Lex::Token *Parser::readToken(int *index, Lex::Rule::Type type, std::string valu
 		return token;
 	}
 	
-	throw "Token";
+	throw ("Token (" + value + ")").c_str();
 }
 
 bool Parser::isIdentifierToken(int *index) {
