@@ -1,0 +1,10 @@
+import console;
+import maths;
+
+def Void main() {
+	var maths.Rectangle rect = maths.Rectangle{};
+	rect.w = 20;
+	rect.h = 20;
+	
+	console.println("Area: %d", rect.area());
+}

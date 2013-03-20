@@ -1,6 +1,6 @@
 import console;
 
-def Void main() {
+func Void main() {
 	// `factorial` is in the `factorial.mylang` file
-	console.println("%d", factorial(20));
+	print("%d", factorial(20));
 }

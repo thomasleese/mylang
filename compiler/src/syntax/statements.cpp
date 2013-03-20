@@ -166,8 +166,16 @@ void Declaration::setExported(bool exported) {
 	this->exported = exported;
 }
 
+bool Declaration::getExported() {
+	return this->exported;
+}
+
 void Declaration::setName(Expressions::Identifier *name) {
 	this->name = name;
+}
+
+Syntax::Expressions::Identifier *Declaration::getName() {
+	return this->name;
 }
 
 VariableDeclaration::VariableDeclaration() {
@@ -252,6 +260,10 @@ void FunctionDeclaration::setType(Expressions::Type *type) {
 
 void FunctionDeclaration::addParameter(Expressions::Parameter *param) {
 	this->parameters.push_back(param);
+}
+
+std::vector<Syntax::Expressions::Parameter *> &FunctionDeclaration::getParameters() {
+	return this->parameters;
 }
 
 void FunctionDeclaration::setBlock(Block *block) {

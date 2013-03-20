@@ -39,6 +39,10 @@ void Parser::dump() {
 	}
 }
 
+std::vector<Statements::Statement *> &Parser::getStatements() {
+	return this->statements;
+}
+
 void Parser::readTokens(std::vector<Lex::Token *> tokens) {
 	this->tokens.clear();
 	
@@ -313,11 +317,11 @@ Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
 }
 
 bool Parser::isFunctionDeclarationStatement(int *index) {
-	return isKeywordToken(index, "def");
+	return isKeywordToken(index, "func");
 }
 
 Statements::FunctionDeclaration *Parser::readFunctionDeclarationStatement(int *index) {
-	readKeywordToken(index, "def");
+	readKeywordToken(index, "func");
 	
 	Statements::FunctionDeclaration *decl = new Statements::FunctionDeclaration();
 	

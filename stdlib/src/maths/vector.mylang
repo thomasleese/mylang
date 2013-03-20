@@ -4,18 +4,29 @@ type exported Struct Vector {
 	var exported Float y = 0;
 	var exported Float z = 0;
 	
-	def exported void set(Float x, Float y, Float z) {
+	def exported Void set(Float x, Float y, Float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	def exported Float len2() {
+	def exported Float length2() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 	
-	def exported Float len() {
+	def exported Float length() {
 		return sqrt(this.len2());
+	}
+	
+	def exported Float distance2(Vector v) {
+		var Float dx = this.x - v.x;
+		var Float dy = this.y - v.y;
+		var Float dz = this.z - v.z;
+		return dx * dx + dy * dy + dz * dz;
+	}
+	
+	def exported Float distance(Vector v) {
+		return sqrt(this.distance2(v));
 	}
 	
 }

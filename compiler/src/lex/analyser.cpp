@@ -36,7 +36,7 @@ std::vector<Token *> &Analyser::getTokens() {
 void Analyser::loadRules() {
 	this->rules.push_back(new Rule(Rule::Comment, "//[^\n\r]+"));
 	
-	this->rules.push_back(new Rule(Rule::Keyword, "import|type|struct|interface|var|if|else|for|switch|case|fallthrough|break|continue|const|exported|default|def|return"));
+	this->rules.push_back(new Rule(Rule::Keyword, "import|type|struct|interface|var|if|else|for|switch|case|fallthrough|break|continue|const|exported|default|func|return"));
 	
 	this->rules.push_back(new Rule(Rule::BooleanLiteral, "true|false"));
 	this->rules.push_back(new Rule(Rule::IntegerLiteral, "[0-9]+"));

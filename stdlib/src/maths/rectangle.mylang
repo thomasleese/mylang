@@ -1,0 +1,46 @@
+type exported Struct Rectangle {
+	
+	var exported Float left = 0;
+	var exported Float right = 0;
+	var exported Float top = 0;
+	var exported Float bottom = 0;
+	
+	def exported Float area() {
+		return this.width() * this.height();
+	}
+	
+	def exported Float width() {
+		return abs(this.right - this.left);
+	}
+	
+	def exported Void set_width(Float width) {
+		this.left = this.x();
+		this.right = this.left + width;
+	}
+	
+	def exported Float height() {
+		return abs(this.bottom - this.top);
+	}
+	
+	def exported Void set_height(Float height) {
+		this.top = this.y();
+		this.bottom = this.top + height;
+	}
+	
+	def exported Float x() {
+		if (this.left < this.right) {
+			return this.left;
+		} else {
+			return this.right;
+		}
+	}
+	
+	def exported Float y() {
+		if (this.top < this.bottom) {
+			return this.top;
+		} else {
+			return this.bottom;
+		}
+	}
+	
+}

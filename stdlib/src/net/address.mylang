@@ -1,0 +1,20 @@
+type exported interface Address {
+	
+	
+	
+}
+
+type exported Byte[] IP {
+	
+	
+	
+}
+
+def parse_ip_address(String s) {
+	var Byte[] bytes;
+	
+	var String[] parts = s.split(".");
+	if (parts.length == 4) {
+		
+	}
+}

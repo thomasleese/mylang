@@ -89,6 +89,7 @@ namespace Syntax {
 			
 		public:
 			void setValue(std::string value);
+			std::string getValue() const;
 			
 			std::string toString() const;
 			

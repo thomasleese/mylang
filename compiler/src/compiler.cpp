@@ -2,6 +2,7 @@
 
 #include "lex/analyser.h"
 #include "syntax/parser.h"
+#include "code/generator.h"
 #include "compiler.h"
 
 void Compiler::compileProject(std::string dir) {
@@ -39,8 +40,8 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		closedir(dp);
 	}
 	
-	//analyser.dump();
-	//std::cout << std::endl;
+	analyser.dump();
+	std::cout << std::endl;
 	
 	Syntax::Parser parser;
 	
@@ -51,4 +52,15 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	}
 	
 	parser.dump();
+	std::cout << std::endl;
+	
+	Code::Generator gen(name);
+	
+	try {
+		gen.parseAST(parser.getStatements());
+	} catch (const char *s) {
+		std::cout << s << std::endl;
+	}
+	
+	gen.dump();
 }

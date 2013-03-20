@@ -127,7 +127,10 @@ namespace Syntax {
 			Declaration();
 			
 			void setExported(bool exported);
+			bool getExported();
+			
 			void setName(Expressions::Identifier *name);
+			Expressions::Identifier *getName();
 			
 		protected:
 			bool exported;
@@ -185,7 +188,10 @@ namespace Syntax {
 			
 		public:
 			void setType(Expressions::Type *type);
+			
 			void addParameter(Expressions::Parameter *param);
+			std::vector<Expressions::Parameter *> &getParameters();
+			
 			void setBlock(Block *block);
 			
 			std::string toString() const;

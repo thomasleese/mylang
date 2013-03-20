@@ -1,0 +1,11 @@
+import net;
+
+def Void main() {
+	var net.Server server = net.listen("tcp", 9739);
+	
+	for {
+		var net.Client client = server.accept();
+		client.write("Hello!");
+		client.close();
+	}
+}

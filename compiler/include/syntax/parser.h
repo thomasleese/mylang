@@ -34,8 +34,9 @@ namespace Syntax {
 		~Parser();
 		
 		void parseTokens(std::vector<Lex::Token *> tokens);
-		
 		void dump();
+		
+		std::vector<Statements::Statement *> &getStatements();
 		
 	private:
 		void readTokens(std::vector<Lex::Token *> tokens);

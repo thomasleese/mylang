@@ -101,6 +101,10 @@ void Identifier::setValue(std::string value) {
 	this->value = value;
 }
 
+std::string Identifier::getValue() const {
+	return this->value;
+}
+
 std::string Identifier::toString() const {
 	std::stringstream ss;
 	
