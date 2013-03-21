@@ -2,8 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(Compiler)
 
-SET(SOURCES	src/main.cpp src/compiler.cpp
-			src/lex/analyser.cpp src/lex/rule.cpp src/lex/token.cpp
+SET(SOURCES	src/main.cpp src/compiler.cpp src/unit.cpp
+			src/units/lex/analyser.cpp src/units/lex/rule.cpp src/units/lex/token.cpp
 			src/syntax/parser.cpp src/syntax/statements.cpp src/syntax/expressions.cpp
 				src/syntax/operators.cpp
 			src/code/generator.cpp)

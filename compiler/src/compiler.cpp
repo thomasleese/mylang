@@ -1,6 +1,6 @@
 #include <dirent.h>
 
-#include "lex/analyser.h"
+#include "units/lex.h"
 #include "syntax/parser.h"
 #include "code/generator.h"
 #include "compiler.h"
@@ -40,8 +40,10 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		closedir(dp);
 	}
 	
-	analyser.dump();
-	std::cout << std::endl;
+	if (analyser.hasMessages()) {
+		analyser.printMessages();
+		return;
+	}
 	
 	Syntax::Parser parser;
 	

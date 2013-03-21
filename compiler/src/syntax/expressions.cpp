@@ -1,7 +1,7 @@
 #include <sstream>
 
 #include "syntax/expressions.h"
-#include "formatting.h"
+#include "unit.h"
 
 using namespace Syntax;
 using namespace Syntax::Expressions;

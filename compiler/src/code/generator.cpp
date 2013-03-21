@@ -4,7 +4,7 @@
 #include <llvm/Module.h>
 #include <llvm/Analysis/Verifier.h>
 
-#include "lex/analyser.h"
+#include "units/lex.h"
 #include "syntax/parser.h"
 #include "code/generator.h"
 

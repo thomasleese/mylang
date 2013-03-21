@@ -1,6 +1,8 @@
 #include <fstream>
 
-#include "lex/analyser.h"
+#include <boost/regex/icu.hpp>
+
+#include "units/lex.h"
 
 using namespace Lex;
 
@@ -23,18 +25,13 @@ void Analyser::parseFile(std::string filename) {
 	tokeniseBuffer(filename);
 }
 
-void Analyser::dump() const {
-	for (Token *token : this->tokens) {
-		std::cout << token->toString() << std::endl;
-	}
-}
-
 std::vector<Token *> Analyser::getTokens() {
 	return this->tokens;
 }
 
 void Analyser::loadRules() {
-	this->rules.push_back(new Rule(Rule::Comment, "//[^\n\r]+"));
+	this->rules.push_back(new Rule(Rule::Ignore, "//[^\n\r]+"));
+	this->rules.push_back(new Rule(Rule::Ignore, "[\n\r\t ]"));
 	
 	this->rules.push_back(new Rule(Rule::Keyword, "import|type|struct|interface|var|if|else|for|switch|case|fallthrough|break|continue|const|exported|default|func|return"));
 	
@@ -73,6 +70,10 @@ void Analyser::tokeniseBuffer(std::string filename) {
 	while (pos < end) {
 		std::string substr = this->buffer.substr(pos, end - pos);
 		
+		int line = getLineFromIndex(pos);
+		int col = 0;
+		bool found = false;
+		
 		for (Rule *rule : this->rules) {
 			if (boost::u32regex_search(substr, matcher, rule->getRegex())) {
 				std::string value = matcher[0].str();
@@ -82,13 +83,19 @@ void Analyser::tokeniseBuffer(std::string filename) {
 					token->setFilename(filename);
 					
 					this->tokens.push_back(token);
-					pos += value.length() - 1; // -1 because there is the pos++ below
+					pos += value.length();
+					found = true;
 					break;
 				}
 			}
 		}
 		
-		pos++;
+		if (!found) {
+			std::string token = "'" + substr.substr(0, 1) + "'";
+			std::string msg = "Unknown character, skipping...";
+			this->addMessage(Warning(filename, line, col, token, msg));
+			pos++;
+		}
 	}
 }
 

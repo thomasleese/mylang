@@ -1,4 +1,4 @@
-#include "lex/analyser.h"
+#include "units/lex.h"
 #include "syntax/parser.h"
 
 using namespace Syntax;
@@ -47,7 +47,7 @@ void Parser::readTokens(std::vector<Lex::Token *> tokens) {
 	this->tokens.clear();
 	
 	for (Lex::Token *token : tokens) {
-		if (token->getRule()->getType() != Lex::Rule::Comment) {
+		if (token->getRule()->getType() != Lex::Rule::Ignore) {
 			this->tokens.push_back(token);
 		}
 	}
