@@ -68,10 +68,10 @@ void Generator::genFunctionDeclarationStatement(int i) {
 		const int paramsLen = decl->getParameters().size();
 		llvm::Type *params[paramsLen];
 		for (int i = 0; i < paramsLen; i++) {
-			params[i] = this->builder->getInt32Ty();
+			params[i] = this->genType(decl->getParameters()[i]->getType());
 		}
 		
-		llvm::FunctionType *type = llvm::FunctionType::get(this->builder->getInt32Ty(),
+		llvm::FunctionType *type = llvm::FunctionType::get(this->genType(decl->getType()),
 										llvm::ArrayRef<llvm::Type *>(params, paramsLen), false);
 		
 		llvm::Function::LinkageTypes linkType = llvm::Function::ExternalLinkage;
@@ -90,4 +90,17 @@ void Generator::genFunctionDeclarationStatement(int i) {
 	}
 	
 	throw "function declaration";
+}
+
+llvm::Type *Generator::genType(Syntax::Expressions::Type *type) {
+	std::vector<Syntax::Expressions::Identifier *> names = type->getNames();
+	std::string name = names[0]->getValue();
+	
+	if (name == "Integer") {
+		return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+	} else if (name == "Void") {
+		return llvm::Type::getVoidTy(llvm::getGlobalContext());
+	} else {
+		return NULL;
+	}
 }

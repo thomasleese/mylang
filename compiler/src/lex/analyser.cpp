@@ -29,7 +29,7 @@ void Analyser::dump() const {
 	}
 }
 
-std::vector<Token *> &Analyser::getTokens() {
+std::vector<Token *> Analyser::getTokens() {
 	return this->tokens;
 }
 

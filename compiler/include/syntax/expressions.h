@@ -143,15 +143,15 @@ namespace Syntax {
 		class Type : public Expression {
 			
 		public:
-			void setName(Identifier *name);
-			void addSelector(Selector *selector);
+			void addName(Identifier *name);
+			std::vector<Identifier *> getNames();
+			
 			void addSlice(Slice *slice);
 			
 			std::string toString() const;
 			
 		private:
-			Identifier *name;
-			std::vector<Selector *> selectors;
+			std::vector<Identifier *> names;
 			std::vector<Slice *> slices;
 			
 		};
@@ -160,6 +160,8 @@ namespace Syntax {
 			
 		public:
 			void setType(Type *type);
+			Type *getType() const;
+			
 			void setIdentifier(Identifier *identifier);
 			
 			std::string toString() const;

@@ -188,6 +188,7 @@ namespace Syntax {
 			
 		public:
 			void setType(Expressions::Type *type);
+			Expressions::Type *getType() const;
 			
 			void addParameter(Expressions::Parameter *param);
 			std::vector<Expressions::Parameter *> &getParameters();

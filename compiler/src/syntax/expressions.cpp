@@ -181,12 +181,12 @@ std::string Slice::toString() const {
 	return ss.str();
 }
 
-void Type::setName(Identifier *name) {
-	this->name = name;
+void Type::addName(Identifier *name) {
+	this->names.push_back(name);
 }
 
-void Type::addSelector(Selector *selector) {
-	this->selectors.push_back(selector);
+std::vector<Identifier *> Type::getNames() {
+	return this->names;
 }
 
 void Type::addSlice(Slice *slice) {
@@ -197,9 +197,18 @@ std::string Type::toString() const {
 	std::stringstream ss;
 	
 	ss << FORMAT_BOLD FORMAT_BLUE "Type" FORMAT_NONE "(";
-	ss << FORMAT_YELLOW "name" FORMAT_NONE "=" << this->name->toString() << " ";
-	ss << FORMAT_YELLOW "slice" FORMAT_NONE "=[";
 	
+	ss << FORMAT_YELLOW "names" FORMAT_NONE "=[";
+	for (int i = 0; i < this->names.size(); i++) {
+		ss << this->names[i]->toString();
+		
+		if (i < this->names.size() - 1) {
+			ss << ", ";
+		}
+	}
+	ss << "] ";
+	
+	ss << FORMAT_YELLOW "slice" FORMAT_NONE "=[";
 	for (int i = 0; i < this->slices.size(); i++) {
 		ss << this->slices[i]->toString();
 		
@@ -207,14 +216,19 @@ std::string Type::toString() const {
 			ss << ", ";
 		}
 	}
+	ss << "]";
 	
-	ss << "])";
+	ss << ")";
 	
 	return ss.str();
 }
 
 void Parameter::setType(Type *type) {
 	this->type = type;
+}
+
+Type *Parameter::getType() const {
+	return this->type;
 }
 
 void Parameter::setIdentifier(Identifier *identifier) {

@@ -39,7 +39,7 @@ void Parser::dump() {
 	}
 }
 
-std::vector<Statements::Statement *> &Parser::getStatements() {
+std::vector<Statements::Statement *> Parser::getStatements() {
 	return this->statements;
 }
 
@@ -536,10 +536,11 @@ bool Parser::isTypeExpression(int *index) {
 Expressions::Type *Parser::readTypeExpression(int *index) {
 	Expressions::Type *type = new Expressions::Type();
 	
-	type->setName(readIdentifierExpression(index));
+	type->addName(readIdentifierExpression(index));
 	
 	while (isSelectorExpression(index)) {
-		type->addSelector(readSelectorExpression(index, NULL));
+		readDelimiterToken(index, ".");
+		type->addName(readIdentifierExpression(index));
 	}
 	
 	while (isSliceExpression(index)) {

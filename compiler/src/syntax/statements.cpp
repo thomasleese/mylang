@@ -258,6 +258,10 @@ void FunctionDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
+Syntax::Expressions::Type *FunctionDeclaration::getType() const {
+	return this->type;
+}
+
 void FunctionDeclaration::addParameter(Expressions::Parameter *param) {
 	this->parameters.push_back(param);
 }

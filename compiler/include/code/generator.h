@@ -37,6 +37,8 @@ namespace Code {
 		void genDeclarationStatement(int i);
 		void genFunctionDeclarationStatement(int i);
 		
+		llvm::Type *genType(Syntax::Expressions::Type *type);
+		
 	private:
 		std::string moduleName;
 		

@@ -16,7 +16,7 @@ namespace Lex {
 		void parseFile(std::string filename);
 		void dump() const;
 		
-		std::vector<Token *> &getTokens();
+		std::vector<Token *> getTokens();
 		
 	private:
 		void loadRules();
