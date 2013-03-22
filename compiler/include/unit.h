@@ -29,20 +29,6 @@ private:
 	
 };
 
-class Warning : public Message {
-	
-public:
-	Warning(std::string filename, int line, int col, std::string token, std::string msg);
-	
-};
-
-class Error : public Message {
-	
-public:
-	Error(std::string filename, int line, int col, std::string token, std::string msg);
-	
-};
-
 class Unit {
 	
 public:
@@ -50,6 +36,11 @@ public:
 	~Unit();
 	
 	void addMessage(Message msg);
+	
+	void addMessage(std::string id, std::string filename, int line, int col, std::string token, std::string msg);
+	void addWarning(std::string filename, int line, int col, std::string token, std::string msg);
+	void addError(std::string filename, int line, int col, std::string token, std::string msg);
+	
 	bool hasMessages();
 	void printMessages();
 	

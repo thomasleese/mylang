@@ -46,15 +46,12 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	}
 	
 	Syntax::Parser parser;
+	parser.parseTokens(analyser.getTokens());
 	
-	try {
-		parser.parseTokens(analyser.getTokens());
-	} catch (Syntax::ParserError err) {
-		err.print();
+	if (parser.hasMessages()) {
+		parser.printMessages();
+		return;
 	}
-	
-	parser.dump();
-	std::cout << std::endl;
 	
 	Code::Generator gen(name);
 	

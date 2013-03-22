@@ -15,24 +15,19 @@ namespace Syntax {
 		
 		class Expression {
 			
-		public:
-			virtual std::string toString() const = 0;
-			
 		};
 		
 		class Unary : public Expression {
 			
 		public:
-			void setOperator(Operators::Unary op);
-			Operators::Unary getOperator();
+			void setOperator(Operators::Unary *op);
+			Operators::Unary *getOperator();
 			
 			void setExpression(Expression *expr);
 			Expression *getExpression();
 			
-			std::string toString() const;
-			
 		private:
-			Operators::Unary op;
+			Operators::Unary *op;
 			Expression *expr;
 			
 		};
@@ -49,8 +44,6 @@ namespace Syntax {
 			void setRight(Expression *expr);
 			Expression *getRight();
 			
-			std::string toString() const;
-			
 		private:
 			Operators::Binary *op;
 			Expression *lhs, *rhs;
@@ -66,8 +59,6 @@ namespace Syntax {
 		public:
 			void setExpression(Expression *expr);
 			
-			std::string toString() const;
-			
 		private:
 			Expression *expr;
 			
@@ -77,8 +68,6 @@ namespace Syntax {
 			
 		public:
 			void setValue(std::string value);
-			
-			std::string toString() const;
 			
 		private:
 			std::string value;
@@ -91,8 +80,6 @@ namespace Syntax {
 			void setValue(std::string value);
 			std::string getValue() const;
 			
-			std::string toString() const;
-			
 		private:
 			std::string value;
 			
@@ -103,8 +90,6 @@ namespace Syntax {
 		public:
 			void setOperand(Operand *expr);
 			void setIdentifier(Identifier *identifier);
-			
-			std::string toString() const;
 			
 		private:
 			Operand *operand;
@@ -118,8 +103,6 @@ namespace Syntax {
 			void setOperand(Operand *expr);
 			void addArgument(Expression *arg);
 			
-			std::string toString() const;
-			
 		private:
 			Operand *operand;
 			std::vector<Expression *> arguments;
@@ -131,8 +114,6 @@ namespace Syntax {
 		public:
 			void setOperand(Operand *expr);
 			void setIndex(Expression *expr);
-			
-			std::string toString() const;
 			
 		private:
 			Operand *operand;
@@ -148,8 +129,6 @@ namespace Syntax {
 			
 			void addSlice(Slice *slice);
 			
-			std::string toString() const;
-			
 		private:
 			std::vector<Identifier *> names;
 			std::vector<Slice *> slices;
@@ -163,8 +142,6 @@ namespace Syntax {
 			Type *getType() const;
 			
 			void setIdentifier(Identifier *identifier);
-			
-			std::string toString() const;
 			
 		private:
 			Type *type;

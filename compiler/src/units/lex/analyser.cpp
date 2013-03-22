@@ -93,7 +93,7 @@ void Analyser::tokeniseBuffer(std::string filename) {
 		if (!found) {
 			std::string token = "'" + substr.substr(0, 1) + "'";
 			std::string msg = "Unknown character, skipping...";
-			this->addMessage(Warning(filename, line, col, token, msg));
+			this->addWarning(filename, line, col, token, msg);
 			pos++;
 		}
 	}

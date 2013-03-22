@@ -5,6 +5,14 @@
 
 using namespace Syntax::Operators;
 
+void Unary::setType(Type t) {
+	this->type = t;
+}
+
+Unary::Type Unary::getType() {
+	return this->type;
+}
+
 void Binary::setType(Type t) {
 	this->type = t;
 	
@@ -63,15 +71,4 @@ void Binary::setPrecedence(int p) {
 
 int Binary::getPrecedence() {
 	return this->precedence;
-}
-
-std::string Binary::toString() const {
-	std::stringstream ss;
-	
-	ss << FORMAT_BOLD FORMAT_BLUE "Binary" FORMAT_NONE "(";
-	ss << FORMAT_YELLOW "type" FORMAT_NONE "=" FORMAT_RED << this->type << FORMAT_NONE " ";
-	ss << FORMAT_YELLOW "precedence" FORMAT_NONE "=" FORMAT_RED << this->precedence << FORMAT_NONE;
-	ss << ")";
-	
-	return ss.str();
 }

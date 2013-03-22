@@ -6,35 +6,23 @@
 #include "syntax/operators.h"
 #include "syntax/statements.h"
 
+#include "unit.h"
+
 namespace Lex {
 	class Token;
 }
 
 namespace Syntax {
 	
-	class ParserError {
-		
-	public:
-		ParserError(Lex::Token *got, std::string expected);
-		ParserError(int line, std::string filename, std::string message);
-		
-		void print();
-		
-	private:
-		int line;
-		std::string filename;
-		std::string message;
-		
-	};
-	
-	class Parser {
+	class Parser : public Unit {
 		
 	public:
 		Parser();
 		~Parser();
 		
+		void addError(Lex::Token *token, std::string expected);
+		
 		void parseTokens(std::vector<Lex::Token *> tokens);
-		void dump();
 		
 		std::vector<Statements::Statement *> getStatements();
 		
@@ -124,7 +112,7 @@ namespace Syntax {
 		
 		// Operators
 		bool isUnaryOperator(int *index);
-		Operators::Unary readUnaryOperator(int *index);
+		Operators::Unary *readUnaryOperator(int *index);
 		
 		bool isBinaryOperator(int *index);
 		Operators::Binary *getBinaryOperator(int *index);

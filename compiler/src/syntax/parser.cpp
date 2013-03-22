@@ -3,23 +3,6 @@
 
 using namespace Syntax;
 
-ParserError::ParserError(Lex::Token *got, std::string expected) {
-	this->line = got->getLineNumber();
-	this->filename = got->getFilename();
-	this->message = "Expected '" + expected + "', got '" + got->getValue() + "'";
-}
-
-ParserError::ParserError(int line, std::string filename, std::string message) {
-	this->line = line;
-	this->filename = filename;
-	this->message = message;
-}
-
-void ParserError::print() {
-	std::cout << "Parser error: " << this->filename << ":" << this->line << std::endl;
-	std::cout << "\t" << this->message << std::endl;
-}
-
 Parser::Parser() {
 	
 }
@@ -28,15 +11,19 @@ Parser::~Parser() {
 	
 }
 
+void Parser::addError(Lex::Token *token, std::string expected) {
+	std::string filename = token->getFilename();
+	int line = token->getLineNumber();
+	int col = 0;
+	std::string tokenValue = token->getValue();
+	std::string msg = "Got '" + tokenValue + "', expected '" + expected + "'.";
+	
+	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
+}
+
 void Parser::parseTokens(std::vector<Lex::Token *> tokens) {
 	readTokens(tokens);
 	generateAST();
-}
-
-void Parser::dump() {
-	for (Statements::Statement *s : this->statements) {
-		std::cout << s->toString() << std::endl;
-	}
 }
 
 std::vector<Statements::Statement *> Parser::getStatements() {
@@ -145,7 +132,9 @@ Statements::Control *Parser::readControlStatement(int *index) {
 		return readSwitchStatement(index);
 	}
 	
-	throw ParserError(this->tokens[*index], "control");
+	this->addError(this->tokens[*index], "control");
+	(*index)++;
+	return NULL;
 }
 
 bool Parser::isIfStatement(int *index) {
@@ -190,7 +179,7 @@ Statements::Case *Parser::readCaseStatement(int *index) {
 		readKeywordToken(index, "default");
 		statement->setExpression(NULL);
 	} else {
-		throw ParserError(this->tokens[*index], "case/default");
+		this->addError(this->tokens[*index], "case/default");
 	}
 	
 	statement->setBlock(readBlockStatement(index));
@@ -239,7 +228,9 @@ Statements::Declaration *Parser::readDeclarationStatement(int *index) {
 		return readConstantDeclarationStatement(index);
 	}
 	
-	throw ParserError(this->tokens[*index], "declaration");
+	this->addError(this->tokens[*index], "declaration");
+	(*index)++;
+	return NULL;
 }
 
 bool Parser::isVariableDeclarationStatement(int *index) {
@@ -376,7 +367,10 @@ Expressions::Unary *Parser::readUnaryExpression(int *index) {
 		unary->setOperator(readUnaryOperator(index));
 		unary->setExpression(readUnaryExpression(index));
 	} else {
-		unary->setOperator(Operators::None);
+		Operators::Unary *op = new Operators::Unary();
+		op->setType(Operators::Unary::None);
+		
+		unary->setOperator(op);
 		unary->setExpression(readOperandExpression(index));
 	}
 	
@@ -439,7 +433,9 @@ Expressions::Operand *Parser::readOperandExpression(int *index) {
 		return operand;
 	}
 	
-	throw ParserError(this->tokens[*index], "operand");
+	this->addError(this->tokens[*index], "operand");
+	(*index)++;
+	return NULL;
 }
 
 bool Parser::isExpressionExpression(int *index) {
@@ -570,25 +566,27 @@ bool Parser::isUnaryOperator(int *index) {
 		|| isOperatorToken(index, "--");
 }
 
-Operators::Unary Parser::readUnaryOperator(int *index) {
+Operators::Unary *Parser::readUnaryOperator(int *index) {
+	Operators::Unary *op = new Operators::Unary();
+	
 	if (isOperatorToken(index, "+")) {
-		(*index)++;
-		return Operators::Add;
+		op->setType(Operators::Unary::Add);
 	} else if (isOperatorToken(index, "-")) {
-		(*index)++;
-		return Operators::Subtract;
+		op->setType(Operators::Unary::Subtract);
 	} else if (isOperatorToken(index, "!")) {
-		(*index)++;
-		return Operators::Not;
+		op->setType(Operators::Unary::Not);
 	} else if (isOperatorToken(index, "++")) {
-		(*index)++;
-		return Operators::Increment;
+		op->setType(Operators::Unary::Increment);
 	} else if (isOperatorToken(index, "--")) {
+		op->setType(Operators::Unary::Decrement);
+	} else {
+		this->addError(this->tokens[*index], "unary operator");
 		(*index)++;
-		return Operators::Decrement;
+		return NULL;
 	}
 	
-	throw ParserError(this->tokens[*index], "unary operator");
+	(*index)++;
+	return op;
 }
 
 bool Parser::isBinaryOperator(int *index) {
@@ -650,7 +648,8 @@ Operators::Binary *Parser::getBinaryOperator(int *index) {
 	} else if (isOperatorToken(index, "=")) {
 		op->setType(Operators::Binary::Assignment);
 	} else {
-		throw ParserError(this->tokens[*index], "binary operator");
+		this->addError(this->tokens[*index], "binary operator");
+		return NULL;
 	}
 	
 	return op;
@@ -683,11 +682,15 @@ Lex::Token *Parser::readToken(int *index, Lex::Rule::Type type, std::string valu
 		return token;
 	}
 	
+	(*index)++;
+	
 	if (value.empty()) {
-		throw ParserError(token, "token");
+		this->addError(token, "token");
 	} else {
-		throw ParserError(token, value);
+		this->addError(token, value);
 	}
+	
+	return NULL;
 }
 
 bool Parser::isIdentifierToken(int *index) {
@@ -743,5 +746,6 @@ Lex::Token *Parser::readLiteralToken(int *index) {
 		return readToken(index, Lex::Rule::StringLiteral, "");
 	}
 	
-	throw ParserError(this->tokens[*index], "literal");
+	this->addError(this->tokens[*index], "literal");
+	return NULL;
 }

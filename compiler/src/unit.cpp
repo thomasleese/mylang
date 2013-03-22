@@ -20,16 +20,6 @@ void Message::print() const {
 	std::cout << std::endl;
 }
 
-Warning::Warning(std::string filename, int line, int col, std::string token, std::string msg) :
-	Message("Warning", filename, line, col, token, msg) {
-	
-}
-
-Error::Error(std::string filename, int line, int col, std::string token, std::string msg) :
-	Message("Error", filename, line, col, token, msg) {
-	
-}
-
 Unit::Unit() {
 	
 }
@@ -40,6 +30,18 @@ Unit::~Unit() {
 
 void Unit::addMessage(Message msg) {
 	this->messages.push_back(msg);
+}
+
+void Unit::addMessage(std::string id, std::string filename, int line, int col, std::string token, std::string msg) {
+	this->addMessage(Message(id, filename, line, col, token, msg));
+}
+
+void Unit::addWarning(std::string filename, int line, int col, std::string token, std::string msg) {
+	this->addMessage("Warning", filename, line, col, token, msg);
+}
+
+void Unit::addError(std::string filename, int line, int col, std::string token, std::string msg) {
+	this->addMessage("Error", filename, line, col, token, msg);
 }
 
 bool Unit::hasMessages() {

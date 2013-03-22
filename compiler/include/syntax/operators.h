@@ -6,13 +6,23 @@ namespace Syntax {
 	
 	namespace Operators {
 		
-		enum Unary {
-			None,
-			Add,
-			Subtract,
-			Not,
-			Increment,
-			Decrement,
+		class Unary {
+		
+		public:
+			enum Type {
+				None,
+				Add,
+				Subtract,
+				Not,
+				Increment,
+				Decrement,
+			};
+			
+			void setType(Type t);
+			Type getType();
+			
+		private:
+			Type type;
 		};
 		
 		class Binary {
@@ -47,8 +57,6 @@ namespace Syntax {
 			
 			void setPrecedence(int p);
 			int getPrecedence();
-			
-			std::string toString() const;
 			
 		private:
 			Type type;

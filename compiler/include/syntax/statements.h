@@ -18,7 +18,7 @@ namespace Syntax {
 		class Statement {
 			
 		public:
-			virtual std::string toString() const = 0;
+			virtual ~Statement();
 			
 		};
 		
@@ -26,8 +26,6 @@ namespace Syntax {
 			
 		public:
 			void addStatement(Statement *stat);
-			
-			std::string toString() const;
 			
 		private:
 			std::vector<Statement *> statements;
@@ -39,8 +37,6 @@ namespace Syntax {
 		public:
 			void setExpression(Expressions::Expression *expr);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Expression *expression;
 			
@@ -51,8 +47,6 @@ namespace Syntax {
 		public:
 			void setIdentifier(Expressions::Identifier *identifier);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Identifier *identifier;
 			
@@ -62,8 +56,6 @@ namespace Syntax {
 			
 		public:
 			void setExpression(Expressions::Expression *expr);
-			
-			std::string toString() const;
 			
 		private:
 			Expressions::Expression *expression;
@@ -83,8 +75,6 @@ namespace Syntax {
 			void setTrueStatement(Statement *statement);
 			void setFalseStatement(Statement *statement);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Expression *expression;
 			Statement *trueStatement, *falseStatement;
@@ -99,8 +89,6 @@ namespace Syntax {
 			void setExpression(Expressions::Expression *expr);
 			void setBlock(Block *block);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Expression *expression;
 			Block *block;
@@ -112,8 +100,6 @@ namespace Syntax {
 		public:
 			void setExpression(Expressions::Expression *expr);
 			void addCase(Case *statement);
-			
-			std::string toString() const;
 			
 		private:
 			Expressions::Expression *expression;
@@ -146,8 +132,6 @@ namespace Syntax {
 			void setType(Expressions::Type *type);
 			void setAssignment(Expressions::Expression *expr);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Type *type;
 			Expressions::Expression *assignment;
@@ -162,8 +146,6 @@ namespace Syntax {
 			void setType(Expressions::Type *type);
 			void setAssignment(Expressions::Expression *expr);
 			
-			std::string toString() const;
-			
 		private:
 			Expressions::Type *type;
 			Expressions::Expression *assignment;
@@ -175,8 +157,6 @@ namespace Syntax {
 		public:
 			void setType(Expressions::Type *type);
 			void setBlock(Block *block);
-			
-			std::string toString() const;
 			
 		private:
 			Expressions::Type *type;
@@ -194,8 +174,6 @@ namespace Syntax {
 			std::vector<Expressions::Parameter *> &getParameters();
 			
 			void setBlock(Block *block);
-			
-			std::string toString() const;
 			
 		private:
 			Expressions::Type *type;
