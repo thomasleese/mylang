@@ -23,6 +23,14 @@ std::string Token::getFilename() {
 	return this->filename;
 }
 
+void Token::setColumn(int col) {
+	this->column = col;
+}
+
+int Token::getColumn() {
+	return this->column;
+}
+
 void Token::setLineNumber(int no) {
 	this->lineNumber = no;
 }

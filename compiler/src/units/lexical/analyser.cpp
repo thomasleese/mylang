@@ -80,6 +80,7 @@ void Analyser::tokeniseBuffer(std::string filename) {
 				if (substr.substr(0, value.length()) == value) {
 					Token *token = new Token(rule, value);
 					token->setLineNumber(getLineFromIndex(pos));
+					token->setColumn(col);
 					token->setFilename(filename);
 					
 					this->tokens.push_back(token);

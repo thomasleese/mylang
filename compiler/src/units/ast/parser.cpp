@@ -13,7 +13,7 @@ Parser::~Parser() {
 void Parser::addError(Lexical::Token *token, std::string expected) {
 	std::string filename = token->getFilename();
 	int line = token->getLineNumber();
-	int col = 0;
+	int col = token->getColumn();
 	std::string tokenValue = token->getValue();
 	std::string msg = "Got '" + tokenValue + "', expected '" + expected + "'.";
 	
@@ -76,7 +76,7 @@ bool Parser::isBlockStatement(int *index) {
 }
 
 Statements::Block *Parser::readBlockStatement(int *index) {
-	Statements::Block *block = new Statements::Block();
+	Statements::Block *block = new Statements::Block(this->tokens[*index]);
 	
 	readDelimiterToken(index, "{");
 	while (!isDelimiterToken(index, "}")) {
@@ -92,7 +92,7 @@ bool Parser::isExpressionStatement(int *index) {
 }
 
 Statements::Expression *Parser::readExpressionStatement(int *index) {
-	Statements::Expression *stat = new Statements::Expression();
+	Statements::Expression *stat = new Statements::Expression(this->tokens[*index]);
 	stat->setExpression(readExpression(index));
 	readDelimiterToken(index, ";");
 	return stat;
@@ -105,7 +105,7 @@ bool Parser::isImportStatement(int *index) {
 Statements::Import *Parser::readImportStatement(int *index) {
 	readKeywordToken(index, "import");
 	
-	Statements::Import *import = new Statements::Import();
+	Statements::Import *import = new Statements::Import(this->tokens[*index]);
 	import->setIdentifier(readIdentifierExpression(index));
 	readDelimiterToken(index, ";");
 	return import;
@@ -118,7 +118,7 @@ bool Parser::isReturnStatement(int *index) {
 Statements::Return *Parser::readReturnStatement(int *index) {
 	readKeywordToken(index, "return");
 	
-	Statements::Return *ret = new Statements::Return();
+	Statements::Return *ret = new Statements::Return(this->tokens[*index]);
 	ret->setExpression(readExpression(index));
 	readDelimiterToken(index, ";");
 	return ret;
@@ -147,7 +147,7 @@ bool Parser::isIfStatement(int *index) {
 Statements::If *Parser::readIfStatement(int *index) {
 	readKeywordToken(index, "if");
 	
-	Statements::If *stat = new Statements::If();
+	Statements::If *stat = new Statements::If(this->tokens[*index]);
 	
 	readDelimiterToken(index, "(");
 	stat->setExpression(readExpression(index));
@@ -172,7 +172,7 @@ bool Parser::isCaseStatement(int *index) {
 }
 
 Statements::Case *Parser::readCaseStatement(int *index) {
-	Statements::Case *statement = new Statements::Case();
+	Statements::Case *statement = new Statements::Case(this->tokens[*index]);
 	if (isKeywordToken(index, "case")) {
 		readKeywordToken(index, "case");
 		readDelimiterToken(index, "(");
@@ -196,7 +196,7 @@ bool Parser::isSwitchStatement(int *index) {
 Statements::Switch *Parser::readSwitchStatement(int *index) {
 	readKeywordToken(index, "switch");
 	
-	Statements::Switch *statement = new Statements::Switch();
+	Statements::Switch *statement = new Statements::Switch(this->tokens[*index]);
 	
 	readDelimiterToken(index, "(");
 	statement->setExpression(readExpression(index));
@@ -243,7 +243,7 @@ bool Parser::isVariableDeclarationStatement(int *index) {
 Statements::VariableDeclaration *Parser::readVariableDeclarationStatement(int *index) {
 	readKeywordToken(index, "var");
 	
-	Statements::VariableDeclaration *decl = new Statements::VariableDeclaration();
+	Statements::VariableDeclaration *decl = new Statements::VariableDeclaration(this->tokens[*index]);
 	
 	if (isKeywordToken(index, "exported")) {
 		readKeywordToken(index, "exported");
@@ -270,7 +270,7 @@ bool Parser::isConstantDeclarationStatement(int *index) {
 Statements::ConstantDeclaration *Parser::readConstantDeclarationStatement(int *index) {
 	readKeywordToken(index, "const");
 	
-	Statements::ConstantDeclaration *decl = new Statements::ConstantDeclaration();
+	Statements::ConstantDeclaration *decl = new Statements::ConstantDeclaration(this->tokens[*index]);
 	
 	if (isKeywordToken(index, "exported")) {
 		readKeywordToken(index, "exported");
@@ -297,7 +297,7 @@ bool Parser::isTypeDeclarationStatement(int *index) {
 Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
 	readKeywordToken(index, "type");
 	
-	Statements::TypeDeclaration *decl = new Statements::TypeDeclaration();
+	Statements::TypeDeclaration *decl = new Statements::TypeDeclaration(this->tokens[*index]);
 	
 	if (isKeywordToken(index, "exported")) {
 		readKeywordToken(index, "exported");
@@ -317,7 +317,7 @@ bool Parser::isFunctionDeclarationStatement(int *index) {
 Statements::FunctionDeclaration *Parser::readFunctionDeclarationStatement(int *index) {
 	readKeywordToken(index, "func");
 	
-	Statements::FunctionDeclaration *decl = new Statements::FunctionDeclaration();
+	Statements::FunctionDeclaration *decl = new Statements::FunctionDeclaration(this->tokens[*index]);
 	
 	if (isKeywordToken(index, "exported")) {
 		readKeywordToken(index, "exported");
@@ -364,7 +364,7 @@ bool Parser::isUnaryExpression(int *index) {
 }
 
 Expressions::Unary *Parser::readUnaryExpression(int *index) {
-	Expressions::Unary *unary = new Expressions::Unary();
+	Expressions::Unary *unary = new Expressions::Unary(this->tokens[*index]);
 	
 	if (isUnaryOperator(index)) {
 		unary->setOperator(readUnaryOperator(index));
@@ -393,7 +393,7 @@ Expressions::Binary *Parser::readBinaryExpression(int *index, Expressions::Expre
 			rhs = readBinaryExpression(index, rhs, getBinaryOperator(index)->getPrecedence());
 		}
 		
-		Expressions::Binary *b = new Expressions::Binary();
+		Expressions::Binary *b = new Expressions::Binary(this->tokens[*index]);
 		b->setOperator(op);
 		b->setLeft(lhs);
 		b->setRight(rhs);
@@ -447,7 +447,7 @@ bool Parser::isExpressionExpression(int *index) {
 
 Expressions::Expr *Parser::readExpressionExpression(int *index) {
 	readDelimiterToken(index, "(");
-	Expressions::Expr *expr = new Expressions::Expr();
+	Expressions::Expr *expr = new Expressions::Expr(this->tokens[*index]);
 	expr->setExpression(readExpression(index));
 	readDelimiterToken(index, ")");
 	return expr;
@@ -458,7 +458,7 @@ bool Parser::isLiteralExpression(int *index) {
 }
 
 Expressions::Literal *Parser::readLiteralExpression(int *index) {
-	Expressions::Literal *lit = new Expressions::Literal();
+	Expressions::Literal *lit = new Expressions::Literal(this->tokens[*index]);
 	lit->setValue(readLiteralToken(index)->getValue());
 	return lit;
 }
@@ -468,7 +468,7 @@ bool Parser::isIdentifierExpression(int *index) {
 }
 
 Expressions::Identifier *Parser::readIdentifierExpression(int *index) {
-	Expressions::Identifier *expr = new Expressions::Identifier();
+	Expressions::Identifier *expr = new Expressions::Identifier(this->tokens[*index]);
 	expr->setValue(readIdentifierToken(index)->getValue());
 	return expr;
 }
@@ -481,7 +481,7 @@ bool Parser::isSelectorExpression(int *index) {
 Expressions::Selector *Parser::readSelectorExpression(int *index, Expressions::Operand *operand) {
 	readDelimiterToken(index, ".");
 	
-	Expressions::Selector *selector = new Expressions::Selector();
+	Expressions::Selector *selector = new Expressions::Selector(this->tokens[*index]);
 	selector->setOperand(operand);
 	selector->setIdentifier(readIdentifierExpression(index));
 	return selector;
@@ -492,7 +492,7 @@ bool Parser::isCallExpression(int *index) {
 }
 
 Expressions::Call *Parser::readCallExpression(int *index, Expressions::Operand *operand) {
-	Expressions::Call *call = new Expressions::Call();
+	Expressions::Call *call = new Expressions::Call(this->tokens[*index]);
 	call->setOperand(operand);
 	
 	readDelimiterToken(index, "(");
@@ -519,7 +519,7 @@ bool Parser::isSliceExpression(int *index) {
 Expressions::Slice *Parser::readSliceExpression(int *index, Expressions::Operand *operand) {
 	readDelimiterToken(index, "[");
 	
-	Expressions::Slice *slice = new Expressions::Slice();
+	Expressions::Slice *slice = new Expressions::Slice(this->tokens[*index]);
 	slice->setIndex(readExpression(index));
 	slice->setOperand(operand);
 	
@@ -533,7 +533,7 @@ bool Parser::isTypeExpression(int *index) {
 }
 
 Expressions::Type *Parser::readTypeExpression(int *index) {
-	Expressions::Type *type = new Expressions::Type();
+	Expressions::Type *type = new Expressions::Type(this->tokens[*index]);
 	
 	type->addName(readIdentifierExpression(index));
 	
@@ -554,7 +554,7 @@ bool Parser::isParameterExpression(int *index) {
 }
 
 Expressions::Parameter *Parser::readParameterExpression(int *index) {
-	Expressions::Parameter *param = new Expressions::Parameter();
+	Expressions::Parameter *param = new Expressions::Parameter(this->tokens[*index]);
 	param->setType(readTypeExpression(index));
 	param->setIdentifier(readIdentifierExpression(index));
 	return param;

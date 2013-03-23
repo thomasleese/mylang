@@ -5,6 +5,23 @@
 using namespace AST;
 using namespace AST::Expressions;
 
+Expression::Expression(Lexical::Token *token) {
+	this->token = token;
+}
+
+Expression::~Expression() {
+	
+}
+
+Lexical::Token *Expression::getToken() {
+	return this->token;
+}
+
+Unary::Unary(Lexical::Token *token) : 
+	Expression(token) {
+	
+}
+
 void Unary::setOperator(Operators::Unary *op) {
 	this->op = op;
 }
@@ -19,6 +36,11 @@ void Unary::setExpression(Expression *expr) {
 
 Expression *Unary::getExpression() {
 	return this->expr;
+}
+
+Binary::Binary(Lexical::Token *token) : 
+	Expression(token) {
+	
 }
 
 void Binary::setOperator(Operators::Binary *op) {
@@ -45,12 +67,32 @@ Expression *Binary::getRight() {
 	return this->rhs;
 }
 
+Operand::Operand(Lexical::Token *token) :
+	Expression(token) {
+	
+}
+
+Expr::Expr(Lexical::Token *token) : 
+	Operand(token) {
+	
+}
+
 void Expr::setExpression(Expression *expr) {
 	this->expr = expr;
 }
 
+Literal::Literal(Lexical::Token *token) : 
+	Operand(token) {
+	
+}
+
 void Literal::setValue(std::string value) {
 	this->value = value;
+}
+
+Identifier::Identifier(Lexical::Token *token) : 
+	Operand(token) {
+	
 }
 
 void Identifier::setValue(std::string value) {
@@ -61,12 +103,22 @@ std::string Identifier::getValue() const {
 	return this->value;
 }
 
+Selector::Selector(Lexical::Token *token) : 
+	Operand(token) {
+	
+}
+
 void Selector::setOperand(Operand *expr) {
 	this->operand = expr;
 }
 
 void Selector::setIdentifier(Identifier *identifier) {
 	this->identifier = identifier;
+}
+
+Call::Call(Lexical::Token *token) : 
+	Operand(token) {
+	
 }
 
 void Call::setOperand(Operand *expr) {
@@ -77,12 +129,22 @@ void Call::addArgument(Expression *arg) {
 	this->arguments.push_back(arg);
 }
 
+Slice::Slice(Lexical::Token *token) : 
+	Operand(token) {
+	
+}
+
 void Slice::setOperand(Operand *expr) {
 	this->operand = expr;
 }
 
 void Slice::setIndex(Expression *expr) {
 	this->index = expr;
+}
+
+Type::Type(Lexical::Token *token) : 
+	Expression(token) {
+	
 }
 
 void Type::addName(Identifier *name) {
@@ -95,6 +157,11 @@ std::vector<Identifier *> Type::getNames() {
 
 void Type::addSlice(Slice *slice) {
 	this->slices.push_back(slice);
+}
+
+Parameter::Parameter(Lexical::Token *token) : 
+	Expression(token) {
+	
 }
 
 void Parameter::setType(Type *type) {

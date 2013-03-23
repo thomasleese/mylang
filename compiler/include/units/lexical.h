@@ -48,6 +48,9 @@ namespace Lexical {
 		void setFilename(std::string filename);
 		std::string getFilename();
 		
+		void setColumn(int col);
+		int getColumn();
+		
 		void setLineNumber(int no);
 		int getLineNumber();
 		
@@ -56,6 +59,7 @@ namespace Lexical {
 		std::string value;
 		
 		std::string filename;
+		int column;
 		int lineNumber;
 		
 	};

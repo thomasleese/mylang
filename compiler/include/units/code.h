@@ -21,15 +21,21 @@ namespace Code {
 		Generator(std::string moduleName);
 		~Generator();
 		
+		void addError(int i, std::string msg);
+		void addError(Lexical::Token *token, std::string msg);
+		
 		void parseAST(std::vector<AST::Statements::Statement *> statements);
 		void dump() const;
 		
 	private:
-		void genImportStatement(int i);
-		void genDeclarationStatement(int i);
-		void genFunctionDeclarationStatement(int i);
+		// Statements
+		llvm::Value *parseDeclarationStatement(int i);
+		llvm::Function *parseFunctionDeclarationStatement(int i);
+		llvm::Function *parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
-		llvm::Type *genType(AST::Expressions::Type *type);
+		// Expressions
+		llvm::Type *parseTypeExpression(int i);
+		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr);
 		
 	private:
 		std::string moduleName;

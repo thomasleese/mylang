@@ -70,11 +70,22 @@ namespace AST {
 		
 		class Expression {
 			
+		public:
+			Expression(Lexical::Token *token);
+			virtual ~Expression();
+			
+			Lexical::Token *getToken();
+			
+		private:
+			Lexical::Token *token;
+			
 		};
 		
 		class Unary : public Expression {
 			
 		public:
+			Unary(Lexical::Token *token);
+			
 			void setOperator(Operators::Unary *op);
 			Operators::Unary *getOperator();
 			
@@ -90,6 +101,8 @@ namespace AST {
 		class Binary : public Expression {
 			
 		public:
+			Binary(Lexical::Token *token);
+			
 			void setOperator(Operators::Binary *op);
 			Operators::Binary *getOperator();
 			
@@ -107,11 +120,16 @@ namespace AST {
 		
 		class Operand : public Expression {
 			
+		public:
+			Operand(Lexical::Token *token);
+			
 		};
 		
 		class Expr : public Operand {
 			
 		public:
+			Expr(Lexical::Token *token);
+			
 			void setExpression(Expression *expr);
 			
 		private:
@@ -122,6 +140,8 @@ namespace AST {
 		class Literal : public Operand {
 			
 		public:
+			Literal(Lexical::Token *token);
+			
 			void setValue(std::string value);
 			
 		private:
@@ -132,6 +152,8 @@ namespace AST {
 		class Identifier : public Operand {
 			
 		public:
+			Identifier(Lexical::Token *token);
+			
 			void setValue(std::string value);
 			std::string getValue() const;
 			
@@ -143,6 +165,8 @@ namespace AST {
 		class Selector : public Operand {
 			
 		public:
+			Selector(Lexical::Token *token);
+			
 			void setOperand(Operand *expr);
 			void setIdentifier(Identifier *identifier);
 			
@@ -155,6 +179,8 @@ namespace AST {
 		class Call : public Operand {
 			
 		public:
+			Call(Lexical::Token *token);
+			
 			void setOperand(Operand *expr);
 			void addArgument(Expression *arg);
 			
@@ -167,6 +193,8 @@ namespace AST {
 		class Slice : public Operand {
 			
 		public:
+			Slice(Lexical::Token *token);
+			
 			void setOperand(Operand *expr);
 			void setIndex(Expression *expr);
 			
@@ -179,6 +207,8 @@ namespace AST {
 		class Type : public Expression {
 			
 		public:
+			Type(Lexical::Token *token);
+			
 			void addName(Identifier *name);
 			std::vector<Identifier *> getNames();
 			
@@ -193,6 +223,8 @@ namespace AST {
 		class Parameter : public Expression {
 			
 		public:
+			Parameter(Lexical::Token *token);
+			
 			void setType(Type *type);
 			Type *getType() const;
 			
@@ -211,13 +243,21 @@ namespace AST {
 		class Statement {
 			
 		public:
+			Statement(Lexical::Token *token);
 			virtual ~Statement();
+			
+			Lexical::Token *getToken();
+			
+		private:
+			Lexical::Token *token;
 			
 		};
 		
 		class Block : public Statement {
 			
 		public:
+			Block(Lexical::Token *token);
+			
 			void addStatement(Statement *stat);
 			
 		private:
@@ -228,6 +268,8 @@ namespace AST {
 		class Expression : public Statement {
 			
 		public:
+			Expression(Lexical::Token *token);
+			
 			void setExpression(Expressions::Expression *expr);
 			
 		private:
@@ -238,6 +280,8 @@ namespace AST {
 		class Import : public Statement {
 			
 		public:
+			Import(Lexical::Token *token);
+			
 			void setIdentifier(Expressions::Identifier *identifier);
 			
 		private:
@@ -248,6 +292,8 @@ namespace AST {
 		class Return : public Statement {
 			
 		public:
+			Return(Lexical::Token *token);
+			
 			void setExpression(Expressions::Expression *expr);
 			
 		private:
@@ -257,12 +303,15 @@ namespace AST {
 		
 		class Control : public Statement {
 			
+		public:
+			Control(Lexical::Token *token);
+			
 		};
 		
 		class If : public Control {
 			
 		public:
-			If();
+			If(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
 			void setTrueStatement(Statement *statement);
@@ -277,7 +326,7 @@ namespace AST {
 		class Case : public Control {
 			
 		public:
-			Case();
+			Case(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
 			void setBlock(Block *block);
@@ -291,6 +340,8 @@ namespace AST {
 		class Switch : public Control {
 			
 		public:
+			Switch(Lexical::Token *token);
+			
 			void setExpression(Expressions::Expression *expr);
 			void addCase(Case *statement);
 			
@@ -303,7 +354,7 @@ namespace AST {
 		class Declaration : public Statement {
 			
 		public:
-			Declaration();
+			Declaration(Lexical::Token *token);
 			
 			void setExported(bool exported);
 			bool getExported();
@@ -320,7 +371,7 @@ namespace AST {
 		class VariableDeclaration : public Declaration {
 			
 		public:
-			VariableDeclaration();
+			VariableDeclaration(Lexical::Token *token);
 			
 			void setType(Expressions::Type *type);
 			void setAssignment(Expressions::Expression *expr);
@@ -334,7 +385,7 @@ namespace AST {
 		class ConstantDeclaration : public Declaration {
 			
 		public:
-			ConstantDeclaration();
+			ConstantDeclaration(Lexical::Token *token);
 			
 			void setType(Expressions::Type *type);
 			void setAssignment(Expressions::Expression *expr);
@@ -348,6 +399,8 @@ namespace AST {
 		class TypeDeclaration : public Declaration {
 			
 		public:
+			TypeDeclaration(Lexical::Token *token);
+			
 			void setType(Expressions::Type *type);
 			void setBlock(Block *block);
 			
@@ -360,6 +413,8 @@ namespace AST {
 		class FunctionDeclaration : public Declaration {
 			
 		public:
+			FunctionDeclaration(Lexical::Token *token);
+			
 			void setType(Expressions::Type *type);
 			Expressions::Type *getType() const;
 			

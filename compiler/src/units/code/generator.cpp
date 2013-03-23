@@ -18,6 +18,19 @@ Generator::~Generator() {
 	delete this->module;
 }
 
+void Generator::addError(int i, std::string msg) {
+	this->addError(this->statements[i]->getToken(), msg);
+}
+
+void Generator::addError(Lexical::Token *token, std::string msg) {
+	std::string filename = token->getFilename();
+	int line = token->getLineNumber();
+	int col = token->getColumn();
+	std::string tokenValue = token->getValue();
+	
+	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
+}
+
 void Generator::parseAST(std::vector<AST::Statements::Statement *> statements) {
 	this->statements = statements;
 	
@@ -31,7 +44,7 @@ void Generator::parseAST(std::vector<AST::Statements::Statement *> statements) {
 	}
 	
 	for (int i = 0; i < this->statements.size(); i++) {
-		genDeclarationStatement(i);
+		parseDeclarationStatement(i);
 	}
 }
 
@@ -39,59 +52,75 @@ void Generator::dump() const {
 	this->module->dump();
 }
 
-void Generator::genImportStatement(int i) {
-	AST::Statements::Import *stat =
-		dynamic_cast<AST::Statements::Import *>(this->statements[i]);
-	
-	if (stat != NULL) {
-		return;
-	}
-	
-	throw "import";
-}
-
-void Generator::genDeclarationStatement(int i) {
+llvm::Value *Generator::parseDeclarationStatement(int i) {
 	if (dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]) != NULL) {
-		return genFunctionDeclarationStatement(i);
+		return parseFunctionDeclarationStatement(i);
 	}
 	
-	throw "declaration";
+	this->addError(i, "Expected declaration statement");
+	return NULL;
 }
 
-void Generator::genFunctionDeclarationStatement(int i) {
+llvm::Function *Generator::parseFunctionDeclarationStatement(int i) {
 	AST::Statements::FunctionDeclaration *decl =
 		dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]);
 	
 	if (decl != NULL) {
-		const int paramsLen = decl->getParameters().size();
-		llvm::Type *params[paramsLen];
-		for (int i = 0; i < paramsLen; i++) {
-			params[i] = this->genType(decl->getParameters()[i]->getType());
-		}
-		
-		llvm::FunctionType *type = llvm::FunctionType::get(this->genType(decl->getType()),
-										llvm::ArrayRef<llvm::Type *>(params, paramsLen), false);
-		
-		llvm::Function::LinkageTypes linkType = llvm::Function::ExternalLinkage;
-		if (decl->getExported()) {
-			linkType = llvm::Function::PrivateLinkage;
-		}
-		
-		llvm::Function *func = llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
-		llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", func);
-		
-		if (decl->getName()->getValue() == "main") {
-			this->builder->SetInsertPoint(entry);
-		}
-		
-		return;
+		return parseFunctionDeclarationStatement(decl);
 	}
 	
-	throw "function declaration";
+	this->addError(i, "Expected function declaration statement");
+	return NULL;
 }
 
-llvm::Type *Generator::genType(AST::Expressions::Type *type) {
-	std::vector<AST::Expressions::Identifier *> names = type->getNames();
+llvm::Function *Generator::parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
+	const int paramsLen = decl->getParameters().size();
+	llvm::Type *params[paramsLen];
+	for (int i = 0; i < paramsLen; i++) {
+		llvm::Type *paramType = this->parseTypeExpression(decl->getParameters()[i]->getType());
+		if (paramType == NULL) {
+			return NULL;
+		}
+		
+		params[i] = paramType;
+	}
+	
+	llvm::Type *returnType = this->parseTypeExpression(decl->getType());
+	if (returnType == NULL) {
+		return NULL;
+	}
+	
+	llvm::FunctionType *type = llvm::FunctionType::get(returnType,
+									llvm::ArrayRef<llvm::Type *>(params, paramsLen), false);
+	
+	llvm::Function::LinkageTypes linkType = llvm::Function::ExternalLinkage;
+	if (decl->getExported()) {
+		linkType = llvm::Function::PrivateLinkage;
+	}
+	
+	llvm::Function *func = llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", func);
+	
+	if (decl->getName()->getValue() == "main") {
+		this->builder->SetInsertPoint(entry);
+	}
+	
+	return func;
+}
+
+llvm::Type *Generator::parseTypeExpression(int i) {
+	AST::Expressions::Type *expr = dynamic_cast<AST::Expressions::Type *>(this->statements[i]);
+	if (expr != NULL) {
+		return parseTypeExpression(expr);
+	} else {
+		this->addError(i, "Expected type expression");
+	}
+	
+	return NULL;
+}
+
+llvm::Type *Generator::parseTypeExpression(AST::Expressions::Type *expr) {
+	std::vector<AST::Expressions::Identifier *> names = expr->getNames();
 	std::string name = names[0]->getValue();
 	
 	if (name == "Integer") {
@@ -99,6 +128,7 @@ llvm::Type *Generator::genType(AST::Expressions::Type *type) {
 	} else if (name == "Void") {
 		return llvm::Type::getVoidTy(llvm::getGlobalContext());
 	} else {
+		this->addError(expr->getToken(), "Unknown type");
 		return NULL;
 	}
 }
