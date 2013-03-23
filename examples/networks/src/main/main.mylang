@@ -1,9 +1,9 @@
 import net;
 
-def Void main() {
+func Void main() {
 	var net.Server server = net.listen("tcp", 9739);
 	
-	for {
+	for (true) {
 		var net.Client client = server.accept();
 		client.write("Hello!");
 		client.close();

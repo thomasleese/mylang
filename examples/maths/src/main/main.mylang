@@ -1,8 +1,8 @@
 import console;
 import maths;
 
-def Void main() {
-	var maths.Rectangle rect = maths.Rectangle{};
+func Void main() {
+	var maths.Rectangle rect = maths.Rectangle; //{};
 	rect.w = 20;
 	rect.h = 20;
 	
