@@ -4,8 +4,7 @@ PROJECT(Compiler)
 
 SET(SOURCES	src/main.cpp src/compiler.cpp src/unit.cpp
 			src/units/lex/analyser.cpp src/units/lex/rule.cpp src/units/lex/token.cpp
-			src/syntax/parser.cpp src/syntax/statements.cpp src/syntax/expressions.cpp
-				src/syntax/operators.cpp
+			src/units/ast/parser.cpp src/units/ast/statements.cpp src/units/ast/expressions.cpp src/units/ast/operators.cpp
 			src/code/generator.cpp)
 
 SET(LIBRARIES boost_regex icuuc icudata)

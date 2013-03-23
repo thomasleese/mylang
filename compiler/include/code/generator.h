@@ -11,7 +11,7 @@ namespace llvm {
 	
 }
 
-namespace Syntax {
+namespace AST {
 	
 	namespace Statements {
 		
@@ -29,7 +29,7 @@ namespace Code {
 		Generator(std::string moduleName);
 		~Generator();
 		
-		void parseAST(std::vector<Syntax::Statements::Statement *> statements);
+		void parseAST(std::vector<AST::Statements::Statement *> statements);
 		void dump() const;
 		
 	private:
@@ -37,7 +37,7 @@ namespace Code {
 		void genDeclarationStatement(int i);
 		void genFunctionDeclarationStatement(int i);
 		
-		llvm::Type *genType(Syntax::Expressions::Type *type);
+		llvm::Type *genType(AST::Expressions::Type *type);
 		
 	private:
 		std::string moduleName;
@@ -45,7 +45,7 @@ namespace Code {
 		llvm::Module *module;
 		llvm::IRBuilder<> *builder;
 		
-		std::vector<Syntax::Statements::Statement *> statements;
+		std::vector<AST::Statements::Statement *> statements;
 	};
 
 }

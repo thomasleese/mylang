@@ -1,10 +1,9 @@
 #include <sstream>
 
-#include "syntax/expressions.h"
-#include "unit.h"
+#include "units/ast.h"
 
-using namespace Syntax;
-using namespace Syntax::Expressions;
+using namespace AST;
+using namespace AST::Expressions;
 
 void Unary::setOperator(Operators::Unary *op) {
 	this->op = op;

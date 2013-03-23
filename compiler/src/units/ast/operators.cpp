@@ -1,9 +1,8 @@
 #include <sstream>
 
-#include "syntax/operators.h"
-#include "unit.h"
+#include "units/ast.h"
 
-using namespace Syntax::Operators;
+using namespace AST::Operators;
 
 void Unary::setType(Type t) {
 	this->type = t;

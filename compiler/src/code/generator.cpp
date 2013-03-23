@@ -5,7 +5,7 @@
 #include <llvm/Analysis/Verifier.h>
 
 #include "units/lex.h"
-#include "syntax/parser.h"
+#include "units/ast.h"
 #include "code/generator.h"
 
 using namespace Code;
@@ -20,12 +20,12 @@ Generator::~Generator() {
 	delete this->module;
 }
 
-void Generator::parseAST(std::vector<Syntax::Statements::Statement *> statements) {
+void Generator::parseAST(std::vector<AST::Statements::Statement *> statements) {
 	this->statements = statements;
 	
 	for (int i = this->statements.size() - 1; i >= 0; i--) {
-		Syntax::Statements::Import *stat =
-			dynamic_cast<Syntax::Statements::Import *>(this->statements[i]);
+		AST::Statements::Import *stat =
+			dynamic_cast<AST::Statements::Import *>(this->statements[i]);
 		
 		if (stat != NULL) {
 			this->statements.erase(this->statements.begin() + i);
@@ -42,8 +42,8 @@ void Generator::dump() const {
 }
 
 void Generator::genImportStatement(int i) {
-	Syntax::Statements::Import *stat =
-		dynamic_cast<Syntax::Statements::Import *>(this->statements[i]);
+	AST::Statements::Import *stat =
+		dynamic_cast<AST::Statements::Import *>(this->statements[i]);
 	
 	if (stat != NULL) {
 		return;
@@ -53,7 +53,7 @@ void Generator::genImportStatement(int i) {
 }
 
 void Generator::genDeclarationStatement(int i) {
-	if (dynamic_cast<Syntax::Statements::FunctionDeclaration *>(this->statements[i]) != NULL) {
+	if (dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]) != NULL) {
 		return genFunctionDeclarationStatement(i);
 	}
 	
@@ -61,8 +61,8 @@ void Generator::genDeclarationStatement(int i) {
 }
 
 void Generator::genFunctionDeclarationStatement(int i) {
-	Syntax::Statements::FunctionDeclaration *decl =
-		dynamic_cast<Syntax::Statements::FunctionDeclaration *>(this->statements[i]);
+	AST::Statements::FunctionDeclaration *decl =
+		dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]);
 	
 	if (decl != NULL) {
 		const int paramsLen = decl->getParameters().size();
@@ -92,8 +92,8 @@ void Generator::genFunctionDeclarationStatement(int i) {
 	throw "function declaration";
 }
 
-llvm::Type *Generator::genType(Syntax::Expressions::Type *type) {
-	std::vector<Syntax::Expressions::Identifier *> names = type->getNames();
+llvm::Type *Generator::genType(AST::Expressions::Type *type) {
+	std::vector<AST::Expressions::Identifier *> names = type->getNames();
 	std::string name = names[0]->getValue();
 	
 	if (name == "Integer") {

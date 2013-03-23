@@ -1,10 +1,8 @@
 #include <sstream>
 
-#include "syntax/expressions.h"
-#include "syntax/statements.h"
-#include "unit.h"
+#include "units/ast.h"
 
-using namespace Syntax::Statements;
+using namespace AST::Statements;
 
 Statement::~Statement() {
 	
@@ -78,7 +76,7 @@ void Declaration::setName(Expressions::Identifier *name) {
 	this->name = name;
 }
 
-Syntax::Expressions::Identifier *Declaration::getName() {
+AST::Expressions::Identifier *Declaration::getName() {
 	return this->name;
 }
 
@@ -118,7 +116,7 @@ void FunctionDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
-Syntax::Expressions::Type *FunctionDeclaration::getType() const {
+AST::Expressions::Type *FunctionDeclaration::getType() const {
 	return this->type;
 }
 
@@ -126,7 +124,7 @@ void FunctionDeclaration::addParameter(Expressions::Parameter *param) {
 	this->parameters.push_back(param);
 }
 
-std::vector<Syntax::Expressions::Parameter *> &FunctionDeclaration::getParameters() {
+std::vector<AST::Expressions::Parameter *> FunctionDeclaration::getParameters() {
 	return this->parameters;
 }
 

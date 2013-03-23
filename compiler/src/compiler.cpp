@@ -1,7 +1,7 @@
 #include <dirent.h>
 
 #include "units/lex.h"
-#include "syntax/parser.h"
+#include "units/ast.h"
 #include "code/generator.h"
 #include "compiler.h"
 
@@ -45,7 +45,7 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		return;
 	}
 	
-	Syntax::Parser parser;
+	AST::Parser parser;
 	parser.parseTokens(analyser.getTokens());
 	
 	if (parser.hasMessages()) {

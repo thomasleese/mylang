@@ -1,7 +1,6 @@
-#include "units/lex.h"
-#include "syntax/parser.h"
+#include "units/ast.h"
 
-using namespace Syntax;
+using namespace AST;
 
 Parser::Parser() {
 	
