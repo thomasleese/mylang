@@ -5,25 +5,17 @@
 
 #include "llvm/IRBuilder.h"
 
+#include "units/ast.h"
+
 namespace llvm {
 	
 	class Module;
 	
 }
 
-namespace AST {
-	
-	namespace Statements {
-		
-		class Statement;
-		
-	}
-	
-}
-
 namespace Code {
 	
-	class Generator {
+	class Generator : public Unit {
 		
 	public:
 		Generator(std::string moduleName);

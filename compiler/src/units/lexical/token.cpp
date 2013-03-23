@@ -1,6 +1,6 @@
-#include "units/lex.h"
+#include "units/lexical.h"
 
-using namespace Lex;
+using namespace Lexical;
 
 Token::Token(Rule *rule, std::string value) {
 	this->rule = rule;

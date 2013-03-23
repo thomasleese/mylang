@@ -2,9 +2,9 @@
 
 #include <boost/regex/icu.hpp>
 
-#include "units/lex.h"
+#include "units/lexical.h"
 
-using namespace Lex;
+using namespace Lexical;
 
 Analyser::Analyser() {
 	loadRules();

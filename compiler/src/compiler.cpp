@@ -1,8 +1,8 @@
 #include <dirent.h>
 
-#include "units/lex.h"
+#include "units/lexical.h"
 #include "units/ast.h"
-#include "code/generator.h"
+#include "units/code.h"
 #include "compiler.h"
 
 void Compiler::compileProject(std::string dir) {
@@ -24,7 +24,7 @@ void Compiler::compileProject(std::string dir) {
 }
 
 void Compiler::compilePackage(std::string name, std::string dir) {
-	Lex::Analyser analyser;
+	Lexical::Analyser analyser;
 	
 	DIR *dp = opendir(dir.c_str());
 	if (dp != NULL) {
@@ -54,11 +54,11 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	}
 	
 	Code::Generator gen(name);
+	gen.parseAST(parser.getStatements());
 	
-	try {
-		gen.parseAST(parser.getStatements());
-	} catch (const char *s) {
-		std::cout << s << std::endl;
+	if (gen.hasMessages()) {
+		gen.printMessages();
+		return;
 	}
 	
 	gen.dump();

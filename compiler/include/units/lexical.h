@@ -4,7 +4,7 @@
 
 #include "unit.h"
 
-namespace Lex {
+namespace Lexical {
 	
 	class Rule {
 		

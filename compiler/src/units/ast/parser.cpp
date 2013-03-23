@@ -10,7 +10,7 @@ Parser::~Parser() {
 	
 }
 
-void Parser::addError(Lex::Token *token, std::string expected) {
+void Parser::addError(Lexical::Token *token, std::string expected) {
 	std::string filename = token->getFilename();
 	int line = token->getLineNumber();
 	int col = 0;
@@ -20,7 +20,7 @@ void Parser::addError(Lex::Token *token, std::string expected) {
 	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
 }
 
-void Parser::parseTokens(std::vector<Lex::Token *> tokens) {
+void Parser::parseTokens(std::vector<Lexical::Token *> tokens) {
 	readTokens(tokens);
 	generateAST();
 }
@@ -29,11 +29,11 @@ std::vector<Statements::Statement *> Parser::getStatements() {
 	return this->statements;
 }
 
-void Parser::readTokens(std::vector<Lex::Token *> tokens) {
+void Parser::readTokens(std::vector<Lexical::Token *> tokens) {
 	this->tokens.clear();
 	
-	for (Lex::Token *token : tokens) {
-		if (token->getRule()->getType() != Lex::Rule::Ignore) {
+	for (Lexical::Token *token : tokens) {
+		if (token->getRule()->getType() != Lexical::Rule::Ignore) {
 			this->tokens.push_back(token);
 		}
 	}
@@ -42,7 +42,11 @@ void Parser::readTokens(std::vector<Lex::Token *> tokens) {
 void Parser::generateAST() {
 	int index = 0;
 	for (; index < this->tokens.size(); ) {
-		this->statements.push_back(readStatement(&index));
+		if (isImportStatement(&index)) {
+			this->statements.push_back(readImportStatement(&index));
+		} else {
+			this->statements.push_back(readDeclarationStatement(&index));
+		}
 	}
 }
 
@@ -661,8 +665,8 @@ Operators::Binary *Parser::readBinaryOperator(int *index) {
 }
 
 // Tokens
-bool Parser::isToken(int *index, Lex::Rule::Type type, std::string value) {
-	Lex::Token *token = this->tokens[*index];
+bool Parser::isToken(int *index, Lexical::Rule::Type type, std::string value) {
+	Lexical::Token *token = this->tokens[*index];
 	if (token->getRule()->getType() == type) {
 		if (value == "") {
 			return true;
@@ -674,8 +678,8 @@ bool Parser::isToken(int *index, Lex::Rule::Type type, std::string value) {
 	return false;
 }
 
-Lex::Token *Parser::readToken(int *index, Lex::Rule::Type type, std::string value) {
-	Lex::Token *token = this->tokens[*index];
+Lexical::Token *Parser::readToken(int *index, Lexical::Rule::Type type, std::string value) {
+	Lexical::Token *token = this->tokens[*index];
 	if (isToken(index, type, value)) {
 		(*index)++;
 		return token;
@@ -693,56 +697,56 @@ Lex::Token *Parser::readToken(int *index, Lex::Rule::Type type, std::string valu
 }
 
 bool Parser::isIdentifierToken(int *index) {
-	return isToken(index, Lex::Rule::Identifier, "");
+	return isToken(index, Lexical::Rule::Identifier, "");
 }
 
-Lex::Token *Parser::readIdentifierToken(int *index) {
-	return readToken(index, Lex::Rule::Identifier, "");
+Lexical::Token *Parser::readIdentifierToken(int *index) {
+	return readToken(index, Lexical::Rule::Identifier, "");
 }
 
 bool Parser::isOperatorToken(int *index, std::string op) {
-	return isToken(index, Lex::Rule::Operator, op);
+	return isToken(index, Lexical::Rule::Operator, op);
 }
 
-Lex::Token *Parser::readOperatorToken(int *index, std::string op) {
-	return readToken(index, Lex::Rule::Operator, op);
+Lexical::Token *Parser::readOperatorToken(int *index, std::string op) {
+	return readToken(index, Lexical::Rule::Operator, op);
 }
 
 bool Parser::isDelimiterToken(int *index, std::string delimiter) {
-	return isToken(index, Lex::Rule::Delimiter, delimiter);
+	return isToken(index, Lexical::Rule::Delimiter, delimiter);
 }
 
-Lex::Token *Parser::readDelimiterToken(int *index, std::string delimiter) {
-	return readToken(index, Lex::Rule::Delimiter, delimiter);
+Lexical::Token *Parser::readDelimiterToken(int *index, std::string delimiter) {
+	return readToken(index, Lexical::Rule::Delimiter, delimiter);
 }
 
 bool Parser::isKeywordToken(int *index, std::string keyword) {
-	return isToken(index, Lex::Rule::Keyword, keyword);
+	return isToken(index, Lexical::Rule::Keyword, keyword);
 }
 
-Lex::Token *Parser::readKeywordToken(int *index, std::string keyword) {
-	return readToken(index, Lex::Rule::Keyword, keyword);
+Lexical::Token *Parser::readKeywordToken(int *index, std::string keyword) {
+	return readToken(index, Lexical::Rule::Keyword, keyword);
 }
 
 bool Parser::isLiteralToken(int *index) {
-	return isToken(index, Lex::Rule::IntegerLiteral, "")
-		|| isToken(index, Lex::Rule::FloatLiteral, "")
-		|| isToken(index, Lex::Rule::ComplexLiteral, "")
-		|| isToken(index, Lex::Rule::BooleanLiteral, "")
-		|| isToken(index, Lex::Rule::StringLiteral, "");
+	return isToken(index, Lexical::Rule::IntegerLiteral, "")
+		|| isToken(index, Lexical::Rule::FloatLiteral, "")
+		|| isToken(index, Lexical::Rule::ComplexLiteral, "")
+		|| isToken(index, Lexical::Rule::BooleanLiteral, "")
+		|| isToken(index, Lexical::Rule::StringLiteral, "");
 }
 
-Lex::Token *Parser::readLiteralToken(int *index) {
-	if (isToken(index, Lex::Rule::IntegerLiteral, "")) {
-		return readToken(index, Lex::Rule::IntegerLiteral, "");
-	} else if (isToken(index, Lex::Rule::FloatLiteral, "")) {
-		return readToken(index, Lex::Rule::FloatLiteral, "");
-	} else if (isToken(index, Lex::Rule::ComplexLiteral, "")) {
-		return readToken(index, Lex::Rule::ComplexLiteral, "");
-	} else if (isToken(index, Lex::Rule::BooleanLiteral, "")) {
-		return readToken(index, Lex::Rule::BooleanLiteral, "");
-	} else if (isToken(index, Lex::Rule::StringLiteral, "")) {
-		return readToken(index, Lex::Rule::StringLiteral, "");
+Lexical::Token *Parser::readLiteralToken(int *index) {
+	if (isToken(index, Lexical::Rule::IntegerLiteral, "")) {
+		return readToken(index, Lexical::Rule::IntegerLiteral, "");
+	} else if (isToken(index, Lexical::Rule::FloatLiteral, "")) {
+		return readToken(index, Lexical::Rule::FloatLiteral, "");
+	} else if (isToken(index, Lexical::Rule::ComplexLiteral, "")) {
+		return readToken(index, Lexical::Rule::ComplexLiteral, "");
+	} else if (isToken(index, Lexical::Rule::BooleanLiteral, "")) {
+		return readToken(index, Lexical::Rule::BooleanLiteral, "");
+	} else if (isToken(index, Lexical::Rule::StringLiteral, "")) {
+		return readToken(index, Lexical::Rule::StringLiteral, "");
 	}
 	
 	this->addError(this->tokens[*index], "literal");

@@ -4,9 +4,7 @@
 #include <llvm/Module.h>
 #include <llvm/Analysis/Verifier.h>
 
-#include "units/lex.h"
-#include "units/ast.h"
-#include "code/generator.h"
+#include "units/code.h"
 
 using namespace Code;
 

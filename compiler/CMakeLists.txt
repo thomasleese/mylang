@@ -3,9 +3,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(Compiler)
 
 SET(SOURCES	src/main.cpp src/compiler.cpp src/unit.cpp
-			src/units/lex/analyser.cpp src/units/lex/rule.cpp src/units/lex/token.cpp
+			src/units/lexical/analyser.cpp src/units/lexical/rule.cpp src/units/lexical/token.cpp
 			src/units/ast/parser.cpp src/units/ast/statements.cpp src/units/ast/expressions.cpp src/units/ast/operators.cpp
-			src/code/generator.cpp)
+			src/units/code/generator.cpp)
 
 SET(LIBRARIES boost_regex icuuc icudata)
 

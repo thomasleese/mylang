@@ -1,6 +1,6 @@
 #pragma once
 
-#include "units/lex.h"
+#include "units/lexical.h"
 
 namespace AST {
 	
@@ -383,14 +383,14 @@ namespace AST {
 		Parser();
 		~Parser();
 		
-		void addError(Lex::Token *token, std::string expected);
+		void addError(Lexical::Token *token, std::string expected);
 		
-		void parseTokens(std::vector<Lex::Token *> tokens);
+		void parseTokens(std::vector<Lexical::Token *> tokens);
 		
 		std::vector<Statements::Statement *> getStatements();
 		
 	private:
-		void readTokens(std::vector<Lex::Token *> tokens);
+		void readTokens(std::vector<Lexical::Token *> tokens);
 		void generateAST();
 		
 		// Statements
@@ -482,26 +482,26 @@ namespace AST {
 		Operators::Binary *readBinaryOperator(int *index);
 		
 		// Tokens
-		bool isToken(int *index, Lex::Rule::Type type, std::string value);
-		Lex::Token *readToken(int *index, Lex::Rule::Type type, std::string value);
+		bool isToken(int *index, Lexical::Rule::Type type, std::string value);
+		Lexical::Token *readToken(int *index, Lexical::Rule::Type type, std::string value);
 		
 		bool isIdentifierToken(int *index);
-		Lex::Token *readIdentifierToken(int *index);
+		Lexical::Token *readIdentifierToken(int *index);
 		
 		bool isOperatorToken(int *index, std::string op);
-		Lex::Token *readOperatorToken(int *index, std::string op);
+		Lexical::Token *readOperatorToken(int *index, std::string op);
 		
 		bool isDelimiterToken(int *index, std::string delimiter);
-		Lex::Token *readDelimiterToken(int *index, std::string delimiter);
+		Lexical::Token *readDelimiterToken(int *index, std::string delimiter);
 		
 		bool isKeywordToken(int *index, std::string keyword);
-		Lex::Token *readKeywordToken(int *index, std::string keyword);
+		Lexical::Token *readKeywordToken(int *index, std::string keyword);
 		
 		bool isLiteralToken(int *index);
-		Lex::Token *readLiteralToken(int *index);
+		Lexical::Token *readLiteralToken(int *index);
 		
 	private:
-		std::vector<Lex::Token *> tokens;
+		std::vector<Lexical::Token *> tokens;
 		std::vector<Statements::Statement *> statements;
 		
 	};

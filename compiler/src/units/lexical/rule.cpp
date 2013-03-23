@@ -1,8 +1,6 @@
-#include <sstream>
+#include "units/lexical.h"
 
-#include "units/lex.h"
-
-using namespace Lex;
+using namespace Lexical;
 
 Rule::Rule(Type type, std::string regex) {
 	this->type = type;
