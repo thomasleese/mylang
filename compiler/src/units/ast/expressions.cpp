@@ -172,6 +172,10 @@ Type *Parameter::getType() const {
 	return this->type;
 }
 
-void Parameter::setIdentifier(Identifier *identifier) {
-	this->identifier = identifier;
+void Parameter::setName(Identifier *name) {
+	this->name = name;
+}
+
+Identifier *Parameter::getName() {
+	return this->name;
 }

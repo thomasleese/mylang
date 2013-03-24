@@ -556,7 +556,7 @@ bool Parser::isParameterExpression(int *index) {
 Expressions::Parameter *Parser::readParameterExpression(int *index) {
 	Expressions::Parameter *param = new Expressions::Parameter(this->tokens[*index]);
 	param->setType(readTypeExpression(index));
-	param->setIdentifier(readIdentifierExpression(index));
+	param->setName(readIdentifierExpression(index));
 	return param;
 }
 

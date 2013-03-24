@@ -228,11 +228,12 @@ namespace AST {
 			void setType(Type *type);
 			Type *getType() const;
 			
-			void setIdentifier(Identifier *identifier);
+			void setName(Identifier *name);
+			Identifier *getName();
 			
 		private:
 			Type *type;
-			Identifier *identifier;
+			Identifier *name;
 			
 		};
 		

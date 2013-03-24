@@ -93,13 +93,19 @@ llvm::Function *Generator::parseFunctionDeclarationStatement(AST::Statements::Fu
 	llvm::FunctionType *type = llvm::FunctionType::get(returnType,
 									llvm::ArrayRef<llvm::Type *>(params, paramsLen), false);
 	
-	llvm::Function::LinkageTypes linkType = llvm::Function::ExternalLinkage;
+	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
 	if (decl->getExported()) {
-		linkType = llvm::Function::PrivateLinkage;
+		linkType = llvm::Function::ExternalLinkage;
 	}
 	
 	llvm::Function *func = llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entrypoint", func);
+	
+	llvm::Function::arg_iterator args = func->arg_begin();
+	for (int i = 0; i < paramsLen; i++) {
+		(args++)->setName(decl->getParameters()[i]->getName()->getValue());
+	}
+	
+	llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", func);
 	
 	if (decl->getName()->getValue() == "main") {
 		this->builder->SetInsertPoint(entry);
