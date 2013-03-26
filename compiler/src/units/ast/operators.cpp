@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "units/ast.h"
 
 using namespace AST::Operators;

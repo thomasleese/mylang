@@ -44,6 +44,10 @@ void Unit::addError(std::string filename, int line, int col, std::string token, 
 	this->addMessage("Error", filename, line, col, token, msg);
 }
 
+std::vector<Message> Unit::getMessages() {
+	return this->messages;
+}
+
 bool Unit::hasMessages() {
 	return !this->messages.empty();
 }

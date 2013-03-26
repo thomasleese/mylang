@@ -41,6 +41,7 @@ public:
 	void addWarning(std::string filename, int line, int col, std::string token, std::string msg);
 	void addError(std::string filename, int line, int col, std::string token, std::string msg);
 	
+	std::vector<Message> getMessages();
 	bool hasMessages();
 	void printMessages();
 	

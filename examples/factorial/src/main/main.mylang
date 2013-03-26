@@ -1,5 +1,3 @@
-import console;
-
 func Void main() {
 	// `factorial` is in the `factorial.mylang` file
 	print("%d", factorial(20));

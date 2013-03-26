@@ -239,6 +239,14 @@ namespace AST {
 		
 	}
 	
+	namespace Blocks {
+		
+		class Block;
+		class Generic;
+		class Type;
+		
+	}
+	
 	namespace Statements {
 		
 		class Statement {
@@ -254,19 +262,14 @@ namespace AST {
 			
 		};
 		
-		class Block : public Statement {
+		class Generic : public Statement {
 			
 		public:
-			Block(Lexical::Token *token);
-			
-			void addStatement(Statement *stat);
-			
-		private:
-			std::vector<Statement *> statements;
+			Generic(Lexical::Token *token);
 			
 		};
 		
-		class Expression : public Statement {
+		class Expression : public Generic {
 			
 		public:
 			Expression(Lexical::Token *token);
@@ -290,7 +293,7 @@ namespace AST {
 			
 		};
 		
-		class Return : public Statement {
+		class Return : public Generic {
 			
 		public:
 			Return(Lexical::Token *token);
@@ -302,7 +305,7 @@ namespace AST {
 			
 		};
 		
-		class Control : public Statement {
+		class Control : public Generic {
 			
 		public:
 			Control(Lexical::Token *token);
@@ -315,12 +318,14 @@ namespace AST {
 			If(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
-			void setTrueStatement(Statement *statement);
-			void setFalseStatement(Statement *statement);
+			void setTrueBlock(Blocks::Generic *block);
+			void setFalseBlock(Blocks::Generic *block);
+			void setFalseStatement(If *statement);
 			
 		private:
 			Expressions::Expression *expression;
-			Statement *trueStatement, *falseStatement;
+			Blocks::Generic *trueBlock, *falseBlock;
+			If *falseStatement;
 			
 		};
 		
@@ -330,11 +335,11 @@ namespace AST {
 			Case(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
-			void setBlock(Block *block);
+			void setBlock(Blocks::Generic *block);
 			
 		private:
 			Expressions::Expression *expression;
-			Block *block;
+			Blocks::Generic *block;
 			
 		};
 		
@@ -403,11 +408,13 @@ namespace AST {
 			TypeDeclaration(Lexical::Token *token);
 			
 			void setType(Expressions::Type *type);
-			void setBlock(Block *block);
+			Expressions::Type *getType();
+			
+			void setBlock(Blocks::Type *block);
 			
 		private:
 			Expressions::Type *type;
-			Block *block;
+			Blocks::Type *block;
 			
 		};
 		
@@ -422,12 +429,79 @@ namespace AST {
 			void addParameter(Expressions::Parameter *param);
 			std::vector<Expressions::Parameter *> getParameters();
 			
-			void setBlock(Block *block);
+			void setBlock(Blocks::Generic *block);
 			
 		private:
 			Expressions::Type *type;
 			std::vector<Expressions::Parameter *> parameters;
-			Block *block;
+			Blocks::Generic *block;
+			
+		};
+		
+	}
+	
+	namespace Blocks {
+		
+		class Block {
+			
+		public:
+			Block(Lexical::Token *token);
+			
+			Lexical::Token *getToken() const;
+			
+		private:
+			Lexical::Token *token;
+			
+		};
+		
+		class Generic : public Block {
+			
+		public:
+			Generic(Lexical::Token *token);
+			
+			void addGenericStatement(Statements::Generic *stat);
+			std::vector<Statements::Generic *> getGenericStatements();
+			
+		private:
+			std::vector<Statements::Generic *> generics;
+			
+		};
+		
+		class Type : public Block {
+			
+		public:
+			Type(Lexical::Token *token);
+			
+			void addVariableDeclarationStatement(Statements::VariableDeclaration *decl);
+			std::vector<Statements::VariableDeclaration *> getVariableDeclarationStatements();
+			
+			void addFunctionDeclarationStatement(Statements::FunctionDeclaration *decl);
+			std::vector<Statements::FunctionDeclaration *> getFunctionDeclarationStatements();
+			
+		private:
+			std::vector<Statements::VariableDeclaration *> variables;
+			std::vector<Statements::FunctionDeclaration *> functions;
+			
+		};
+		
+		class Module : public Type {
+			
+		public:
+			Module(Lexical::Token *token);
+			
+			void addImportStatement(Statements::Import *import);
+			std::vector<Statements::Import *> getImportStatements();
+			
+			void addConstantDeclarationStatement(Statements::ConstantDeclaration *decl);
+			std::vector<Statements::ConstantDeclaration *> getConstantDeclarationStatements();
+			
+			void addTypeDeclarationStatement(Statements::TypeDeclaration *decl);
+			std::vector<Statements::TypeDeclaration *> getTypeDeclarationStatements();
+			
+		private:
+			std::vector<Statements::Import *> imports;
+			std::vector<Statements::ConstantDeclaration *> constants;
+			std::vector<Statements::TypeDeclaration *> types;
 			
 		};
 		
@@ -453,8 +527,8 @@ namespace AST {
 		bool isStatement(int *index);
 		Statements::Statement *readStatement(int *index);
 		
-		bool isBlockStatement(int *index);
-		Statements::Block *readBlockStatement(int *index);
+		bool isGenericStatement(int *index);
+		Statements::Generic *readGenericStatement(int *index);
 		
 		bool isExpressionStatement(int *index);
 		Statements::Expression *readExpressionStatement(int *index);
@@ -536,6 +610,19 @@ namespace AST {
 		bool isBinaryOperator(int *index);
 		Operators::Binary *getBinaryOperator(int *index);
 		Operators::Binary *readBinaryOperator(int *index);
+		
+		// Blocks
+		bool isBlock(int *index);
+		Blocks::Block *readBlock(int *index);
+		
+		bool isGenericBlock(int *index);
+		Blocks::Generic *readGenericBlock(int *index);
+		
+		bool isTypeBlock(int *index);
+		Blocks::Type *readTypeBlock(int *index, bool acceptVars);
+		
+		bool isModuleBlock(int *index);
+		Blocks::Module *readModuleBlock(int *index);
 		
 		// Tokens
 		bool isToken(int *index, Lexical::Rule::Type type, std::string value);

@@ -4,8 +4,8 @@ PROJECT(Compiler)
 
 SET(SOURCES	src/main.cpp src/compiler.cpp src/unit.cpp
 			src/units/lexical/analyser.cpp src/units/lexical/rule.cpp src/units/lexical/token.cpp
-			src/units/ast/parser.cpp src/units/ast/statements.cpp src/units/ast/expressions.cpp src/units/ast/operators.cpp
-			src/units/code/generator.cpp)
+			src/units/ast/parser.cpp src/units/ast/statements.cpp src/units/ast/expressions.cpp src/units/ast/operators.cpp src/units/ast/blocks.cpp
+			src/units/code/generator.cpp src/units/code/pass.cpp src/units/code/declarationpass.cpp src/units/code/definitionpass.cpp)
 
 SET(LIBRARIES boost_regex icuuc icudata)
 

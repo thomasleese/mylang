@@ -56,35 +56,28 @@ bool Parser::isStatement(int *index) {
 }
 
 Statements::Statement *Parser::readStatement(int *index) {
-	if (isBlockStatement(index)) {
-		return readBlockStatement(index);
-	} else if (isImportStatement(index)) {
+	if (isImportStatement(index)) {
 		return readImportStatement(index);
-	} else if (isReturnStatement(index)) {
-		return readReturnStatement(index);
-	} else if (isControlStatement(index)) {
-		return readControlStatement(index);
 	} else if (isDeclarationStatement(index)) {
 		return readDeclarationStatement(index);
 	} else {
+		return readGenericStatement(index);
+	}
+}
+
+bool Parser::isGenericStatement(int *index) {
+	return isReturnStatement(index) || isControlStatement(index)
+		|| isExpressionStatement(index);
+}
+
+Statements::Generic *Parser::readGenericStatement(int *index) {
+	if (isReturnStatement(index)) {
+		return readReturnStatement(index);
+	} else if (isControlStatement(index)) {
+		return readControlStatement(index);
+	} else {
 		return readExpressionStatement(index);
 	}
-}
-
-bool Parser::isBlockStatement(int *index) {
-	return isDelimiterToken(index, "{");
-}
-
-Statements::Block *Parser::readBlockStatement(int *index) {
-	Statements::Block *block = new Statements::Block(this->tokens[*index]);
-	
-	readDelimiterToken(index, "{");
-	while (!isDelimiterToken(index, "}")) {
-		block->addStatement(readStatement(index));
-	}
-	readDelimiterToken(index, "}");
-	
-	return block;
 }
 
 bool Parser::isExpressionStatement(int *index) {
@@ -153,14 +146,14 @@ Statements::If *Parser::readIfStatement(int *index) {
 	stat->setExpression(readExpression(index));
 	readDelimiterToken(index, ")");
 	
-	stat->setTrueStatement(readBlockStatement(index));
+	stat->setTrueBlock(readGenericBlock(index));
 	
 	if (isKeywordToken(index, "else")) {
 		readKeywordToken(index, "else");
 		if (isIfStatement(index)) {
 			stat->setFalseStatement(readIfStatement(index));
 		} else {
-			stat->setFalseStatement(readBlockStatement(index));
+			stat->setFalseBlock(readGenericBlock(index));
 		}
 	}
 	
@@ -185,7 +178,7 @@ Statements::Case *Parser::readCaseStatement(int *index) {
 		this->addError(this->tokens[*index], "case/default");
 	}
 	
-	statement->setBlock(readBlockStatement(index));
+	statement->setBlock(readGenericBlock(index));
 	return statement;
 }
 
@@ -306,7 +299,10 @@ Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
 	
 	decl->setType(readTypeExpression(index));
 	decl->setName(readIdentifierExpression(index));
-	decl->setBlock(readBlockStatement(index));
+	
+	bool acceptVars = decl->getType()->getNames()[0]->getValue() == "struct";
+	
+	decl->setBlock(readTypeBlock(index, acceptVars));
 	return decl;
 }
 
@@ -341,7 +337,7 @@ Statements::FunctionDeclaration *Parser::readFunctionDeclarationStatement(int *i
 	
 	readDelimiterToken(index, ")");
 	
-	decl->setBlock(readBlockStatement(index));
+	decl->setBlock(readGenericBlock(index));
 	return decl;
 }
 
@@ -662,6 +658,90 @@ Operators::Binary *Parser::readBinaryOperator(int *index) {
 	Operators::Binary *op = getBinaryOperator(index);
 	(*index)++;
 	return op;
+}
+
+// Blocks
+bool Parser::isBlock(int *index) {
+	return isGenericBlock(index) || isModuleBlock(index);
+}
+
+Blocks::Block *Parser::readBlock(int *index) {
+	if (isGenericBlock(index)) {
+		return readGenericBlock(index);
+	} else if (isModuleBlock(index)) {
+		return readModuleBlock(index);
+	}
+	
+	this->addError(this->tokens[*index], "block");
+	return NULL;
+}
+
+bool Parser::isGenericBlock(int *index) {
+	return isDelimiterToken(index, "{");
+}
+
+Blocks::Generic *Parser::readGenericBlock(int *index) {
+	Blocks::Generic *block = new Blocks::Generic(this->tokens[*index]);
+	
+	readDelimiterToken(index, "{");
+	while (!isDelimiterToken(index, "}")) {
+		block->addGenericStatement(readGenericStatement(index));
+	}
+	readDelimiterToken(index, "}");
+	
+	return block;
+}
+		
+bool Parser::isTypeBlock(int *index) {
+	return isDelimiterToken(index, "{");
+}
+
+Blocks::Type *Parser::readTypeBlock(int *index, bool acceptVars) {
+	Blocks::Type *block = new Blocks::Type(this->tokens[*index]);
+	
+	readDelimiterToken(index, "{");
+	while (!isDelimiterToken(index, "}")) {
+		if (acceptVars && isVariableDeclarationStatement(index)) {
+			block->addVariableDeclarationStatement(readVariableDeclarationStatement(index));
+		} else if (isFunctionDeclarationStatement(index)) {
+			block->addFunctionDeclarationStatement(readFunctionDeclarationStatement(index));
+		} else {
+			this->addError(this->tokens[*index], "variable/function");
+			return NULL;
+		}
+	}
+	readDelimiterToken(index, "}");
+	
+	return block;
+}
+
+bool Parser::isModuleBlock(int *index) {
+	return isDelimiterToken(index, "{");
+}
+
+Blocks::Module *Parser::readModuleBlock(int *index) {
+	Blocks::Module *block = new Blocks::Module(this->tokens[*index]);
+	
+	readDelimiterToken(index, "{");
+	while (!isDelimiterToken(index, "}")) {
+		if (isImportStatement(index)) {
+			block->addImportStatement(readImportStatement(index));
+		} else if (isConstantDeclarationStatement(index)) {
+			block->addConstantDeclarationStatement(readConstantDeclarationStatement(index));
+		} else if (isVariableDeclarationStatement(index)) {
+			block->addVariableDeclarationStatement(readVariableDeclarationStatement(index));
+		} else if (isFunctionDeclarationStatement(index)) {
+			block->addFunctionDeclarationStatement(readFunctionDeclarationStatement(index));
+		} else if (isTypeDeclarationStatement(index)) {
+			block->addTypeDeclarationStatement(readTypeDeclarationStatement(index));
+		} else {
+			this->addError(this->tokens[*index], "import/constant/variable/function/type");
+			return NULL;
+		}
+	}
+	readDelimiterToken(index, "}");
+	
+	return block;
 }
 
 // Tokens

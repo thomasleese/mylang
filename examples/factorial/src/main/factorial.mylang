@@ -1,3 +1,14 @@
+type Integer FactorialResult {
+	
+	func String toString() {
+		print(this);
+	}
+	
+}
+
+var FactorialResult I = 10;
+const String J = "hi";
+
 func Integer factorial(Integer n) {
 	if (n == 0) {
 		return 1;

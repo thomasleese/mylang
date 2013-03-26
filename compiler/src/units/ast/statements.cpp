@@ -2,6 +2,7 @@
 
 #include "units/ast.h"
 
+using namespace AST;
 using namespace AST::Statements;
 
 Statement::Statement(Lexical::Token *token) {
@@ -16,17 +17,13 @@ Lexical::Token *Statement::getToken() {
 	return this->token;
 }
 
-Block::Block(Lexical::Token *token) :
+Generic::Generic(Lexical::Token *token) :
 	Statement(token) {
 	
 }
 
-void Block::addStatement(Statement *stat) {
-	this->statements.push_back(stat);
-}
-
 Expression::Expression(Lexical::Token *token) :
-	Statement(token) {
+	Generic(token) {
 	
 }
 
@@ -44,7 +41,7 @@ void Import::setIdentifier(Expressions::Identifier *identifier) {
 }
 
 Return::Return(Lexical::Token *token) :
-	Statement(token) {
+	Generic(token) {
 	
 }
 
@@ -53,7 +50,7 @@ void Return::setExpression(Expressions::Expression *expr) {
 }
 
 Control::Control(Lexical::Token *token) :
-	Statement(token) {
+	Generic(token) {
 	
 }
 
@@ -66,11 +63,15 @@ void If::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
 }
 
-void If::setTrueStatement(Statement *statement) {
-	this->trueStatement = statement;
+void If::setTrueBlock(Blocks::Generic *block) {
+	this->trueBlock = block;
 }
 
-void If::setFalseStatement(Statement *statement) {
+void If::setFalseBlock(Blocks::Generic *block) {
+	this->falseBlock = block;
+}
+
+void If::setFalseStatement(If *statement) {
 	this->falseStatement = statement;
 }
 
@@ -83,7 +84,7 @@ void Case::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
 }
 
-void Case::setBlock(Block *block) {
+void Case::setBlock(Blocks::Generic *block) {
 	this->block = block;
 }
 
@@ -156,7 +157,11 @@ void TypeDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
-void TypeDeclaration::setBlock(Block *block) {
+Expressions::Type *TypeDeclaration::getType() {
+	return this->type;
+}
+
+void TypeDeclaration::setBlock(Blocks::Type *block) {
 	this->block = block;
 }
 
@@ -181,6 +186,6 @@ std::vector<AST::Expressions::Parameter *> FunctionDeclaration::getParameters() 
 	return this->parameters;
 }
 
-void FunctionDeclaration::setBlock(Block *block) {
+void FunctionDeclaration::setBlock(Blocks::Generic *block) {
 	this->block = block;
 }
