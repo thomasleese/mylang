@@ -7,6 +7,6 @@ DefinitionPass::DefinitionPass(llvm::Module *module) :
 	
 }
 
-void DefinitionPass::tokeniseAST() {
+void DefinitionPass::generateCode() {
 	
 }

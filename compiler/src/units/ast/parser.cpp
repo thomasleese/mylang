@@ -25,8 +25,8 @@ void Parser::parseTokens(std::vector<Lexical::Token *> tokens) {
 	generateAST();
 }
 
-std::vector<Statements::Statement *> Parser::getStatements() {
-	return this->statements;
+Blocks::Module *Parser::getBlock() {
+	return this->block;
 }
 
 void Parser::readTokens(std::vector<Lexical::Token *> tokens) {
@@ -41,13 +41,7 @@ void Parser::readTokens(std::vector<Lexical::Token *> tokens) {
 
 void Parser::generateAST() {
 	int index = 0;
-	for (; index < this->tokens.size(); ) {
-		if (isImportStatement(&index)) {
-			this->statements.push_back(readImportStatement(&index));
-		} else {
-			this->statements.push_back(readDeclarationStatement(&index));
-		}
-	}
+	this->block = readModuleBlock(&index);
 }
 
 // Statements
@@ -722,8 +716,7 @@ bool Parser::isModuleBlock(int *index) {
 Blocks::Module *Parser::readModuleBlock(int *index) {
 	Blocks::Module *block = new Blocks::Module(this->tokens[*index]);
 	
-	readDelimiterToken(index, "{");
-	while (!isDelimiterToken(index, "}")) {
+	for (; *index < this->tokens.size(); ) {
 		if (isImportStatement(index)) {
 			block->addImportStatement(readImportStatement(index));
 		} else if (isConstantDeclarationStatement(index)) {
@@ -736,10 +729,8 @@ Blocks::Module *Parser::readModuleBlock(int *index) {
 			block->addTypeDeclarationStatement(readTypeDeclarationStatement(index));
 		} else {
 			this->addError(this->tokens[*index], "import/constant/variable/function/type");
-			return NULL;
 		}
 	}
-	readDelimiterToken(index, "}");
 	
 	return block;
 }

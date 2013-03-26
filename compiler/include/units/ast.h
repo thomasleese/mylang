@@ -517,7 +517,7 @@ namespace AST {
 		
 		void parseTokens(std::vector<Lexical::Token *> tokens);
 		
-		std::vector<Statements::Statement *> getStatements();
+		Blocks::Module *getBlock();
 		
 	private:
 		void readTokens(std::vector<Lexical::Token *> tokens);
@@ -645,7 +645,7 @@ namespace AST {
 		
 	private:
 		std::vector<Lexical::Token *> tokens;
-		std::vector<Statements::Statement *> statements;
+		Blocks::Module *block;
 		
 	};
 	

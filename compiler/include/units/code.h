@@ -26,14 +26,13 @@ namespace Code {
 		Pass(llvm::Module *module);
 		~Pass();
 		
-		void addError(int i, std::string msg);
 		void addError(Lexical::Token *token, std::string msg);
 		
-		void parseAST(std::vector<AST::Statements::Statement *> statements);
+		void parseAST(AST::Blocks::Module *block);
 		
 	private:
-		void readAST(std::vector<AST::Statements::Statement *> statements);
-		virtual void tokeniseAST() = 0;
+		void readAST(AST::Blocks::Module *block);
+		virtual void generateCode() = 0;
 		
 	protected:
 		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr);
@@ -41,7 +40,7 @@ namespace Code {
 	protected:
 		llvm::Module *module;
 		llvm::IRBuilder<> *builder;
-		std::vector<AST::Statements::Statement *> statements;
+		AST::Blocks::Module *block;
 		
 	};
 	
@@ -51,12 +50,10 @@ namespace Code {
 		DeclarationPass(llvm::Module *module);
 		
 	private:
-		void tokeniseAST();
+		void generateCode();
 		
-		llvm::Value *parseImportStatement(int i);
-		llvm::Value *parseImportStatement(AST::Statements::Import *import);
-		llvm::Function *parseFunctionDeclarationStatement(int i);
-		llvm::Function *parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *func);
+		void parseImportStatement(AST::Statements::Import *import);
+		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *func);
 		
 	};
 	
@@ -66,7 +63,7 @@ namespace Code {
 		DefinitionPass(llvm::Module *module);
 		
 	private:
-		void tokeniseAST();
+		void generateCode();
 		
 	};
 	
@@ -76,13 +73,13 @@ namespace Code {
 		Generator(std::string moduleName);
 		~Generator();
 		
-		void parseAST(std::vector<AST::Statements::Statement *> statements);
+		void parseAST(AST::Blocks::Module *block);
 		void dump() const;
 				
 	private:
 		std::string moduleName;
 		llvm::Module *module;
-		std::vector<AST::Statements::Statement *> statements;
+		AST::Blocks::Module *block;
 	};
 
 }

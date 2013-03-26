@@ -11,10 +11,6 @@ Pass::~Pass() {
 	delete this->builder;
 }
 
-void Pass::addError(int i, std::string msg) {
-	this->addError(this->statements[i]->getToken(), msg);
-}
-
 void Pass::addError(Lexical::Token *token, std::string msg) {
 	std::string filename = token->getFilename();
 	int line = token->getLineNumber();
@@ -24,13 +20,13 @@ void Pass::addError(Lexical::Token *token, std::string msg) {
 	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
 }
 
-void Pass::parseAST(std::vector<AST::Statements::Statement *> statements) {
-	this->readAST(statements);
-	this->tokeniseAST();
+void Pass::parseAST(AST::Blocks::Module *block) {
+	this->readAST(block);
+	this->generateCode();
 }
 
-void Pass::readAST(std::vector<AST::Statements::Statement *> statements) {
-	this->statements = statements;
+void Pass::readAST(AST::Blocks::Module *block) {
+	this->block = block;
 }
 
 llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr) {

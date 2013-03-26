@@ -7,49 +7,27 @@ DeclarationPass::DeclarationPass(llvm::Module *module) :
 	
 }
 
-void DeclarationPass::tokeniseAST() {
-	for (int i = 0; i < this->statements.size(); i++) {
-		if (dynamic_cast<AST::Statements::Import *>(this->statements[i]) != NULL) {
-			parseImportStatement(i);
-		} else if (dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]) != NULL) {
-			parseFunctionDeclarationStatement(i);
-		} else {
-			this->addError(i, "Expected import or declaration");
-		}
-	}
-}
-
-llvm::Value *DeclarationPass::parseImportStatement(int i) {
-	AST::Statements::Import *import = dynamic_cast<AST::Statements::Import *>(this->statements[i]);
-	if (import != NULL) {
-		return parseImportStatement(import);
+void DeclarationPass::generateCode() {
+	for (AST::Statements::Import *import : this->block->getImportStatements()) {
+		parseImportStatement(import);
 	}
 	
-	this->addError(import->getToken(), "Expected import");
-	return NULL;
-}
-
-llvm::Value *DeclarationPass::parseImportStatement(AST::Statements::Import *import) {
-	return NULL;
-}
-
-llvm::Function *DeclarationPass::parseFunctionDeclarationStatement(int i) {
-	AST::Statements::FunctionDeclaration *func = dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]);
-	if (func != NULL) {
-		return parseFunctionDeclarationStatement(func);
+	for (AST::Statements::FunctionDeclaration *decl : this->block->getFunctionDeclarationStatements()) {
+		parseFunctionDeclarationStatement(decl);
 	}
-	
-	this->addError(func->getToken(), "Expected 'func'");
-	return NULL;
 }
 
-llvm::Function *DeclarationPass::parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
+void DeclarationPass::parseImportStatement(AST::Statements::Import *import) {
+	
+}
+
+void DeclarationPass::parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
 	const int paramsLen = decl->getParameters().size();
 	llvm::Type *params[paramsLen];
 	for (int i = 0; i < paramsLen; i++) {
 		llvm::Type *paramType = this->parseTypeExpression(decl->getParameters()[i]->getType());
 		if (paramType == NULL) {
-			return NULL;
+			return;
 		}
 		
 		params[i] = paramType;
@@ -57,7 +35,7 @@ llvm::Function *DeclarationPass::parseFunctionDeclarationStatement(AST::Statemen
 	
 	llvm::Type *returnType = this->parseTypeExpression(decl->getType());
 	if (returnType == NULL) {
-		return NULL;
+		return;
 	}
 	
 	llvm::FunctionType *type = llvm::FunctionType::get(returnType,
@@ -74,6 +52,4 @@ llvm::Function *DeclarationPass::parseFunctionDeclarationStatement(AST::Statemen
 	for (int i = 0; i < paramsLen; i++) {
 		(args++)->setName(decl->getParameters()[i]->getName()->getValue());
 	}
-	
-	return func;
 }

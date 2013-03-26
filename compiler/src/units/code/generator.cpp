@@ -11,9 +11,9 @@ Generator::~Generator() {
 	delete this->module;
 }
 
-void Generator::parseAST(std::vector<AST::Statements::Statement *> statements) {
+void Generator::parseAST(AST::Blocks::Module *block) {
 	DeclarationPass pass1(this->module);
-	pass1.parseAST(statements);
+	pass1.parseAST(block);
 	
 	if (pass1.hasMessages()) {
 		for (Message msg : pass1.getMessages()) {
@@ -24,7 +24,7 @@ void Generator::parseAST(std::vector<AST::Statements::Statement *> statements) {
 	}
 	
 	DefinitionPass pass2(this->module);
-	pass2.parseAST(statements);
+	pass2.parseAST(block);
 	
 	if (pass2.hasMessages()) {
 		for (Message msg : pass2.getMessages()) {

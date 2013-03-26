@@ -54,7 +54,7 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	}
 	
 	Code::Generator gen(name);
-	gen.parseAST(parser.getStatements());
+	gen.parseAST(parser.getBlock());
 	
 	if (gen.hasMessages()) {
 		gen.printMessages();
