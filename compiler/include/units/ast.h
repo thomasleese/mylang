@@ -162,6 +162,22 @@ namespace AST {
 			
 		};
 		
+		class QualifiedIdentifier : public Expression {
+			
+		public:
+			QualifiedIdentifier(Lexical::Token *token);
+			
+			void setModule(Identifier *identifier);
+			Identifier *getModule();
+			
+			void setName(Identifier *identifier);
+			Identifier *getName();
+			
+		private:
+			Identifier *module, *name;
+			
+		};
+		
 		class Selector : public Operand {
 			
 		public:
@@ -209,13 +225,13 @@ namespace AST {
 		public:
 			Type(Lexical::Token *token);
 			
-			void addName(Identifier *name);
-			std::vector<Identifier *> getNames();
+			void setName(QualifiedIdentifier *name);
+			QualifiedIdentifier *getName();
 			
 			void addSlice(Slice *slice);
 			
 		private:
-			std::vector<Identifier *> names;
+			QualifiedIdentifier *name;
 			std::vector<Slice *> slices;
 			
 		};
@@ -394,7 +410,10 @@ namespace AST {
 			ConstantDeclaration(Lexical::Token *token);
 			
 			void setType(Expressions::Type *type);
+			Expressions::Type *getType();
+			
 			void setAssignment(Expressions::Expression *expr);
+			Expressions::Expression *getAssignment();
 			
 		private:
 			Expressions::Type *type;
@@ -587,6 +606,9 @@ namespace AST {
 		
 		bool isIdentifierExpression(int *index);
 		Expressions::Identifier *readIdentifierExpression(int *index);
+		
+		bool isQualifiedIdentifierExpression(int *index);
+		Expressions::QualifiedIdentifier *readQualifiedIdentifierExpression(int *index);
 		
 		bool isSelectorExpression(int *index);
 		Expressions::Selector *readSelectorExpression(int *index, Expressions::Operand *operand);

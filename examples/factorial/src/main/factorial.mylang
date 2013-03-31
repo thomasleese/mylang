@@ -1,18 +1,18 @@
 type Integer FactorialResult {
 	
-	func String toString() {
-		print(this);
+	func Integer times10() {
+		return this * 10;
 	}
 	
 }
 
-var FactorialResult I = 10;
-const String J = "hi";
+const Integer Step = 1;
+var FactorialResult FactorialOfTen = factorial(10);
 
-func Integer factorial(Integer n) {
+func FactorialResult factorial(Integer n) {
 	if (n == 0) {
-		return 1;
+		return Step;
 	} else {
-		return n * factorial(n - 1);
+		return n * factorial(n - Step);
 	}
 }

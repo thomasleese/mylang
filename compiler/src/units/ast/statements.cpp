@@ -144,8 +144,16 @@ void ConstantDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
+Expressions::Type *ConstantDeclaration::getType() {
+	return this->type;
+}
+
 void ConstantDeclaration::setAssignment(Expressions::Expression *expr) {
 	this->assignment = expr;
+}
+
+Expressions::Expression *ConstantDeclaration::getAssignment() {
+	return this->assignment;
 }
 
 TypeDeclaration::TypeDeclaration(Lexical::Token *token) :

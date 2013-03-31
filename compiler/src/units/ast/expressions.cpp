@@ -103,6 +103,28 @@ std::string Identifier::getValue() const {
 	return this->value;
 }
 
+QualifiedIdentifier::QualifiedIdentifier(Lexical::Token *token) :
+	Expression(token) {
+	this->name = NULL;
+	this->module = NULL;
+}
+
+void QualifiedIdentifier::setModule(Identifier *identifier) {
+	this->module = identifier;
+}
+
+Identifier *QualifiedIdentifier::getModule() {
+	return this->module;
+}
+
+void QualifiedIdentifier::setName(Identifier *identifier) {
+	this->name = identifier;
+}
+
+Identifier *QualifiedIdentifier::getName() {
+	return this->name;
+}
+
 Selector::Selector(Lexical::Token *token) : 
 	Operand(token) {
 	
@@ -147,12 +169,12 @@ Type::Type(Lexical::Token *token) :
 	
 }
 
-void Type::addName(Identifier *name) {
-	this->names.push_back(name);
+void Type::setName(QualifiedIdentifier *name) {
+	this->name = name;
 }
 
-std::vector<Identifier *> Type::getNames() {
-	return this->names;
+QualifiedIdentifier *Type::getName() {
+	return this->name;
 }
 
 void Type::addSlice(Slice *slice) {

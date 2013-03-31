@@ -76,7 +76,7 @@ void Analyser::tokeniseBuffer(std::string filename) {
 		
 		for (Rule *rule : this->rules) {
 			if (boost::u32regex_search(substr, matcher, rule->getRegex())) {
-				std::string value = matcher[0].str();
+				std::string value(matcher[0].str());
 				if (substr.substr(0, value.length()) == value) {
 					Token *token = new Token(rule, value);
 					token->setLineNumber(getLineFromIndex(pos));

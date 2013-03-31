@@ -238,7 +238,13 @@ Statements::VariableDeclaration *Parser::readVariableDeclarationStatement(int *i
 	}
 	
 	decl->setType(readTypeExpression(index));
-	decl->setName(readIdentifierExpression(index));
+	
+	Expressions::Identifier *name = readIdentifierExpression(index);
+	if (name == NULL) {
+		return NULL;
+	}
+	
+	decl->setName(name);
 	
 	if (isOperatorToken(index, "=")) {
 		readOperatorToken(index, "=");
@@ -294,7 +300,7 @@ Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
 	decl->setType(readTypeExpression(index));
 	decl->setName(readIdentifierExpression(index));
 	
-	bool acceptVars = decl->getType()->getNames()[0]->getValue() == "struct";
+	bool acceptVars = decl->getType()->getName()->getName()->getValue() == "struct";
 	
 	decl->setBlock(readTypeBlock(index, acceptVars));
 	return decl;
@@ -459,8 +465,43 @@ bool Parser::isIdentifierExpression(int *index) {
 
 Expressions::Identifier *Parser::readIdentifierExpression(int *index) {
 	Expressions::Identifier *expr = new Expressions::Identifier(this->tokens[*index]);
-	expr->setValue(readIdentifierToken(index)->getValue());
+	
+	Lexical::Token *val = readIdentifierToken(index);
+	if (val == NULL) {
+		return NULL;
+	}
+	
+	expr->setValue(val->getValue());
 	return expr;
+}
+
+bool Parser::isQualifiedIdentifierExpression(int *index) {
+	return isIdentifierExpression(index);
+}
+
+Expressions::QualifiedIdentifier *Parser::readQualifiedIdentifierExpression(int *index) {
+	Expressions::QualifiedIdentifier *ident = new Expressions::QualifiedIdentifier(this->tokens[*index]);
+	
+	Expressions::Identifier *first = readIdentifierExpression(index);
+	if (first == NULL) {
+		return NULL;
+	}
+	
+	if (isDelimiterToken(index, ".")) {
+		readDelimiterToken(index, ".");
+		
+		Expressions::Identifier *second = readIdentifierExpression(index);
+		if (second == NULL) {
+			return NULL;
+		}
+		
+		ident->setModule(first);
+		ident->setName(second);
+	} else {
+		ident->setName(first);
+	}
+	
+	return ident;
 }
 
 bool Parser::isSelectorExpression(int *index) {
@@ -525,12 +566,7 @@ bool Parser::isTypeExpression(int *index) {
 Expressions::Type *Parser::readTypeExpression(int *index) {
 	Expressions::Type *type = new Expressions::Type(this->tokens[*index]);
 	
-	type->addName(readIdentifierExpression(index));
-	
-	while (isSelectorExpression(index)) {
-		readDelimiterToken(index, ".");
-		type->addName(readIdentifierExpression(index));
-	}
+	type->setName(readQualifiedIdentifierExpression(index));
 	
 	while (isSliceExpression(index)) {
 		type->addSlice(readSliceExpression(index, NULL));

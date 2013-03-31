@@ -30,8 +30,7 @@ void Pass::readAST(AST::Blocks::Module *block) {
 }
 
 llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr) {
-	std::vector<AST::Expressions::Identifier *> names = expr->getNames();
-	std::string name = names[0]->getValue();
+	std::string name = expr->getName()->getName()->getValue();
 	
 	if (name == "Integer") {
 		return llvm::Type::getInt64Ty(llvm::getGlobalContext());

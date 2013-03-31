@@ -53,7 +53,8 @@ namespace Code {
 		void generateCode();
 		
 		void parseImportStatement(AST::Statements::Import *import);
-		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *func);
+		void parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
+		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
 	};
 	
