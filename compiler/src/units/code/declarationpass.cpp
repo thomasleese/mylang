@@ -2,14 +2,18 @@
 
 using namespace Code;
 
-DeclarationPass::DeclarationPass(llvm::Module *module) :
-	Pass(module) {
+DeclarationPass::DeclarationPass(Generator *gen) :
+	Pass(gen) {
 	
 }
 
 void DeclarationPass::generateCode() {
 	for (AST::Statements::Import *import : this->block->getImportStatements()) {
 		parseImportStatement(import);
+	}
+	
+	for (AST::Statements::TypeDeclaration *decl : this->block->getTypeDeclarationStatements()) {
+		parseTypeDeclarationStatement(decl);
 	}
 	
 	for (AST::Statements::ConstantDeclaration *decl : this->block->getConstantDeclarationStatements()) {
@@ -23,6 +27,42 @@ void DeclarationPass::generateCode() {
 
 void DeclarationPass::parseImportStatement(AST::Statements::Import *import) {
 	
+}
+
+void DeclarationPass::parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {
+	// Create function which defines the type
+	llvm::Type *baseType = this->parseTypeExpression(decl->getType());
+	if (baseType == NULL) {
+		return;
+	}
+	
+	std::string name = decl->getName()->getValue();
+	
+	llvm::FunctionType *type = llvm::FunctionType::get(baseType, false);
+	
+	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
+	if (decl->getExported()) {
+		linkType = llvm::Function::ExternalLinkage;
+	}
+	
+	llvm::Function::Create(type, linkType, name, this->module);
+	
+	AST::Blocks::Type *block = decl->getBlock();
+	for (AST::Statements::FunctionDeclaration *func : block->getFunctionDeclarationStatements()) {
+		func->getName()->setValue(name + "_method_" + func->getName()->getValue());
+		
+		AST::Expressions::Parameter *param = new AST::Expressions::Parameter(NULL);
+		
+		param->setType(decl->getType());
+		
+		AST::Expressions::Identifier *thisIdentifier = new AST::Expressions::Identifier(NULL);
+		thisIdentifier->setValue("this");
+		param->setName(thisIdentifier);
+		
+		func->insertParameter(0, param);
+		
+		parseFunctionDeclarationStatement(func);
+	}
 }
 
 void DeclarationPass::parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl) {

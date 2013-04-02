@@ -58,7 +58,7 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 	
 	if (gen.hasMessages()) {
 		gen.printMessages();
-		return;
+		//return;
 	}
 	
 	gen.dump();

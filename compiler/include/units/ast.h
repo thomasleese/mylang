@@ -430,6 +430,7 @@ namespace AST {
 			Expressions::Type *getType();
 			
 			void setBlock(Blocks::Type *block);
+			Blocks::Type *getBlock() const;
 			
 		private:
 			Expressions::Type *type;
@@ -445,6 +446,7 @@ namespace AST {
 			void setType(Expressions::Type *type);
 			Expressions::Type *getType() const;
 			
+			void insertParameter(int index, Expressions::Parameter *param);
 			void addParameter(Expressions::Parameter *param);
 			std::vector<Expressions::Parameter *> getParameters();
 			

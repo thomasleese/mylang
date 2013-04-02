@@ -173,6 +173,10 @@ void TypeDeclaration::setBlock(Blocks::Type *block) {
 	this->block = block;
 }
 
+Blocks::Type *TypeDeclaration::getBlock() const {
+	return this->block;
+}
+
 FunctionDeclaration::FunctionDeclaration(Lexical::Token *token) :
 	Declaration(token) {
 	
@@ -184,6 +188,10 @@ void FunctionDeclaration::setType(Expressions::Type *type) {
 
 AST::Expressions::Type *FunctionDeclaration::getType() const {
 	return this->type;
+}
+
+void FunctionDeclaration::insertParameter(int index, Expressions::Parameter *param) {
+	this->parameters.insert(this->parameters.begin() + index, param);
 }
 
 void FunctionDeclaration::addParameter(Expressions::Parameter *param) {

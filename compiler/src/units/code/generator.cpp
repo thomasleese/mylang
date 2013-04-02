@@ -11,64 +11,35 @@ Generator::~Generator() {
 	delete this->module;
 }
 
+void Generator::addError(Lexical::Token *token, std::string msg) {
+	std::string filename = token->getFilename();
+	int line = token->getLineNumber();
+	int col = token->getColumn();
+	std::string tokenValue = token->getValue();
+	
+	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
+}
+
 void Generator::parseAST(AST::Blocks::Module *block) {
-	DeclarationPass pass1(this->module);
+	DeclarationPass pass1(this);
 	pass1.parseAST(block);
 	
-	if (pass1.hasMessages()) {
-		for (Message msg : pass1.getMessages()) {
-			this->addMessage(msg);
-		}
-		
+	if (hasMessages()) {
 		return;
 	}
 	
-	DefinitionPass pass2(this->module);
+	DefinitionPass pass2(this);
 	pass2.parseAST(block);
 	
-	if (pass2.hasMessages()) {
-		for (Message msg : pass2.getMessages()) {
-			this->addMessage(msg);
-		}
-		
+	if (hasMessages()) {
 		return;
 	}
+}
+
+llvm::Module *Generator::getModule() const {
+	return this->module;
 }
 
 void Generator::dump() const {
 	this->module->dump();
 }
-
-/*llvm::Value *Generator::parseDeclarationStatement(int i) {
-	if (dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]) != NULL) {
-		return parseFunctionDeclarationStatement(i);
-	}
-	
-	this->addError(i, "Expected declaration statement");
-	return NULL;
-}
-
-llvm::Function *Generator::parseFunctionDeclarationStatement(int i) {
-	AST::Statements::FunctionDeclaration *decl =
-		dynamic_cast<AST::Statements::FunctionDeclaration *>(this->statements[i]);
-	
-	if (decl != NULL) {
-		return parseFunctionDeclarationStatement(decl);
-	}
-	
-	this->addError(i, "Expected function declaration statement");
-	return NULL;
-}
-
-llvm::Function *Generator::parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
-	
-	
-	llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", func);
-	
-	if (decl->getName()->getValue() == "main") {
-		this->builder->SetInsertPoint(entry);
-	}
-	
-	return func;
-}
-*/

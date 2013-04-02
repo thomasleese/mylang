@@ -2,22 +2,16 @@
 
 using namespace Code;
 
-Pass::Pass(llvm::Module *module) {
-	this->module = module;
-	this->builder = new llvm::IRBuilder<>(llvm::getGlobalContext());
+Pass::Pass(Generator *gen) {
+	this->generator = gen;
+	this->module = gen->getModule();
+	this->irBuilder = new llvm::IRBuilder<>(llvm::getGlobalContext());
+	this->mdBuilder = new llvm::MDBuilder(llvm::getGlobalContext());
 }
 
 Pass::~Pass() {
-	delete this->builder;
-}
-
-void Pass::addError(Lexical::Token *token, std::string msg) {
-	std::string filename = token->getFilename();
-	int line = token->getLineNumber();
-	int col = token->getColumn();
-	std::string tokenValue = token->getValue();
-	
-	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
+	delete this->irBuilder;
+	delete this->mdBuilder;
 }
 
 void Pass::parseAST(AST::Blocks::Module *block) {
@@ -29,15 +23,35 @@ void Pass::readAST(AST::Blocks::Module *block) {
 	this->block = block;
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr) {
-	std::string name = expr->getName()->getName()->getValue();
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident) {
+	std::string moduleName = "";
+	if (ident->getModule() != NULL) {
+		moduleName = ident->getModule()->getValue();
+	}
+	
+	std::string name = ident->getName()->getValue();
+	
+	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
 	if (name == "Integer") {
-		return llvm::Type::getInt64Ty(llvm::getGlobalContext());
+		return llvm::Type::getInt64Ty(ctx);
 	} else if (name == "Void") {
-		return llvm::Type::getVoidTy(llvm::getGlobalContext());
+		return llvm::Type::getVoidTy(ctx);
 	} else {
-		this->addError(expr->getToken(), "Unknown type");
+		llvm::Function *func = this->module->getFunction(name);
+		if (func != NULL) {
+			return func->getReturnType();
+		}
+		
+		this->generator->addError(ident->getToken(), "Unknown type");
 		return NULL;
 	}
+}
+
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr) {
+	llvm::Type *type = parseTypeExpression(expr->getName());
+	
+	
+	
+	return type;
 }

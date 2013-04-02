@@ -3,12 +3,11 @@
 #include <iostream>
 #include <vector>
 
-#include <llvm/IRBuilder.h>
 #include <llvm/DerivedTypes.h>
 #include <llvm/IRBuilder.h>
+#include <llvm/MDBuilder.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
-#include <llvm/Analysis/Verifier.h>
 
 #include "units/ast.h"
 
@@ -20,13 +19,13 @@ namespace llvm {
 
 namespace Code {
 	
-	class Pass : public Unit {
+	class Generator;
+	
+	class Pass {
 		
 	public:
-		Pass(llvm::Module *module);
+		Pass(Generator *gen);
 		~Pass();
-		
-		void addError(Lexical::Token *token, std::string msg);
 		
 		void parseAST(AST::Blocks::Module *block);
 		
@@ -35,11 +34,14 @@ namespace Code {
 		virtual void generateCode() = 0;
 		
 	protected:
+		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident);
 		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr);
 		
 	protected:
+		Generator *generator;
 		llvm::Module *module;
-		llvm::IRBuilder<> *builder;
+		llvm::IRBuilder<> *irBuilder;
+		llvm::MDBuilder *mdBuilder;
 		AST::Blocks::Module *block;
 		
 	};
@@ -47,12 +49,13 @@ namespace Code {
 	class DeclarationPass : public Pass {
 		
 	public:
-		DeclarationPass(llvm::Module *module);
+		DeclarationPass(Generator *gen);
 		
 	private:
 		void generateCode();
 		
 		void parseImportStatement(AST::Statements::Import *import);
+		void parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
 		void parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
 		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
@@ -61,7 +64,7 @@ namespace Code {
 	class DefinitionPass : public Pass {
 		
 	public:
-		DefinitionPass(llvm::Module *module);
+		DefinitionPass(Generator *gen);
 		
 	private:
 		void generateCode();
@@ -74,7 +77,12 @@ namespace Code {
 		Generator(std::string moduleName);
 		~Generator();
 		
+		void addError(Lexical::Token *token, std::string msg);
+		
 		void parseAST(AST::Blocks::Module *block);
+		
+		llvm::Module *getModule() const;
+		
 		void dump() const;
 				
 	private:
