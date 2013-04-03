@@ -13,7 +13,7 @@ Expression::~Expression() {
 	
 }
 
-Lexical::Token *Expression::getToken() {
+Lexical::Token *Expression::getToken() const {
 	return this->token;
 }
 
@@ -103,6 +103,12 @@ std::string Identifier::getValue() const {
 	return this->value;
 }
 
+QualifiedIdentifier *Identifier::toQualifiedIdentifier() {
+	QualifiedIdentifier *i = new QualifiedIdentifier(this->getToken());
+	i->setName(this);
+	return i;
+}
+
 QualifiedIdentifier::QualifiedIdentifier(Lexical::Token *token) :
 	Expression(token) {
 	this->name = NULL;
@@ -166,7 +172,15 @@ void Slice::setIndex(Expression *expr) {
 
 Type::Type(Lexical::Token *token) : 
 	Expression(token) {
-	
+	this->isStruct = false;
+}
+
+void Type::setIsStruct(bool s) {
+	this->isStruct = s;
+}
+
+bool Type::getIsStruct() const {
+	return this->isStruct;
 }
 
 void Type::setName(QualifiedIdentifier *name) {

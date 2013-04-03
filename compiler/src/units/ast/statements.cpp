@@ -131,6 +131,10 @@ void VariableDeclaration::setType(Expressions::Type *type) {
 	this->type = type;
 }
 
+Expressions::Type *VariableDeclaration::getType() const {
+	return this->type;
+}
+
 void VariableDeclaration::setAssignment(Expressions::Expression *expr) {
 	this->assignment = expr;
 }

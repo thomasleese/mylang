@@ -22,7 +22,7 @@ execute_process(
 )
 
 execute_process(
-	COMMAND llvm-config --libs engine
+	COMMAND llvm-config --libs
 	OUTPUT_VARIABLE LLVM_LIBS
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )

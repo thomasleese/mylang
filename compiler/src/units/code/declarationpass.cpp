@@ -31,12 +31,10 @@ void DeclarationPass::parseImportStatement(AST::Statements::Import *import) {
 
 void DeclarationPass::parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {
 	// Create function which defines the type
-	llvm::Type *baseType = this->parseTypeExpression(decl->getType());
+	llvm::Type *baseType = this->parseTypeExpression(decl->getType(), decl);
 	if (baseType == NULL) {
 		return;
 	}
-	
-	std::string name = decl->getName()->getValue();
 	
 	llvm::FunctionType *type = llvm::FunctionType::get(baseType, false);
 	
@@ -45,23 +43,17 @@ void DeclarationPass::parseTypeDeclarationStatement(AST::Statements::TypeDeclara
 		linkType = llvm::Function::ExternalLinkage;
 	}
 	
-	llvm::Function::Create(type, linkType, name, this->module);
+	llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
 	
+	// create the methods of the type
 	AST::Blocks::Type *block = decl->getBlock();
 	for (AST::Statements::FunctionDeclaration *func : block->getFunctionDeclarationStatements()) {
-		func->getName()->setValue(name + "_method_" + func->getName()->getValue());
+		// we need to convert the normal function into a method
+		func = this->convertTypeFunctionToFunction(func, decl);
 		
-		AST::Expressions::Parameter *param = new AST::Expressions::Parameter(NULL);
-		
-		param->setType(decl->getType());
-		
-		AST::Expressions::Identifier *thisIdentifier = new AST::Expressions::Identifier(NULL);
-		thisIdentifier->setValue("this");
-		param->setName(thisIdentifier);
-		
-		func->insertParameter(0, param);
-		
-		parseFunctionDeclarationStatement(func);
+		if (func != NULL) {
+			parseFunctionDeclarationStatement(func);
+		}
 	}
 }
 

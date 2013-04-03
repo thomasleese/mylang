@@ -8,6 +8,8 @@
 #include <llvm/MDBuilder.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
+#include <llvm/Bitcode/ReaderWriter.h>
+#include <llvm/Support/raw_ostream.h>
 
 #include "units/ast.h"
 
@@ -35,7 +37,9 @@ namespace Code {
 		
 	protected:
 		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident);
-		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr);
+		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl = NULL);
+		
+		AST::Statements::FunctionDeclaration *convertTypeFunctionToFunction(AST::Statements::FunctionDeclaration *func, AST::Statements::TypeDeclaration *type);
 		
 	protected:
 		Generator *generator;
@@ -69,6 +73,10 @@ namespace Code {
 	private:
 		void generateCode();
 		
+		void parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
+		void parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
+		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
+		
 	};
 	
 	class Generator : public Unit {
@@ -84,7 +92,8 @@ namespace Code {
 		llvm::Module *getModule() const;
 		
 		void dump() const;
-				
+		void write(std::string buildDir) const;
+		
 	private:
 		std::string moduleName;
 		llvm::Module *module;

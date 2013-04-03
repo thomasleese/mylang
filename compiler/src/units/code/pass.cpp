@@ -48,10 +48,45 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	}
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr) {
-	llvm::Type *type = parseTypeExpression(expr->getName());
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl) {
+	llvm::Type *type;
 	
-	
+	if (typeDecl != NULL && expr->getIsStruct()) {
+		std::vector<llvm::Type *> elements;
+		
+		AST::Blocks::Type *block = typeDecl->getBlock();
+		for (AST::Statements::VariableDeclaration *var : block->getVariableDeclarationStatements()) {
+			elements.push_back(parseTypeExpression(var->getType()));
+		}
+		
+		type = llvm::StructType::create(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Type *>(elements));
+	} else {
+		type = parseTypeExpression(expr->getName());
+	}
 	
 	return type;
+}
+
+AST::Statements::FunctionDeclaration *Pass::convertTypeFunctionToFunction(AST::Statements::FunctionDeclaration *func, AST::Statements::TypeDeclaration *type) {
+	func->getName()->setValue(type->getName()->getValue() + "_method_" + func->getName()->getValue());
+	
+	AST::Expressions::Parameter *param = new AST::Expressions::Parameter(NULL);
+	
+	AST::Expressions::Type *paramType = new AST::Expressions::Type(NULL);
+	paramType->setName(type->getName()->toQualifiedIdentifier());
+	
+	param->setType(paramType);
+	
+	AST::Expressions::Identifier *thisIdentifier = new AST::Expressions::Identifier(NULL);
+	thisIdentifier->setValue("this");
+	param->setName(thisIdentifier);
+	
+	func->insertParameter(0, param);
+	
+	if (func->getExported() && !type->getExported()) {
+		this->generator->addError(func->getToken(), "Cannot declare exported function of non-exported type");
+		return NULL;
+	}
+	
+	return func;
 }

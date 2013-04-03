@@ -74,7 +74,7 @@ namespace AST {
 			Expression(Lexical::Token *token);
 			virtual ~Expression();
 			
-			Lexical::Token *getToken();
+			Lexical::Token *getToken() const;
 			
 		private:
 			Lexical::Token *token;
@@ -149,6 +149,8 @@ namespace AST {
 			
 		};
 		
+		class QualifiedIdentifier;
+		
 		class Identifier : public Operand {
 			
 		public:
@@ -156,6 +158,8 @@ namespace AST {
 			
 			void setValue(std::string value);
 			std::string getValue() const;
+			
+			QualifiedIdentifier *toQualifiedIdentifier();
 			
 		private:
 			std::string value;
@@ -225,6 +229,9 @@ namespace AST {
 		public:
 			Type(Lexical::Token *token);
 			
+			void setIsStruct(bool s);
+			bool getIsStruct() const;
+			
 			void setName(QualifiedIdentifier *name);
 			QualifiedIdentifier *getName();
 			
@@ -233,6 +240,7 @@ namespace AST {
 		private:
 			QualifiedIdentifier *name;
 			std::vector<Slice *> slices;
+			bool isStruct;
 			
 		};
 		
@@ -396,6 +404,8 @@ namespace AST {
 			VariableDeclaration(Lexical::Token *token);
 			
 			void setType(Expressions::Type *type);
+			Expressions::Type *getType() const;
+			
 			void setAssignment(Expressions::Expression *expr);
 			
 		private:

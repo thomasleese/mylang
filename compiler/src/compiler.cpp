@@ -7,6 +7,7 @@
 
 void Compiler::compileProject(std::string dir) {
 	std::string srcDir = dir + "/src";
+	std::string buildDir = dir + "/build";
 	
 	DIR *dp = opendir(srcDir.c_str());
 	if (dp != NULL) {
@@ -15,7 +16,8 @@ void Compiler::compileProject(std::string dir) {
 		while ((ep = readdir(dp)) != NULL) {
 			std::string name = ep->d_name;
 			if (name != "." && name != "..") {
-				compilePackage(name, srcDir + "/" + name);
+				std::cout << "Building " << srcDir << "/" << name << std::endl;
+				compileModule(name, srcDir + "/" + name, buildDir);
 			}
 		}
 		
@@ -23,17 +25,18 @@ void Compiler::compileProject(std::string dir) {
 	}
 }
 
-void Compiler::compilePackage(std::string name, std::string dir) {
+void Compiler::compileModule(std::string name, std::string srcDir, std::string buildDir) {
 	Lexical::Analyser analyser;
 	
-	DIR *dp = opendir(dir.c_str());
+	DIR *dp = opendir(srcDir.c_str());
 	if (dp != NULL) {
 		dirent *ep;
 		
 		while ((ep = readdir(dp)) != NULL) {
 			std::string filename = ep->d_name;
 			if (filename != "." && filename != "..") {
-				analyser.parseFile(dir + "/" + filename);
+				std::cout << "Analysing " << srcDir << "/" << filename << std::endl;
+				analyser.parseFile(srcDir + "/" + filename);
 			}
 		}
 		
@@ -45,6 +48,8 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		return;
 	}
 	
+	std::cout << "Parsing " << srcDir << std::endl;
+	
 	AST::Parser parser;
 	parser.parseTokens(analyser.getTokens());
 	
@@ -53,13 +58,16 @@ void Compiler::compilePackage(std::string name, std::string dir) {
 		return;
 	}
 	
+	std::cout << "Generating " << buildDir << "/" << name << ".bc" << std::endl;
+	
 	Code::Generator gen(name);
 	gen.parseAST(parser.getBlock());
 	
 	if (gen.hasMessages()) {
 		gen.printMessages();
-		//return;
+		return;
 	}
 	
 	gen.dump();
+	gen.write(buildDir);
 }

@@ -1,3 +1,6 @@
+#include <fstream>
+#include <sys/stat.h>
+
 #include "units/code.h"
 
 using namespace Code;
@@ -24,16 +27,8 @@ void Generator::parseAST(AST::Blocks::Module *block) {
 	DeclarationPass pass1(this);
 	pass1.parseAST(block);
 	
-	if (hasMessages()) {
-		return;
-	}
-	
 	DefinitionPass pass2(this);
 	pass2.parseAST(block);
-	
-	if (hasMessages()) {
-		return;
-	}
 }
 
 llvm::Module *Generator::getModule() const {
@@ -42,4 +37,20 @@ llvm::Module *Generator::getModule() const {
 
 void Generator::dump() const {
 	this->module->dump();
+}
+
+void Generator::write(std::string buildDir) const {
+	mkdir(buildDir.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+	
+	std::string filename = buildDir + "/" + this->moduleName + ".bc";
+	
+	std::string err;
+	llvm::raw_fd_ostream stream(filename.c_str(), err, llvm::raw_fd_ostream::F_Binary);
+	
+	if (err.empty()) {
+		llvm::WriteBitcodeToFile(this->module, stream);
+		stream.close();
+	} else {
+		// sort this out...
+	}
 }

@@ -300,9 +300,7 @@ Statements::TypeDeclaration *Parser::readTypeDeclarationStatement(int *index) {
 	decl->setType(readTypeExpression(index));
 	decl->setName(readIdentifierExpression(index));
 	
-	bool acceptVars = decl->getType()->getName()->getName()->getValue() == "struct";
-	
-	decl->setBlock(readTypeBlock(index, acceptVars));
+	decl->setBlock(readTypeBlock(index, decl->getType()->getIsStruct()));
 	return decl;
 }
 
@@ -566,10 +564,15 @@ bool Parser::isTypeExpression(int *index) {
 Expressions::Type *Parser::readTypeExpression(int *index) {
 	Expressions::Type *type = new Expressions::Type(this->tokens[*index]);
 	
-	type->setName(readQualifiedIdentifierExpression(index));
+	if (isKeywordToken(index, "struct")) {
+		readKeywordToken(index, "struct");
+		type->setIsStruct(true);
+	} else {
+		type->setName(readQualifiedIdentifierExpression(index));
 	
-	while (isSliceExpression(index)) {
-		type->addSlice(readSliceExpression(index, NULL));
+		while (isSliceExpression(index)) {
+			type->addSlice(readSliceExpression(index, NULL));
+		}
 	}
 	
 	return type;

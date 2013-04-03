@@ -1,7 +1,18 @@
 type Integer FactorialResult {
 	
-	func Integer times10() {
+	func FactorialResult times10() {
 		return this * 10;
+	}
+	
+}
+
+type struct StructuredResult {
+	
+	var FactorialResult result;
+	
+	func FactorialResult enjoy() {
+		this.result = factorial(20);
+		return result;
 	}
 	
 }
