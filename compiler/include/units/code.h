@@ -35,9 +35,10 @@ namespace Code {
 		void readAST(AST::Blocks::Module *block);
 		virtual void generateCode() = 0;
 		
+		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident, llvm::MDNode **metadataNode);
+		
 	protected:
-		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident);
-		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl = NULL);
+		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr, llvm::MDNode **metadataNode, AST::Statements::TypeDeclaration *typeDecl = NULL);
 		
 		AST::Statements::FunctionDeclaration *convertTypeFunctionToFunction(AST::Statements::FunctionDeclaration *func, AST::Statements::TypeDeclaration *type);
 		
@@ -58,10 +59,11 @@ namespace Code {
 	private:
 		void generateCode();
 		
-		void parseImportStatement(AST::Statements::Import *import);
-		void parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
-		void parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
-		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
+		void parseGlobalImportStatement(AST::Statements::Import *import);
+		void parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
+		void parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl);
+		void parseGlobalConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
+		void parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
 	};
 	

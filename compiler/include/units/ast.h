@@ -398,7 +398,7 @@ namespace AST {
 			
 		};
 		
-		class VariableDeclaration : public Declaration {
+		class VariableDeclaration : public Declaration, public Generic {
 			
 		public:
 			VariableDeclaration(Lexical::Token *token);

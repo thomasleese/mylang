@@ -1,33 +1,33 @@
-type exported Struct Rectangle {
+type exported struct Rectangle {
 	
-	var exported Float left = 0;
-	var exported Float right = 0;
-	var exported Float top = 0;
-	var exported Float bottom = 0;
+	var exported Float left;
+	var exported Float right;
+	var exported Float top;
+	var exported Float bottom;
 	
-	def exported Float area() {
+	func exported Float area() {
 		return this.width() * this.height();
 	}
 	
-	def exported Float width() {
+	func exported Float width() {
 		return abs(this.right - this.left);
 	}
 	
-	def exported Void set_width(Float width) {
+	func exported Void setWidth(Float width) {
 		this.left = this.x();
 		this.right = this.left + width;
 	}
 	
-	def exported Float height() {
+	func exported Float height() {
 		return abs(this.bottom - this.top);
 	}
 	
-	def exported Void set_height(Float height) {
+	func exported Void setHeight(Float height) {
 		this.top = this.y();
 		this.bottom = this.top + height;
 	}
 	
-	def exported Float x() {
+	func exported Float x() {
 		if (this.left < this.right) {
 			return this.left;
 		} else {
@@ -35,7 +35,7 @@ type exported Struct Rectangle {
 		}
 	}
 	
-	def exported Float y() {
+	func exported Float y() {
 		if (this.top < this.bottom) {
 			return this.top;
 		} else {

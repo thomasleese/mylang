@@ -46,7 +46,8 @@ void Parser::generateAST() {
 
 // Statements
 bool Parser::isStatement(int *index) {
-	return isExpressionStatement(index);
+	return isImportStatement(index) || isDeclarationStatement(index)
+		|| isGenericStatement(index);
 }
 
 Statements::Statement *Parser::readStatement(int *index) {
@@ -61,6 +62,7 @@ Statements::Statement *Parser::readStatement(int *index) {
 
 bool Parser::isGenericStatement(int *index) {
 	return isReturnStatement(index) || isControlStatement(index)
+		|| isVariableDeclarationStatement(index)
 		|| isExpressionStatement(index);
 }
 
@@ -69,6 +71,8 @@ Statements::Generic *Parser::readGenericStatement(int *index) {
 		return readReturnStatement(index);
 	} else if (isControlStatement(index)) {
 		return readControlStatement(index);
+	} else if (isVariableDeclarationStatement(index)) {
+		return readVariableDeclarationStatement(index);
 	} else {
 		return readExpressionStatement(index);
 	}
@@ -768,6 +772,7 @@ Blocks::Module *Parser::readModuleBlock(int *index) {
 			block->addTypeDeclarationStatement(readTypeDeclarationStatement(index));
 		} else {
 			this->addError(this->tokens[*index], "import/constant/variable/function/type");
+			(*index)++; // skip this token
 		}
 	}
 	

@@ -1,6 +1,6 @@
-type Int Weekday {
+type Integer Weekday {
 	
-	def String to_string() {
+	func String toString() {
 		switch (this) {
 			case (0) {
 				return "Sunday";

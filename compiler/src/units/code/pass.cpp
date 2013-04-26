@@ -23,7 +23,9 @@ void Pass::readAST(AST::Blocks::Module *block) {
 	this->block = block;
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident) {
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident, llvm::MDNode **metadataNode) {
+	llvm::LLVMContext &ctx = llvm::getGlobalContext();
+	
 	std::string moduleName = "";
 	if (ident->getModule() != NULL) {
 		moduleName = ident->getModule()->getValue();
@@ -31,10 +33,17 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	
 	std::string name = ident->getName()->getValue();
 	
-	llvm::LLVMContext &ctx = llvm::getGlobalContext();
+	std::vector<llvm::Value *> metadataValues;
+	metadataValues.push_back(llvm::MDString::get(ctx, moduleName));
+	metadataValues.push_back(llvm::MDString::get(ctx, name));
+	*metadataNode = llvm::MDNode::get(ctx, llvm::ArrayRef<llvm::Value *>(metadataValues));
 	
-	if (name == "Integer") {
+	if (name == "Byte") {
+		return llvm::Type::getInt8Ty(ctx);
+	} else if (name == "Integer") {
 		return llvm::Type::getInt64Ty(ctx);
+	} else if (name == "Float") {
+		return llvm::Type::getDoubleTy(ctx);
 	} else if (name == "Void") {
 		return llvm::Type::getVoidTy(ctx);
 	} else {
@@ -48,20 +57,26 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	}
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl) {
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, llvm::MDNode **metadataNode, AST::Statements::TypeDeclaration *typeDecl) {
 	llvm::Type *type;
 	
 	if (typeDecl != NULL && expr->getIsStruct()) {
 		std::vector<llvm::Type *> elements;
 		
+		std::vector<llvm::Value *> metadataNodes;
+		
 		AST::Blocks::Type *block = typeDecl->getBlock();
 		for (AST::Statements::VariableDeclaration *var : block->getVariableDeclarationStatements()) {
-			elements.push_back(parseTypeExpression(var->getType()));
+			llvm::MDNode *node;
+			elements.push_back(parseTypeExpression(var->getType(), &node));
+			metadataNodes.push_back(node);
 		}
 		
-		type = llvm::StructType::create(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Type *>(elements));
+		*metadataNode = llvm::MDNode::get(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Value *>(metadataNodes));
+		
+		type = llvm::StructType::create(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Type *>(elements), typeDecl->getName()->getValue());
 	} else {
-		type = parseTypeExpression(expr->getName());
+		type = parseTypeExpression(expr->getName(), metadataNode);
 	}
 	
 	return type;

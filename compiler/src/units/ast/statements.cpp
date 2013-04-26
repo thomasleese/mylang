@@ -123,7 +123,8 @@ AST::Expressions::Identifier *Declaration::getName() {
 }
 
 VariableDeclaration::VariableDeclaration(Lexical::Token *token) :
-	Declaration(token) {
+	Declaration(token),
+	Generic(token) {
 	this->assignment = NULL;
 }
 

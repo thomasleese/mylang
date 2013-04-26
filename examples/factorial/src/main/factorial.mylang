@@ -1,26 +1,6 @@
-type Integer FactorialResult {
-	
-	func FactorialResult times10() {
-		return this * 10;
-	}
-	
-}
-
-type struct StructuredResult {
-	
-	var FactorialResult result;
-	
-	func FactorialResult enjoy() {
-		this.result = factorial(20);
-		return result;
-	}
-	
-}
-
 const Integer Step = 1;
-var FactorialResult FactorialOfTen = factorial(10);
 
-func FactorialResult factorial(Integer n) {
+func Integer factorial(Integer n) {
 	if (n == 0) {
 		return Step;
 	} else {

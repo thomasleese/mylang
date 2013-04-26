@@ -1,4 +1,4 @@
-type exported interface Address {
+type exported struct Address {
 	
 	
 	
@@ -10,7 +10,7 @@ type exported Byte[] IP {
 	
 }
 
-def parse_ip_address(String s) {
+func IP parseIPAddress(String s) {
 	var Byte[] bytes;
 	
 	var String[] parts = s.split(".");
