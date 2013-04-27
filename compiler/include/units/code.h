@@ -35,10 +35,9 @@ namespace Code {
 		void readAST(AST::Blocks::Module *block);
 		virtual void generateCode() = 0;
 		
-		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident, llvm::MDNode **metadataNode);
-		
 	protected:
-		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr, llvm::MDNode **metadataNode, AST::Statements::TypeDeclaration *typeDecl = NULL);
+		llvm::Type *parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident);
+		llvm::Type *parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl = NULL);
 		
 		AST::Statements::FunctionDeclaration *convertTypeFunctionToFunction(AST::Statements::FunctionDeclaration *func, AST::Statements::TypeDeclaration *type);
 		
@@ -62,7 +61,6 @@ namespace Code {
 		void parseGlobalImportStatement(AST::Statements::Import *import);
 		void parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
 		void parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl);
-		void parseGlobalConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
 		void parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
 	};
@@ -75,9 +73,18 @@ namespace Code {
 	private:
 		void generateCode();
 		
-		void parseTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
-		void parseConstantDeclarationStatement(AST::Statements::ConstantDeclaration *decl);
-		void parseFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
+		void parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
+		void parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl);
+		void parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
+		
+		void parseIfStatement(AST::Statements::If *stat);
+		
+		llvm::Value *parseExpression(AST::Expressions::Expression *expr);
+		llvm::Value *parseBinaryExpression(AST::Expressions::Binary *expr);
+		llvm::Value *parseUnaryExpression(AST::Expressions::Unary *expr);
+		llvm::Value *parseOperandExpression(AST::Expressions::Operand *expr);
+		llvm::Value *parseIdentifierExpression(AST::Expressions::Identifier *expr);
+		llvm::Value *parseLiteralExpression(AST::Expressions::Literal *expr);
 		
 	};
 	

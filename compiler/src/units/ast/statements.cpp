@@ -63,6 +63,10 @@ void If::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
 }
 
+Expressions::Expression *If::getExpression() const {
+	return this->expression;
+}
+
 void If::setTrueBlock(Blocks::Generic *block) {
 	this->trueBlock = block;
 }
@@ -126,6 +130,15 @@ VariableDeclaration::VariableDeclaration(Lexical::Token *token) :
 	Declaration(token),
 	Generic(token) {
 	this->assignment = NULL;
+	this->isConstant = false;
+}
+
+void VariableDeclaration::setIsConstant(bool constant) {
+	this->isConstant = constant;
+}
+
+bool VariableDeclaration::getIsConstant() {
+	return this->isConstant;
 }
 
 void VariableDeclaration::setType(Expressions::Type *type) {
@@ -138,27 +151,6 @@ Expressions::Type *VariableDeclaration::getType() const {
 
 void VariableDeclaration::setAssignment(Expressions::Expression *expr) {
 	this->assignment = expr;
-}
-
-ConstantDeclaration::ConstantDeclaration(Lexical::Token *token) :
-	Declaration(token) {
-	this->assignment = NULL;
-}
-
-void ConstantDeclaration::setType(Expressions::Type *type) {
-	this->type = type;
-}
-
-Expressions::Type *ConstantDeclaration::getType() {
-	return this->type;
-}
-
-void ConstantDeclaration::setAssignment(Expressions::Expression *expr) {
-	this->assignment = expr;
-}
-
-Expressions::Expression *ConstantDeclaration::getAssignment() {
-	return this->assignment;
 }
 
 TypeDeclaration::TypeDeclaration(Lexical::Token *token) :
@@ -209,4 +201,8 @@ std::vector<AST::Expressions::Parameter *> FunctionDeclaration::getParameters() 
 
 void FunctionDeclaration::setBlock(Blocks::Generic *block) {
 	this->block = block;
+}
+
+Blocks::Generic *FunctionDeclaration::getBlock() const {
+	return this->block;
 }

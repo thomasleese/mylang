@@ -342,6 +342,8 @@ namespace AST {
 			If(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
+			Expressions::Expression *getExpression() const;
+			
 			void setTrueBlock(Blocks::Generic *block);
 			void setFalseBlock(Blocks::Generic *block);
 			void setFalseStatement(If *statement);
@@ -403,29 +405,16 @@ namespace AST {
 		public:
 			VariableDeclaration(Lexical::Token *token);
 			
+			void setIsConstant(bool constant);
+			bool getIsConstant();
+			
 			void setType(Expressions::Type *type);
 			Expressions::Type *getType() const;
 			
 			void setAssignment(Expressions::Expression *expr);
 			
 		private:
-			Expressions::Type *type;
-			Expressions::Expression *assignment;
-			
-		};
-		
-		class ConstantDeclaration : public Declaration {
-			
-		public:
-			ConstantDeclaration(Lexical::Token *token);
-			
-			void setType(Expressions::Type *type);
-			Expressions::Type *getType();
-			
-			void setAssignment(Expressions::Expression *expr);
-			Expressions::Expression *getAssignment();
-			
-		private:
+			bool isConstant;
 			Expressions::Type *type;
 			Expressions::Expression *assignment;
 			
@@ -461,6 +450,7 @@ namespace AST {
 			std::vector<Expressions::Parameter *> getParameters();
 			
 			void setBlock(Blocks::Generic *block);
+			Blocks::Generic *getBlock() const;
 			
 		private:
 			Expressions::Type *type;
@@ -523,15 +513,11 @@ namespace AST {
 			void addImportStatement(Statements::Import *import);
 			std::vector<Statements::Import *> getImportStatements();
 			
-			void addConstantDeclarationStatement(Statements::ConstantDeclaration *decl);
-			std::vector<Statements::ConstantDeclaration *> getConstantDeclarationStatements();
-			
 			void addTypeDeclarationStatement(Statements::TypeDeclaration *decl);
 			std::vector<Statements::TypeDeclaration *> getTypeDeclarationStatements();
 			
 		private:
 			std::vector<Statements::Import *> imports;
-			std::vector<Statements::ConstantDeclaration *> constants;
 			std::vector<Statements::TypeDeclaration *> types;
 			
 		};
@@ -587,9 +573,6 @@ namespace AST {
 		
 		bool isVariableDeclarationStatement(int *index);
 		Statements::VariableDeclaration *readVariableDeclarationStatement(int *index);
-		
-		bool isConstantDeclarationStatement(int *index);
-		Statements::ConstantDeclaration *readConstantDeclarationStatement(int *index);
 		
 		bool isTypeDeclarationStatement(int *index);
 		Statements::TypeDeclaration *readTypeDeclarationStatement(int *index);

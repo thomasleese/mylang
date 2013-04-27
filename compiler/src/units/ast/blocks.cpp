@@ -58,14 +58,6 @@ std::vector<Statements::Import *> Module::getImportStatements() {
 	return this->imports;
 }
 
-void Module::addConstantDeclarationStatement(Statements::ConstantDeclaration *decl) {
-	this->constants.push_back(decl);
-}
-
-std::vector<Statements::ConstantDeclaration *> Module::getConstantDeclarationStatements() {
-	return this->constants;
-}
-
 void Module::addTypeDeclarationStatement(Statements::TypeDeclaration *decl) {
 	this->types.push_back(decl);
 }

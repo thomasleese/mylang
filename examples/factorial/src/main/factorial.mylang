@@ -1,4 +1,4 @@
-const Integer Step = 1;
+var const Integer Step = 1;
 
 func Integer factorial(Integer n) {
 	if (n == 0) {

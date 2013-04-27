@@ -23,7 +23,7 @@ void Pass::readAST(AST::Blocks::Module *block) {
 	this->block = block;
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident, llvm::MDNode **metadataNode) {
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ident) {
 	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
 	std::string moduleName = "";
@@ -32,11 +32,6 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	}
 	
 	std::string name = ident->getName()->getValue();
-	
-	std::vector<llvm::Value *> metadataValues;
-	metadataValues.push_back(llvm::MDString::get(ctx, moduleName));
-	metadataValues.push_back(llvm::MDString::get(ctx, name));
-	*metadataNode = llvm::MDNode::get(ctx, llvm::ArrayRef<llvm::Value *>(metadataValues));
 	
 	if (name == "Byte") {
 		return llvm::Type::getInt8Ty(ctx);
@@ -57,26 +52,20 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	}
 }
 
-llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, llvm::MDNode **metadataNode, AST::Statements::TypeDeclaration *typeDecl) {
+llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, AST::Statements::TypeDeclaration *typeDecl) {
 	llvm::Type *type;
 	
 	if (typeDecl != NULL && expr->getIsStruct()) {
 		std::vector<llvm::Type *> elements;
 		
-		std::vector<llvm::Value *> metadataNodes;
-		
 		AST::Blocks::Type *block = typeDecl->getBlock();
 		for (AST::Statements::VariableDeclaration *var : block->getVariableDeclarationStatements()) {
-			llvm::MDNode *node;
-			elements.push_back(parseTypeExpression(var->getType(), &node));
-			metadataNodes.push_back(node);
+			elements.push_back(parseTypeExpression(var->getType()));
 		}
-		
-		*metadataNode = llvm::MDNode::get(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Value *>(metadataNodes));
 		
 		type = llvm::StructType::create(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Type *>(elements), typeDecl->getName()->getValue());
 	} else {
-		type = parseTypeExpression(expr->getName(), metadataNode);
+		type = parseTypeExpression(expr->getName());
 	}
 	
 	return type;

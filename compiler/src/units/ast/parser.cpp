@@ -207,8 +207,7 @@ Statements::Switch *Parser::readSwitchStatement(int *index) {
 bool Parser::isDeclarationStatement(int *index) {
 	return isFunctionDeclarationStatement(index)
 			|| isTypeDeclarationStatement(index)
-			|| isVariableDeclarationStatement(index)
-			|| isConstantDeclarationStatement(index);
+			|| isVariableDeclarationStatement(index);
 }
 
 Statements::Declaration *Parser::readDeclarationStatement(int *index) {
@@ -218,8 +217,6 @@ Statements::Declaration *Parser::readDeclarationStatement(int *index) {
 		return readTypeDeclarationStatement(index);
 	} else if (isVariableDeclarationStatement(index)) {
 		return readVariableDeclarationStatement(index);
-	} else if (isConstantDeclarationStatement(index)) {
-		return readConstantDeclarationStatement(index);
 	}
 	
 	this->addError(this->tokens[*index], "declaration");
@@ -241,6 +238,11 @@ Statements::VariableDeclaration *Parser::readVariableDeclarationStatement(int *i
 		decl->setExported(true);
 	}
 	
+	if (isKeywordToken(index, "const")) {
+		readKeywordToken(index, "const");
+		decl->setIsConstant(true);
+	}
+	
 	decl->setType(readTypeExpression(index));
 	
 	Expressions::Identifier *name = readIdentifierExpression(index);
@@ -249,33 +251,6 @@ Statements::VariableDeclaration *Parser::readVariableDeclarationStatement(int *i
 	}
 	
 	decl->setName(name);
-	
-	if (isOperatorToken(index, "=")) {
-		readOperatorToken(index, "=");
-		decl->setAssignment(readExpression(index));
-	}
-	
-	readDelimiterToken(index, ";");
-	
-	return decl;
-}
-
-bool Parser::isConstantDeclarationStatement(int *index) {
-	return isKeywordToken(index, "const");
-}
-
-Statements::ConstantDeclaration *Parser::readConstantDeclarationStatement(int *index) {
-	readKeywordToken(index, "const");
-	
-	Statements::ConstantDeclaration *decl = new Statements::ConstantDeclaration(this->tokens[*index]);
-	
-	if (isKeywordToken(index, "exported")) {
-		readKeywordToken(index, "exported");
-		decl->setExported(true);
-	}
-	
-	decl->setType(readTypeExpression(index));
-	decl->setName(readIdentifierExpression(index));
 	
 	if (isOperatorToken(index, "=")) {
 		readOperatorToken(index, "=");
@@ -762,8 +737,6 @@ Blocks::Module *Parser::readModuleBlock(int *index) {
 	for (; *index < this->tokens.size(); ) {
 		if (isImportStatement(index)) {
 			block->addImportStatement(readImportStatement(index));
-		} else if (isConstantDeclarationStatement(index)) {
-			block->addConstantDeclarationStatement(readConstantDeclarationStatement(index));
 		} else if (isVariableDeclarationStatement(index)) {
 			block->addVariableDeclarationStatement(readVariableDeclarationStatement(index));
 		} else if (isFunctionDeclarationStatement(index)) {
