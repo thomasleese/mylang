@@ -86,8 +86,30 @@ Literal::Literal(Lexical::Token *token) :
 	
 }
 
-void Literal::setValue(std::string value) {
-	this->value = value;
+IntegerLiteral::IntegerLiteral(Lexical::Token *token) :
+	Literal(token) {
+	
+}
+
+void IntegerLiteral::setValue(int val) {
+	this->value = val;
+}
+
+int IntegerLiteral::getValue() const {
+	return this->value;
+}
+
+StringLiteral::StringLiteral(Lexical::Token *token) :
+	Literal(token) {
+	
+}
+
+void StringLiteral::setValue(std::string val) {
+	this->value = val;
+}
+
+std::string StringLiteral::getValue() const {
+	return this->value;
 }
 
 Identifier::Identifier(Lexical::Token *token) : 
@@ -153,8 +175,16 @@ void Call::setOperand(Operand *expr) {
 	this->operand = expr;
 }
 
+Operand *Call::getOperand() const {
+	return this->operand;
+}
+
 void Call::addArgument(Expression *arg) {
 	this->arguments.push_back(arg);
+}
+
+std::vector<Expression *> Call::getArguments() const {
+	return this->arguments;
 }
 
 Slice::Slice(Lexical::Token *token) : 

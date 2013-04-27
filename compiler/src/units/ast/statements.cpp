@@ -42,11 +42,15 @@ void Import::setIdentifier(Expressions::Identifier *identifier) {
 
 Return::Return(Lexical::Token *token) :
 	Generic(token) {
-	
+	this->expression = NULL;
 }
 
 void Return::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
+}
+
+Expressions::Expression *Return::getExpression() const {
+	return this->expression;
 }
 
 Control::Control(Lexical::Token *token) :
@@ -56,7 +60,8 @@ Control::Control(Lexical::Token *token) :
 
 If::If(Lexical::Token *token) :
 	Control(token) {
-	this->falseStatement = NULL;
+	this->falseIf = NULL;
+	this->falseBlock = NULL;
 }
 
 void If::setExpression(Expressions::Expression *expr) {
@@ -71,12 +76,24 @@ void If::setTrueBlock(Blocks::Generic *block) {
 	this->trueBlock = block;
 }
 
+Blocks::Generic *If::getTrueBlock() const {
+	return this->trueBlock;
+}
+
 void If::setFalseBlock(Blocks::Generic *block) {
 	this->falseBlock = block;
 }
 
-void If::setFalseStatement(If *statement) {
-	this->falseStatement = statement;
+Blocks::Generic *If::getFalseBlock() const {
+	return this->falseBlock;
+}
+
+void If::setFalseIf(If *statement) {
+	this->falseIf = statement;
+}
+
+If *If::getFalseIf() const {
+	return this->falseIf;
 }
 
 Case::Case(Lexical::Token *token) :

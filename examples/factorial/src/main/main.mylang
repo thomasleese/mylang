@@ -1,4 +1,12 @@
+func Integer factorial(Integer n) {
+	if (n == 0) {
+		return 1;
+	} else {
+		return n * factorial(n - 1);
+	}
+}
+
 func Void main() {
 	// `factorial` is in the `factorial.mylang` file
-	print("%d", factorial(20));
+	print("%d", factorial(5));
 }

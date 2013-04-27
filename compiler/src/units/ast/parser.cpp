@@ -110,7 +110,11 @@ Statements::Return *Parser::readReturnStatement(int *index) {
 	readKeywordToken(index, "return");
 	
 	Statements::Return *ret = new Statements::Return(this->tokens[*index]);
-	ret->setExpression(readExpression(index));
+	
+	if (isExpression(index)) {
+		ret->setExpression(readExpression(index));
+	}
+	
 	readDelimiterToken(index, ";");
 	return ret;
 }
@@ -148,8 +152,9 @@ Statements::If *Parser::readIfStatement(int *index) {
 	
 	if (isKeywordToken(index, "else")) {
 		readKeywordToken(index, "else");
+		
 		if (isIfStatement(index)) {
-			stat->setFalseStatement(readIfStatement(index));
+			stat->setFalseIf(readIfStatement(index));
 		} else {
 			stat->setFalseBlock(readGenericBlock(index));
 		}
@@ -427,12 +432,46 @@ Expressions::Expr *Parser::readExpressionExpression(int *index) {
 }
 
 bool Parser::isLiteralExpression(int *index) {
-	return isLiteralToken(index);
+	return isIntegerLiteralExpression(index)
+			|| isStringLiteralExpression(index);
 }
 
 Expressions::Literal *Parser::readLiteralExpression(int *index) {
-	Expressions::Literal *lit = new Expressions::Literal(this->tokens[*index]);
-	lit->setValue(readLiteralToken(index)->getValue());
+	if (isIntegerLiteralExpression(index)) {
+		return readIntegerLiteralExpression(index);
+	} else if (isStringLiteralExpression(index)) {
+		return readStringLiteralExpression(index);
+	}
+	
+	this->addError(this->tokens[*index], "literal");
+	(*index)++;
+	return NULL;
+}
+
+bool Parser::isIntegerLiteralExpression(int *index) {
+	return isIntegerLiteralToken(index);
+}
+
+Expressions::IntegerLiteral *Parser::readIntegerLiteralExpression(int *index) {
+	Expressions::IntegerLiteral *lit = new Expressions::IntegerLiteral(this->tokens[*index]);
+	
+	std::stringstream ss;
+	ss << readIntegerLiteralToken(index)->getValue();
+	
+	int v = 0;
+	ss >> v;
+	
+	lit->setValue(v);
+	return lit;
+}
+
+bool Parser::isStringLiteralExpression(int *index) {
+	return isStringLiteralToken(index);
+}
+
+Expressions::StringLiteral *Parser::readStringLiteralExpression(int *index) {
+	Expressions::StringLiteral *lit = new Expressions::StringLiteral(this->tokens[*index]);
+	lit->setValue(readStringLiteralToken(index)->getValue());
 	return lit;
 }
 
@@ -816,27 +855,28 @@ Lexical::Token *Parser::readKeywordToken(int *index, std::string keyword) {
 	return readToken(index, Lexical::Rule::Keyword, keyword);
 }
 
-bool Parser::isLiteralToken(int *index) {
-	return isToken(index, Lexical::Rule::IntegerLiteral, "")
-		|| isToken(index, Lexical::Rule::FloatLiteral, "")
-		|| isToken(index, Lexical::Rule::ComplexLiteral, "")
-		|| isToken(index, Lexical::Rule::BooleanLiteral, "")
-		|| isToken(index, Lexical::Rule::StringLiteral, "");
+bool Parser::isIntegerLiteralToken(int *index) {
+	return isToken(index, Lexical::Rule::IntegerLiteral, "");
 }
 
-Lexical::Token *Parser::readLiteralToken(int *index) {
+Lexical::Token *Parser::readIntegerLiteralToken(int *index) {
 	if (isToken(index, Lexical::Rule::IntegerLiteral, "")) {
 		return readToken(index, Lexical::Rule::IntegerLiteral, "");
-	} else if (isToken(index, Lexical::Rule::FloatLiteral, "")) {
-		return readToken(index, Lexical::Rule::FloatLiteral, "");
-	} else if (isToken(index, Lexical::Rule::ComplexLiteral, "")) {
-		return readToken(index, Lexical::Rule::ComplexLiteral, "");
-	} else if (isToken(index, Lexical::Rule::BooleanLiteral, "")) {
-		return readToken(index, Lexical::Rule::BooleanLiteral, "");
-	} else if (isToken(index, Lexical::Rule::StringLiteral, "")) {
+	}
+	
+	this->addError(this->tokens[*index], "integer literal");
+	return NULL;
+}
+
+bool Parser::isStringLiteralToken(int *index) {
+	return isToken(index, Lexical::Rule::StringLiteral, "");
+}
+
+Lexical::Token *Parser::readStringLiteralToken(int *index) {
+	if (isToken(index, Lexical::Rule::StringLiteral, "")) {
 		return readToken(index, Lexical::Rule::StringLiteral, "");
 	}
 	
-	this->addError(this->tokens[*index], "literal");
+	this->addError(this->tokens[*index], "string literal");
 	return NULL;
 }

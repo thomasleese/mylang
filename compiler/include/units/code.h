@@ -77,14 +77,21 @@ namespace Code {
 		void parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl);
 		void parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
 		
-		void parseIfStatement(AST::Statements::If *stat);
-		
 		llvm::Value *parseExpression(AST::Expressions::Expression *expr);
 		llvm::Value *parseBinaryExpression(AST::Expressions::Binary *expr);
 		llvm::Value *parseUnaryExpression(AST::Expressions::Unary *expr);
 		llvm::Value *parseOperandExpression(AST::Expressions::Operand *expr);
-		llvm::Value *parseIdentifierExpression(AST::Expressions::Identifier *expr);
 		llvm::Value *parseLiteralExpression(AST::Expressions::Literal *expr);
+		llvm::Value *parseIntegerLiteralExpression(AST::Expressions::IntegerLiteral *expr);
+		llvm::Value *parseIdentifierExpression(AST::Expressions::Identifier *expr);
+		llvm::Value *parseCallExpression(AST::Expressions::Call *call);
+		
+		void parseGenericBlock(AST::Blocks::Generic *block);
+		
+		void parseGenericStatement(AST::Statements::Generic *stat);
+		void parseReturnStatement(AST::Statements::Return *stat);
+		void parseControlStatement(AST::Statements::Control *stat);
+		void parseIfStatement(AST::Statements::If *stat);
 		
 	};
 	

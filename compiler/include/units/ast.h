@@ -142,7 +142,28 @@ namespace AST {
 		public:
 			Literal(Lexical::Token *token);
 			
-			void setValue(std::string value);
+		};
+		
+		class IntegerLiteral : public Literal {
+			
+		public:
+			IntegerLiteral(Lexical::Token *token);
+			
+			void setValue(int val);
+			int getValue() const;
+			
+		private:
+			int value;
+			
+		};
+		
+		class StringLiteral : public Literal {
+			
+		public:
+			StringLiteral(Lexical::Token *token);
+			
+			void setValue(std::string val);
+			std::string getValue() const;
 			
 		private:
 			std::string value;
@@ -202,7 +223,10 @@ namespace AST {
 			Call(Lexical::Token *token);
 			
 			void setOperand(Operand *expr);
+			Operand *getOperand() const;
+			
 			void addArgument(Expression *arg);
+			std::vector<Expression *> getArguments() const;
 			
 		private:
 			Operand *operand;
@@ -323,6 +347,7 @@ namespace AST {
 			Return(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
+			Expressions::Expression *getExpression() const;
 			
 		private:
 			Expressions::Expression *expression;
@@ -345,13 +370,18 @@ namespace AST {
 			Expressions::Expression *getExpression() const;
 			
 			void setTrueBlock(Blocks::Generic *block);
+			Blocks::Generic *getTrueBlock() const;
+			
 			void setFalseBlock(Blocks::Generic *block);
-			void setFalseStatement(If *statement);
+			Blocks::Generic *getFalseBlock() const;
+			
+			void setFalseIf(If *statement);
+			If *getFalseIf() const;
 			
 		private:
 			Expressions::Expression *expression;
 			Blocks::Generic *trueBlock, *falseBlock;
-			If *falseStatement;
+			If *falseIf;
 			
 		};
 		
@@ -599,6 +629,12 @@ namespace AST {
 		bool isLiteralExpression(int *index);
 		Expressions::Literal *readLiteralExpression(int *index);
 		
+		bool isIntegerLiteralExpression(int *index);
+		Expressions::IntegerLiteral *readIntegerLiteralExpression(int *index);
+		
+		bool isStringLiteralExpression(int *index);
+		Expressions::StringLiteral *readStringLiteralExpression(int *index);
+		
 		bool isIdentifierExpression(int *index);
 		Expressions::Identifier *readIdentifierExpression(int *index);
 		
@@ -657,8 +693,11 @@ namespace AST {
 		bool isKeywordToken(int *index, std::string keyword);
 		Lexical::Token *readKeywordToken(int *index, std::string keyword);
 		
-		bool isLiteralToken(int *index);
-		Lexical::Token *readLiteralToken(int *index);
+		bool isIntegerLiteralToken(int *index);
+		Lexical::Token *readIntegerLiteralToken(int *index);
+		
+		bool isStringLiteralToken(int *index);
+		Lexical::Token *readStringLiteralToken(int *index);
 		
 	private:
 		std::vector<Lexical::Token *> tokens;
