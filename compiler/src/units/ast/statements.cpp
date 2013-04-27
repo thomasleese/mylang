@@ -31,6 +31,10 @@ void Expression::setExpression(Expressions::Expression *expr) {
 	this->expression = expr;
 }
 
+Expressions::Expression *Expression::getExpression() const {
+	return this->expression;
+}
+
 Import::Import(Lexical::Token *token) :
 	Statement(token) {
 	

@@ -89,6 +89,7 @@ namespace Code {
 		void parseGenericBlock(AST::Blocks::Generic *block);
 		
 		void parseGenericStatement(AST::Statements::Generic *stat);
+		void parseExpressionStatement(AST::Statements::Expression *stat);
 		void parseReturnStatement(AST::Statements::Return *stat);
 		void parseControlStatement(AST::Statements::Control *stat);
 		void parseIfStatement(AST::Statements::If *stat);

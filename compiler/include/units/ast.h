@@ -323,6 +323,7 @@ namespace AST {
 			Expression(Lexical::Token *token);
 			
 			void setExpression(Expressions::Expression *expr);
+			Expressions::Expression *getExpression() const;
 			
 		private:
 			Expressions::Expression *expression;

@@ -180,6 +180,11 @@ void DefinitionPass::parseGenericBlock(AST::Blocks::Generic *block) {
 }
 
 void DefinitionPass::parseGenericStatement(AST::Statements::Generic *stat) {
+	AST::Statements::Expression *exprStatement = dynamic_cast<AST::Statements::Expression *>(stat);
+	if (exprStatement != NULL) {
+		this->parseExpressionStatement(exprStatement);
+	}
+	
 	AST::Statements::Return *returnStatement = dynamic_cast<AST::Statements::Return *>(stat);
 	if (returnStatement != NULL) {
 		this->parseReturnStatement(returnStatement);
@@ -189,6 +194,10 @@ void DefinitionPass::parseGenericStatement(AST::Statements::Generic *stat) {
 	if (controlStatement != NULL) {
 		this->parseControlStatement(controlStatement);
 	}
+}
+
+void DefinitionPass::parseExpressionStatement(AST::Statements::Expression *stat) {
+	this->parseExpression(stat->getExpression());
 }
 
 void DefinitionPass::parseReturnStatement(AST::Statements::Return *stat) {

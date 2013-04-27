@@ -6,7 +6,10 @@ func Integer factorial(Integer n) {
 	}
 }
 
+func Void print(Integer i) {
+	
+}
+
 func Void main() {
-	// `factorial` is in the `factorial.mylang` file
-	print("%d", factorial(5));
+	print(factorial(5));
 }
