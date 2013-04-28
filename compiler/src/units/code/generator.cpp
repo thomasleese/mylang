@@ -22,20 +22,21 @@ Generator::Generator(std::string moduleName) {
 	this->fpm = new llvm::FunctionPassManager(this->module);
 	this->fpm->add(new llvm::DataLayout(*engine->getDataLayout()));
 	this->fpm->add(llvm::createBasicAliasAnalysisPass());
-	//this->fpm->add(llvm::createInstructionCombiningPass());
+	this->fpm->add(llvm::createInstructionCombiningPass());
+	this->fpm->add(llvm::createUnreachableBlockEliminationPass());
 	this->fpm->add(llvm::createReassociatePass());
 	this->fpm->add(llvm::createGVNPass());
-	//this->fpm->add(llvm::createCFGSimplificationPass());
+	this->fpm->add(llvm::createCFGSimplificationPass());
 	
 	this->fpm->doInitialization();
 	
 	// add the _print_integer function
-	/*std::vector<llvm::Type *> args;
+	std::vector<llvm::Type *> args;
 	args.push_back(llvm::Type::getInt64Ty(llvm::getGlobalContext()));
 	
 	llvm::FunctionType* type = llvm::FunctionType::get(llvm::Type::getVoidTy(llvm::getGlobalContext()), args, false);
 	llvm::Function *func = llvm::Function::Create(type, llvm::Function::ExternalLinkage, "_print_integer", this->module);
-	func->setCallingConv(llvm::CallingConv::C);*/
+	func->setCallingConv(llvm::CallingConv::C);
 }
 
 Generator::~Generator() {

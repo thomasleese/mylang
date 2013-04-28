@@ -51,6 +51,11 @@ void DefinitionPass::parseGlobalFunctionDeclarationStatement(AST::Statements::Fu
 	this->irBuilder->SetInsertPoint(entry);
 	
 	this->parseGenericBlock(decl->getBlock());
+	
+	if (this->irBuilder->GetInsertBlock()->getTerminator() == NULL) {
+		this->irBuilder->CreateRetVoid();
+	}
+	
 	this->fpm->run(*func);
 }
 
@@ -235,7 +240,10 @@ void DefinitionPass::parseIfStatement(AST::Statements::If *stat) {
 		
 		this->irBuilder->SetInsertPoint(ifTrue);
 		this->parseGenericBlock(stat->getTrueBlock());
-		this->irBuilder->CreateBr(ifAfter);
+		
+		if (this->irBuilder->GetInsertBlock()->getTerminator() == NULL) {
+			this->irBuilder->CreateBr(ifAfter);
+		}
 		
 		this->irBuilder->SetInsertPoint(ifFalse);
 		
@@ -245,7 +253,9 @@ void DefinitionPass::parseIfStatement(AST::Statements::If *stat) {
 			this->parseIfStatement(stat->getFalseIf());
 		}
 		
-		this->irBuilder->CreateBr(ifAfter);
+		if (this->irBuilder->GetInsertBlock()->getTerminator() == NULL) {
+			this->irBuilder->CreateBr(ifAfter);
+		}
 		
 		this->irBuilder->SetInsertPoint(ifAfter);
 	}
