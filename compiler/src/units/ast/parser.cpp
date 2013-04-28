@@ -771,6 +771,10 @@ bool Parser::isModuleBlock(int *index) {
 }
 
 Blocks::Module *Parser::readModuleBlock(int *index) {
+#ifdef DEBUG
+	std::cout << "Reading module block" << std::endl;
+#endif
+	
 	Blocks::Module *block = new Blocks::Module(this->tokens[*index]);
 	
 	for (; *index < this->tokens.size(); ) {

@@ -35,7 +35,10 @@ void Compiler::compileModule(std::string name, std::string srcDir, std::string b
 		while ((ep = readdir(dp)) != NULL) {
 			std::string filename = ep->d_name;
 			if (filename != "." && filename != "..") {
+#ifdef DEBUG
 				std::cout << "Analysing " << srcDir << "/" << filename << std::endl;
+#endif
+				
 				analyser.parseFile(srcDir + "/" + filename);
 			}
 		}
@@ -47,8 +50,10 @@ void Compiler::compileModule(std::string name, std::string srcDir, std::string b
 		analyser.printMessages();
 		return;
 	}
-	
+
+#ifdef DEBUG
 	std::cout << "Parsing " << srcDir << std::endl;
+#endif
 	
 	AST::Parser parser;
 	parser.parseTokens(analyser.getTokens());
@@ -58,7 +63,9 @@ void Compiler::compileModule(std::string name, std::string srcDir, std::string b
 		return;
 	}
 	
+#ifdef DEBUG
 	std::cout << "Generating " << buildDir << "/" << name << ".bc" << std::endl;
+#endif
 	
 	Code::Generator gen(name);
 	gen.parseAST(parser.getBlock());
@@ -68,6 +75,9 @@ void Compiler::compileModule(std::string name, std::string srcDir, std::string b
 		return;
 	}
 	
-	gen.dump();
 	gen.write(buildDir);
+	
+#ifdef DEBUG
+	gen.dump();
+#endif
 }

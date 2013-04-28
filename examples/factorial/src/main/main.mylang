@@ -6,10 +6,7 @@ func Integer factorial(Integer n) {
 	}
 }
 
-func Void print(Integer i) {
-	
-}
-
 func Void main() {
-	print(factorial(5));
+	// a function defined by the compiler
+	_print_integer(factorial(5));
 }

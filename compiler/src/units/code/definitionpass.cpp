@@ -51,6 +51,7 @@ void DefinitionPass::parseGlobalFunctionDeclarationStatement(AST::Statements::Fu
 	this->irBuilder->SetInsertPoint(entry);
 	
 	this->parseGenericBlock(decl->getBlock());
+	this->fpm->run(*func);
 }
 
 llvm::Value *DefinitionPass::parseExpression(AST::Expressions::Expression *expr) {
@@ -153,6 +154,7 @@ llvm::Value *DefinitionPass::parseIdentifierExpression(AST::Expressions::Identif
 	// then we look for global variables
 	
 	// clearly it's none of the above...
+	this->generator->addError(expr->getToken(), "Unknown identifier");
 	return NULL;
 }
 
@@ -167,7 +169,7 @@ llvm::Value *DefinitionPass::parseCallExpression(AST::Expressions::Call *expr) {
 			args.push_back(this->parseExpression(argExpr));
 		}
 		
-		return this->irBuilder->CreateCall(func, llvm::ArrayRef<llvm::Value *>(args), "tmp");
+		return this->irBuilder->CreateCall(func, args, "tmp");
 	}
 	
 	return NULL;

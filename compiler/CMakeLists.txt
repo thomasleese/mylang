@@ -28,6 +28,8 @@ execute_process(
 )
 
 SET(CMAKE_BUILD_TYPE "Debug")
+ADD_DEFINITIONS(-DDEBUG)
+
 SET(CMAKE_CXX_FLAGS "${LLVM_CXX_FLAGS} -std=c++11 -fexceptions")
 SET(CMAKE_EXE_LINKER_FLAGS "${LLVM_LD_FLAGS}")
 

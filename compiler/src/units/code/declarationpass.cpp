@@ -30,6 +30,12 @@ void DeclarationPass::parseGlobalImportStatement(AST::Statements::Import *import
 }
 
 void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {
+	std::string name = decl->getName()->getValue();
+	
+#ifdef DEBUG
+	std::cout << "Parsing global type declaration statement: " << name << std::endl;
+#endif
+	
 	// Create function which defines the type
 	llvm::Type *baseType = this->parseTypeExpression(decl->getType(), decl);
 	if (baseType == NULL) {
@@ -43,7 +49,7 @@ void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeD
 		linkType = llvm::Function::ExternalLinkage;
 	}
 	
-	llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
+	llvm::Function::Create(type, linkType, name, this->module);
 	
 	// create the methods of the type
 	AST::Blocks::Type *block = decl->getBlock();
@@ -78,7 +84,13 @@ void DeclarationPass::parseGlobalVariableDeclarationStatement(AST::Statements::V
 void DeclarationPass::parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
 	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
+	std::string funcName = decl->getName()->getValue();
+	
 	const int paramsLen = decl->getParameters().size();
+
+#ifdef DEBUG
+	std::cout << "Parsing global function declaration statement: " << funcName << " (" << paramsLen << " params)" << std::endl;
+#endif
 	
 	std::vector<llvm::Type *> paramTypes;
 	for (int i = 0; i < paramsLen; i++) {
@@ -97,15 +109,15 @@ void DeclarationPass::parseGlobalFunctionDeclarationStatement(AST::Statements::F
 		return;
 	}
 	
-	llvm::FunctionType *type = llvm::FunctionType::get(returnType,
-									llvm::ArrayRef<llvm::Type *>(paramTypes), false);
+	llvm::FunctionType *type = llvm::FunctionType::get(returnType, paramTypes, false);
 	
 	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
 	if (decl->getExported()) {
 		linkType = llvm::Function::ExternalLinkage;
 	}
 	
-	llvm::Function *func = llvm::Function::Create(type, linkType, decl->getName()->getValue(), this->module);
+	llvm::Function *func = llvm::Function::Create(type, linkType, funcName, this->module);
+	func->setCallingConv(llvm::CallingConv::C);
 	
 	llvm::Function::arg_iterator args = func->arg_begin();
 	for (int i = 0; i < paramsLen; i++) {

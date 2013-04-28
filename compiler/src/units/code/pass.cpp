@@ -5,6 +5,7 @@ using namespace Code;
 Pass::Pass(Generator *gen) {
 	this->generator = gen;
 	this->module = gen->getModule();
+	this->fpm = gen->getFunctionPassManager();
 	this->irBuilder = new llvm::IRBuilder<>(llvm::getGlobalContext());
 	this->mdBuilder = new llvm::MDBuilder(llvm::getGlobalContext());
 }
@@ -32,6 +33,10 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::QualifiedIdentifier *ide
 	}
 	
 	std::string name = ident->getName()->getValue();
+
+#ifdef DEBUG
+	std::cout << "Parsing type expression: " << moduleName << "." << name << std::endl;
+#endif
 	
 	if (name == "Byte") {
 		return llvm::Type::getInt8Ty(ctx);
@@ -56,6 +61,12 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, AST::Stateme
 	llvm::Type *type;
 	
 	if (typeDecl != NULL && expr->getIsStruct()) {
+		std::string name = typeDecl->getName()->getValue();
+		
+#ifdef DEBUG
+		std::cout << "Parsing struct type: " << name << std::endl;
+#endif
+		
 		std::vector<llvm::Type *> elements;
 		
 		AST::Blocks::Type *block = typeDecl->getBlock();
@@ -63,7 +74,7 @@ llvm::Type *Pass::parseTypeExpression(AST::Expressions::Type *expr, AST::Stateme
 			elements.push_back(parseTypeExpression(var->getType()));
 		}
 		
-		type = llvm::StructType::create(llvm::getGlobalContext(), llvm::ArrayRef<llvm::Type *>(elements), typeDecl->getName()->getValue());
+		type = llvm::StructType::create(llvm::getGlobalContext(), elements, name);
 	} else {
 		type = parseTypeExpression(expr->getName());
 	}

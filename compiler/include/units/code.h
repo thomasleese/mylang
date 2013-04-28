@@ -9,6 +9,17 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
 #include <llvm/Bitcode/ReaderWriter.h>
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include "llvm/ExecutionEngine/Interpreter.h"
+#include "llvm/PassManager.h"
+#include "llvm/Analysis/Verifier.h"
+#include "llvm/Analysis/Passes.h"
+#include "llvm/DataLayout.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Support/TargetSelect.h"
+#include <llvm/ExecutionEngine/JIT.h>
+#include <llvm/Support/TargetSelect.h>
 #include <llvm/Support/raw_ostream.h>
 
 #include "units/ast.h"
@@ -46,6 +57,7 @@ namespace Code {
 		llvm::Module *module;
 		llvm::IRBuilder<> *irBuilder;
 		llvm::MDBuilder *mdBuilder;
+		llvm::FunctionPassManager *fpm;
 		AST::Blocks::Module *block;
 		
 	};
@@ -107,6 +119,7 @@ namespace Code {
 		void parseAST(AST::Blocks::Module *block);
 		
 		llvm::Module *getModule() const;
+		llvm::FunctionPassManager *getFunctionPassManager() const;
 		
 		void dump() const;
 		void write(std::string buildDir) const;
@@ -114,6 +127,8 @@ namespace Code {
 	private:
 		std::string moduleName;
 		llvm::Module *module;
+		llvm::ExecutionEngine *engine;
+		llvm::FunctionPassManager *fpm;
 		AST::Blocks::Module *block;
 	};
 
