@@ -162,8 +162,16 @@ void Selector::setOperand(Operand *expr) {
 	this->operand = expr;
 }
 
+Operand *Selector::getOperand() const {
+	return this->operand;
+}
+
 void Selector::setIdentifier(Identifier *identifier) {
 	this->identifier = identifier;
+}
+
+Identifier *Selector::getIdentifier() const {
+	return this->identifier;
 }
 
 Call::Call(Lexical::Token *token) : 

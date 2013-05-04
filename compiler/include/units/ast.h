@@ -209,7 +209,10 @@ namespace AST {
 			Selector(Lexical::Token *token);
 			
 			void setOperand(Operand *expr);
+			Operand *getOperand() const;
+			
 			void setIdentifier(Identifier *identifier);
+			Identifier *getIdentifier() const;
 			
 		private:
 			Operand *operand;
@@ -335,10 +338,11 @@ namespace AST {
 		public:
 			Import(Lexical::Token *token);
 			
-			void setIdentifier(Expressions::Identifier *identifier);
+			void setName(Expressions::Identifier *identifier);
+			Expressions::Identifier *getName() const;
 			
 		private:
-			Expressions::Identifier *identifier;
+			Expressions::Identifier *name;
 			
 		};
 		
@@ -443,6 +447,7 @@ namespace AST {
 			Expressions::Type *getType() const;
 			
 			void setAssignment(Expressions::Expression *expr);
+			Expressions::Expression *getAssignment() const;
 			
 		private:
 			bool isConstant;

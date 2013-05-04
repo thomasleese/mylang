@@ -97,7 +97,8 @@ Statements::Import *Parser::readImportStatement(int *index) {
 	readKeywordToken(index, "import");
 	
 	Statements::Import *import = new Statements::Import(this->tokens[*index]);
-	import->setIdentifier(readIdentifierExpression(index));
+	import->setName(readIdentifierExpression(index));
+	
 	readDelimiterToken(index, ";");
 	return import;
 }
@@ -772,7 +773,7 @@ bool Parser::isModuleBlock(int *index) {
 
 Blocks::Module *Parser::readModuleBlock(int *index) {
 #ifdef DEBUG
-	std::cout << "Reading module block" << std::endl;
+	std::cout << "Reading module block: " << *index << std::endl;
 #endif
 	
 	Blocks::Module *block = new Blocks::Module(this->tokens[*index]);

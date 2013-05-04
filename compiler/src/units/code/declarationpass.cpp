@@ -26,11 +26,35 @@ void DeclarationPass::generateCode() {
 }
 
 void DeclarationPass::parseGlobalImportStatement(AST::Statements::Import *import) {
+	this->parseGlobalImportStatement(import->getName()->getValue());
+}
+
+void DeclarationPass::parseGlobalImportStatement(std::string name) {
+	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
+#ifdef DEBUG
+	std::cout << "Parsing global import statement: " << name << std::endl;
+#endif
+	
+	llvm::Module *module = this->findModuleByName(name);
+	
+	// go through every function inside the module and determine what should be declared into this module
+	for (llvm::Module::iterator i = module->begin(), e = module->end(); i != e; ++i) {
+		std::string n = i->getName().str();
+		if (n.substr(0, 7) == "module_") {
+			this->parseGlobalImportStatement(n.substr(7));
+		} else if (n.substr(0, name.length() + 1) == name + "_") {
+			if (i->hasDefaultVisibility()) {
+				llvm::Function::Create(i->getFunctionType(), llvm::Function::ExternalLinkage, n, this->module);
+			}
+		}
+	}
+	
+	this->module->getOrInsertFunction("module_" + name, llvm::Type::getVoidTy(ctx), NULL);
 }
 
 void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {
-	std::string name = decl->getName()->getValue();
+	std::string name = this->moduleName + "_" + decl->getName()->getValue();
 	
 #ifdef DEBUG
 	std::cout << "Parsing global type declaration statement: " << name << std::endl;
@@ -43,13 +67,13 @@ void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeD
 	}
 	
 	llvm::FunctionType *type = llvm::FunctionType::get(baseType, false);
+	llvm::Function *func = llvm::Function::Create(type, llvm::Function::ExternalLinkage, name, this->module);
 	
-	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
 	if (decl->getExported()) {
-		linkType = llvm::Function::ExternalLinkage;
+		func->setVisibility(llvm::GlobalValue::DefaultVisibility);
+	} else {
+		func->setVisibility(llvm::GlobalValue::ProtectedVisibility);
 	}
-	
-	llvm::Function::Create(type, linkType, name, this->module);
 	
 	// create the methods of the type
 	AST::Blocks::Type *block = decl->getBlock();
@@ -64,27 +88,31 @@ void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeD
 }
 
 void DeclarationPass::parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl) {
+	std::string name = this->moduleName + "_" + decl->getName()->getValue();
+	
+#ifdef DEBUG
+	std::cout << "Parsing global variable declaration statement: " << name << std::endl;
+#endif
+	
 	llvm::Type *type = this->parseTypeExpression(decl->getType());
 	if (type == NULL) {
 		return;
 	}
 	
-	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
-	if (decl->getExported()) {
-		linkType = llvm::Function::ExternalLinkage;
-	}
-	
 	llvm::Constant *constant = llvm::Constant::getNullValue(type);
+	llvm::GlobalValue *val = new llvm::GlobalVariable(*this->module, type, decl->getIsConstant(), llvm::Function::ExternalLinkage, constant, name);
 	
-	std::string name = decl->getName()->getValue();
-	
-	new llvm::GlobalVariable(*this->module, type, decl->getIsConstant(), linkType, constant, name);
+	if (decl->getExported()) {
+		val->setVisibility(llvm::GlobalValue::DefaultVisibility);
+	} else {
+		val->setVisibility(llvm::GlobalValue::ProtectedVisibility);
+	}
 }
 
 void DeclarationPass::parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
 	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
-	std::string funcName = decl->getName()->getValue();
+	std::string funcName = this->moduleName + "_" + decl->getName()->getValue();
 	
 	const int paramsLen = decl->getParameters().size();
 
@@ -111,13 +139,14 @@ void DeclarationPass::parseGlobalFunctionDeclarationStatement(AST::Statements::F
 	
 	llvm::FunctionType *type = llvm::FunctionType::get(returnType, paramTypes, false);
 	
-	llvm::Function::LinkageTypes linkType = llvm::Function::PrivateLinkage;
-	if (decl->getExported()) {
-		linkType = llvm::Function::ExternalLinkage;
-	}
-	
-	llvm::Function *func = llvm::Function::Create(type, linkType, funcName, this->module);
+	llvm::Function *func = llvm::Function::Create(type, llvm::Function::ExternalLinkage, funcName, this->module);
 	func->setCallingConv(llvm::CallingConv::C);
+	
+	if (decl->getExported()) {
+		func->setVisibility(llvm::GlobalValue::DefaultVisibility);
+	} else {
+		func->setVisibility(llvm::GlobalValue::ProtectedVisibility);
+	}
 	
 	llvm::Function::arg_iterator args = func->arg_begin();
 	for (int i = 0; i < paramsLen; i++) {

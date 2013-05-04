@@ -4,25 +4,35 @@
 #include <vector>
 
 #include <llvm/DerivedTypes.h>
-#include <llvm/IRBuilder.h>
-#include <llvm/MDBuilder.h>
+#include <llvm/PassManager.h>
 #include <llvm/LLVMContext.h>
+#include <llvm/GlobalValue.h>
+#include <llvm/DataLayout.h>
+#include <llvm/MDBuilder.h>
+#include <llvm/IRBuilder.h>
 #include <llvm/Module.h>
+#include <llvm/Pass.h>
+
 #include <llvm/Bitcode/ReaderWriter.h>
+
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/ExecutionEngine/GenericValue.h>
-#include "llvm/ExecutionEngine/Interpreter.h"
-#include "llvm/PassManager.h"
-#include "llvm/Analysis/Verifier.h"
-#include "llvm/Analysis/Passes.h"
-#include "llvm/DataLayout.h"
-#include "llvm/Transforms/Scalar.h"
-#include "llvm/Support/TargetSelect.h"
+#include <llvm/ExecutionEngine/Interpreter.h>
+
+#include <llvm/Analysis/Verifier.h>
+#include <llvm/Analysis/Passes.h>
+
+#include <llvm/Transforms/Scalar.h>
+
 #include <llvm/ExecutionEngine/JIT.h>
+
+#include <llvm/CodeGen/Passes.h>
+
 #include <llvm/Support/TargetSelect.h>
-#include "llvm/CodeGen/Passes.h"
-#include "llvm/Pass.h"
+#include <llvm/Support/MemoryBuffer.h>
+#include <llvm/Support/system_error.h>
 #include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/DataTypes.h>
 
 #include "units/ast.h"
 
@@ -54,9 +64,12 @@ namespace Code {
 		
 		AST::Statements::FunctionDeclaration *convertTypeFunctionToFunction(AST::Statements::FunctionDeclaration *func, AST::Statements::TypeDeclaration *type);
 		
+		llvm::Module *findModuleByName(std::string name);
+		
 	protected:
 		Generator *generator;
 		llvm::Module *module;
+		std::string moduleName;
 		llvm::IRBuilder<> *irBuilder;
 		llvm::MDBuilder *mdBuilder;
 		llvm::FunctionPassManager *fpm;
@@ -73,6 +86,8 @@ namespace Code {
 		void generateCode();
 		
 		void parseGlobalImportStatement(AST::Statements::Import *import);
+		void parseGlobalImportStatement(std::string moduleName);
+		
 		void parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl);
 		void parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl);
 		void parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl);
@@ -98,6 +113,8 @@ namespace Code {
 		llvm::Value *parseLiteralExpression(AST::Expressions::Literal *expr);
 		llvm::Value *parseIntegerLiteralExpression(AST::Expressions::IntegerLiteral *expr);
 		llvm::Value *parseIdentifierExpression(AST::Expressions::Identifier *expr);
+		llvm::Value *parseIdentifierExpression(std::string name);
+		llvm::Value *parseSelectorExpression(AST::Expressions::Selector *expr);
 		llvm::Value *parseCallExpression(AST::Expressions::Call *call);
 		
 		void parseGenericBlock(AST::Blocks::Generic *block);
@@ -120,6 +137,7 @@ namespace Code {
 		
 		void parseAST(AST::Blocks::Module *block);
 		
+		std::string getModuleName() const;
 		llvm::Module *getModule() const;
 		llvm::FunctionPassManager *getFunctionPassManager() const;
 		

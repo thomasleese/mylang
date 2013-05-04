@@ -77,6 +77,7 @@ void Compiler::compileModule(std::string name, std::string srcDir, std::string b
 	
 	gen.write(buildDir);
 	
+	
 #ifdef DEBUG
 	gen.dump();
 #endif

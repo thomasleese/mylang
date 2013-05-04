@@ -19,6 +19,19 @@ void DefinitionPass::generateCode() {
 	for (AST::Statements::FunctionDeclaration *decl : this->block->getFunctionDeclarationStatements()) {
 		parseGlobalFunctionDeclarationStatement(decl);
 	}
+	
+	if (this->moduleName == "main") {
+		llvm::Function *origFunc = this->module->getFunction("main_main");
+		if (origFunc == NULL) {
+			this->generator->addError(NULL, "A 'main' module requires a 'main' function.");
+			return;
+		}
+		
+		llvm::Function *func = static_cast<llvm::Function *>(this->module->getOrInsertFunction("main", origFunc->getReturnType(), NULL));
+		llvm::BasicBlock *entry = llvm::BasicBlock::Create(llvm::getGlobalContext(), "entry", func);
+		this->irBuilder->SetInsertPoint(entry);
+		this->irBuilder->CreateRet(this->irBuilder->CreateCall(origFunc, "tmp"));
+	}
 }
 
 void DefinitionPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {
@@ -33,16 +46,28 @@ void DefinitionPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeDe
 }
 
 void DefinitionPass::parseGlobalVariableDeclarationStatement(AST::Statements::VariableDeclaration *decl) {
-	llvm::GlobalVariable *var = this->module->getGlobalVariable(decl->getName()->getValue());
+	std::string name = this->moduleName + "_" + decl->getName()->getValue();
+	
+	llvm::GlobalVariable *var = this->module->getGlobalVariable(name, true);
 	if (var == NULL) { // an error must've happened earlier
 		return;
 	}
 	
-	
+	llvm::Value *value = this->parseExpression(decl->getAssignment());
+	if (value != NULL) {
+		llvm::Constant *constant = dynamic_cast<llvm::Constant *>(value);
+		if (constant == NULL) {
+			this->generator->addError(static_cast<AST::Statements::Declaration *>(decl)->getToken(), "Initialiser is not constant");
+		} else {
+			var->setInitializer(constant);
+		}
+	}
 }
 
 void DefinitionPass::parseGlobalFunctionDeclarationStatement(AST::Statements::FunctionDeclaration *decl) {
-	llvm::Function *func = this->module->getFunction(decl->getName()->getValue());
+	std::string name = this->moduleName + "_" + decl->getName()->getValue();
+	
+	llvm::Function *func = this->module->getFunction(name);
 	if (func == NULL) { // an error must've occured earlier on
 		return;
 	}
@@ -86,23 +111,43 @@ llvm::Value *DefinitionPass::parseBinaryExpression(AST::Expressions::Binary *exp
 		case AST::Operators::Binary::Equals:
 			return this->irBuilder->CreateICmpEQ(left, right, "tmp");
 			
+		case AST::Operators::Binary::LessThan:
+			return this->irBuilder->CreateFCmpOLT(left, right, "tmp");
+			
 		case AST::Operators::Binary::Subtract:
 			return this->irBuilder->CreateSub(left, right, "tmp");
+			
+		case AST::Operators::Binary::Add:
+			return this->irBuilder->CreateAdd(left, right, "tmp");
 			
 		case AST::Operators::Binary::Multiply:
 			return this->irBuilder->CreateMul(left, right, "tmp");
 			
+		case AST::Operators::Binary::Divide:
+			return this->irBuilder->CreateSDiv(left, right, "tmp");
+			
 		default:
+			this->generator->addError(expr->getToken(), "Unknown operator");
 			return NULL;
 	}
 }
 
 llvm::Value *DefinitionPass::parseUnaryExpression(AST::Expressions::Unary *expr) {
-	if (expr->getOperator()->getType() == AST::Operators::Unary::None) {
-		return this->parseExpression(expr->getExpression());
-	}
+	llvm::Value *value = this->parseExpression(expr->getExpression());
+	llvm::LLVMContext &ctx = llvm::getGlobalContext();
 	
-	return NULL;
+	switch (expr->getOperator()->getType()) {
+		case AST::Operators::Unary::None:
+		case AST::Operators::Unary::Add:
+			return value;
+			
+		case AST::Operators::Unary::Subtract:
+			return this->irBuilder->CreateNeg(value, "tmp");
+		
+		default:
+			this->generator->addError(expr->getToken(), "Unknown unary operator");
+			return NULL;
+	}
 }
 
 llvm::Value *DefinitionPass::parseOperandExpression(AST::Expressions::Operand *expr) {
@@ -114,6 +159,11 @@ llvm::Value *DefinitionPass::parseOperandExpression(AST::Expressions::Operand *e
 	AST::Expressions::Identifier *identifierExpr = dynamic_cast<AST::Expressions::Identifier *>(expr);
 	if (identifierExpr != NULL) {
 		return this->parseIdentifierExpression(identifierExpr);
+	}
+	
+	AST::Expressions::Selector *selectorExpr = dynamic_cast<AST::Expressions::Selector *>(expr);
+	if (selectorExpr != NULL) {
+		return this->parseSelectorExpression(selectorExpr);
 	}
 	
 	AST::Expressions::Call *callExpr = dynamic_cast<AST::Expressions::Call *>(expr);
@@ -139,27 +189,63 @@ llvm::Value *DefinitionPass::parseIntegerLiteralExpression(AST::Expressions::Int
 }
 
 llvm::Value *DefinitionPass::parseIdentifierExpression(AST::Expressions::Identifier *expr) {
+	return this->parseIdentifierExpression(expr->getValue());
+}
+
+llvm::Value *DefinitionPass::parseIdentifierExpression(std::string name) {
 	llvm::Function *func = this->irBuilder->GetInsertBlock()->getParent();
 	
 	// first we see if it's an argument
 	for (llvm::Function::arg_iterator i = func->arg_begin(), e = func->arg_end(); i != e; ++i) {
-		if (i->getName() == expr->getValue()) {
+		if (i->getName() == name) {
 			return i;
 		}
 	}
 	
-	// then we look for local variables
+	// TODO then we look for local variables
 	
 	// then we look for global functions
-	llvm::Function *otherFunc = this->module->getFunction(expr->getValue());
+	llvm::Function *otherFunc = this->module->getFunction(this->moduleName + "_" + name);
+	if (otherFunc != NULL) {
+		return otherFunc;
+	}
+	
+	otherFunc = this->module->getFunction(name);
 	if (otherFunc != NULL) {
 		return otherFunc;
 	}
 	
 	// then we look for global variables
+	llvm::GlobalVariable *globalVar = this->module->getGlobalVariable(this->moduleName + "_" + name, true);
+	if (globalVar != NULL) {
+		return globalVar;
+	}
+	
+	// then look for a module name
+	llvm::Function *modFunc = this->module->getFunction("module_" + name);
+	if (modFunc != NULL) {
+		return modFunc;
+	}
 	
 	// clearly it's none of the above...
-	this->generator->addError(expr->getToken(), "Unknown identifier");
+	this->generator->addError(NULL, "Unknown identifier: " + name);
+	return NULL;
+}
+
+llvm::Value *DefinitionPass::parseSelectorExpression(AST::Expressions::Selector *expr) {
+	llvm::Value *left = this->parseOperandExpression(expr->getOperand());
+	
+	if (left == NULL) {
+		// an error occured above here!
+		return NULL;
+	}
+	
+	if (left->hasName() && left->getName().str().substr(0, 7) == "module_") {
+		// we're selecting a module!
+		std::string moduleName = left->getName().str().substr(7);
+		return this->parseIdentifierExpression(moduleName + "_" + expr->getIdentifier()->getValue());
+	}
+	
 	return NULL;
 }
 
@@ -171,7 +257,12 @@ llvm::Value *DefinitionPass::parseCallExpression(AST::Expressions::Call *expr) {
 		std::vector<llvm::Value *> args;
 		
 		for (AST::Expressions::Expression *argExpr : expr->getArguments()) {
-			args.push_back(this->parseExpression(argExpr));
+			llvm::Value *arg = this->parseExpression(argExpr);
+			if (arg != NULL) {
+				args.push_back(arg);
+			} else { // an error occured above here!
+				return NULL;
+			}
 		}
 		
 		return this->irBuilder->CreateCall(func, args, "tmp");

@@ -27,7 +27,6 @@ Generator::Generator(std::string moduleName) {
 	this->fpm->add(llvm::createReassociatePass());
 	this->fpm->add(llvm::createGVNPass());
 	this->fpm->add(llvm::createCFGSimplificationPass());
-	
 	this->fpm->doInitialization();
 	
 	// add the _print_integer function
@@ -44,10 +43,17 @@ Generator::~Generator() {
 }
 
 void Generator::addError(Lexical::Token *token, std::string msg) {
-	std::string filename = token->getFilename();
-	int line = token->getLineNumber();
-	int col = token->getColumn();
-	std::string tokenValue = token->getValue();
+	std::string filename = "unknown";
+	int line = 0;
+	int col = 0;
+	std::string tokenValue = "unknown";
+	
+	if (token != NULL) {
+		filename = token->getFilename();
+		line = token->getLineNumber();
+		col = token->getColumn();
+		tokenValue = token->getValue();
+	}
 	
 	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
 }
@@ -58,6 +64,10 @@ void Generator::parseAST(AST::Blocks::Module *block) {
 	
 	DefinitionPass pass2(this);
 	pass2.parseAST(block);
+}
+
+std::string Generator::getModuleName() const {
+	return this->moduleName;
 }
 
 llvm::Module *Generator::getModule() const {
@@ -71,9 +81,6 @@ llvm::FunctionPassManager *Generator::getFunctionPassManager() const {
 void Generator::dump() const {
 	std::cout << "Dumping module" << std::endl;
 	this->module->dump();
-	
-	std::cout << "Running module" << std::endl;
-	this->engine->runFunction(this->module->getFunction("main"), std::vector<llvm::GenericValue>());
 }
 
 void Generator::write(std::string buildDir) const {

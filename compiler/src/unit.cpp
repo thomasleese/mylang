@@ -29,7 +29,6 @@ Unit::~Unit() {
 }
 
 void Unit::addMessage(Message msg) {
-	msg.print();
 	this->messages.push_back(msg);
 }
 

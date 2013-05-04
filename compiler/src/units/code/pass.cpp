@@ -5,6 +5,7 @@ using namespace Code;
 Pass::Pass(Generator *gen) {
 	this->generator = gen;
 	this->module = gen->getModule();
+	this->moduleName = gen->getModuleName();
 	this->fpm = gen->getFunctionPassManager();
 	this->irBuilder = new llvm::IRBuilder<>(llvm::getGlobalContext());
 	this->mdBuilder = new llvm::MDBuilder(llvm::getGlobalContext());
@@ -104,4 +105,29 @@ AST::Statements::FunctionDeclaration *Pass::convertTypeFunctionToFunction(AST::S
 	}
 	
 	return func;
+}
+
+llvm::Module *Pass::findModuleByName(std::string name) {
+#ifdef DEBUG
+	std::cout << "Searching for module: " << name << std::endl;
+#endif
+	
+	// TODO decide on a proper location for stdlib
+	std::string filename = "../../stdlib/build/" + name + ".bc";
+	
+#ifdef DEBUG
+	std::cout << "Reading bitcode file from: " << filename << std::endl;
+#endif
+	
+	// FIXME why are we using 10?
+	llvm::OwningPtr<llvm::MemoryBuffer> buff(llvm::MemoryBuffer::getNewMemBuffer(10));
+	llvm::MemoryBuffer::getFile(filename, buff);
+	
+	std::string err;
+	llvm::Module *module = llvm::ParseBitcodeFile(buff.get(), llvm::getGlobalContext(), &err);
+	if (module == NULL) {
+		std::cout << err << std::endl;
+	}
+	
+	return module;
 }

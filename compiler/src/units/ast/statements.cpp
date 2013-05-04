@@ -40,8 +40,12 @@ Import::Import(Lexical::Token *token) :
 	
 }
 
-void Import::setIdentifier(Expressions::Identifier *identifier) {
-	this->identifier = identifier;
+void Import::setName(Expressions::Identifier *identifier) {
+	this->name = identifier;
+}
+
+Expressions::Identifier *Import::getName() const {
+	return this->name;
 }
 
 Return::Return(Lexical::Token *token) :
@@ -172,6 +176,10 @@ Expressions::Type *VariableDeclaration::getType() const {
 
 void VariableDeclaration::setAssignment(Expressions::Expression *expr) {
 	this->assignment = expr;
+}
+
+Expressions::Expression *VariableDeclaration::getAssignment() const {
+	return this->assignment;
 }
 
 TypeDeclaration::TypeDeclaration(Lexical::Token *token) :
