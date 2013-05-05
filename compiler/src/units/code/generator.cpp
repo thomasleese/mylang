@@ -6,8 +6,9 @@
 using namespace Code;
 
 extern "C" {
-	void _print_integer(int i) {
-		std::cout << i << std::endl;
+	int syscalls_putchar(int i) {
+		std::cout << (char) i << std::endl;
+		return i;
 	}
 }
 
@@ -29,13 +30,9 @@ Generator::Generator(std::string moduleName) {
 	this->fpm->add(llvm::createCFGSimplificationPass());
 	this->fpm->doInitialization();
 	
-	// add the _print_integer function
-	std::vector<llvm::Type *> args;
-	args.push_back(llvm::Type::getInt64Ty(llvm::getGlobalContext()));
-	
-	llvm::FunctionType* type = llvm::FunctionType::get(llvm::Type::getVoidTy(llvm::getGlobalContext()), args, false);
-	llvm::Function *func = llvm::Function::Create(type, llvm::Function::ExternalLinkage, "_print_integer", this->module);
-	func->setCallingConv(llvm::CallingConv::C);
+	if (moduleName == "syscalls") {
+		this->addSyscalls();
+	}
 }
 
 Generator::~Generator() {
@@ -56,6 +53,12 @@ void Generator::addError(Lexical::Token *token, std::string msg) {
 	}
 	
 	this->addMessage(Message("Error", filename, line, col, tokenValue, msg));
+}
+
+void Generator::addSyscalls() {
+	llvm::LLVMContext &ctx = llvm::getGlobalContext();
+	
+	this->module->getOrInsertFunction("syscalls_putchar", llvm::Type::getInt64Ty(ctx), llvm::Type::getInt64Ty(ctx), NULL);
 }
 
 void Generator::parseAST(AST::Blocks::Module *block) {

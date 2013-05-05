@@ -1,10 +1,11 @@
 import maths;
+import syscalls;
 
 func Void test_abs() {
-	_print_integer(maths.abs(+10));
-	_print_integer(maths.abs(-10));
-	_print_integer(maths.abs(+0));
-	_print_integer(maths.abs(-0));
+	syscalls.putchar(maths.abs(+10));
+	syscalls.putchar(maths.abs(-10));
+	syscalls.putchar(maths.abs(+0));
+	syscalls.putchar(maths.abs(-0));
 }
 
 func Void main() {

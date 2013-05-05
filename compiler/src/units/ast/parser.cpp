@@ -776,7 +776,12 @@ Blocks::Module *Parser::readModuleBlock(int *index) {
 	std::cout << "Reading module block: " << *index << std::endl;
 #endif
 	
-	Blocks::Module *block = new Blocks::Module(this->tokens[*index]);
+	Blocks::Module *block;
+	if (*index < this->tokens.size()) {
+		block = new Blocks::Module(this->tokens[*index]);
+	} else {
+		block = new Blocks::Module(NULL);
+	}
 	
 	for (; *index < this->tokens.size(); ) {
 		if (isImportStatement(index)) {

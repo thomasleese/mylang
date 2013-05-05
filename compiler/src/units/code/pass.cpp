@@ -126,7 +126,7 @@ llvm::Module *Pass::findModuleByName(std::string name) {
 	std::string err;
 	llvm::Module *module = llvm::ParseBitcodeFile(buff.get(), llvm::getGlobalContext(), &err);
 	if (module == NULL) {
-		std::cout << err << std::endl;
+		this->generator->addError(NULL, "Could not import module: " + err);
 	}
 	
 	return module;

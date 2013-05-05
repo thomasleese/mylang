@@ -36,12 +36,6 @@
 
 #include "units/ast.h"
 
-namespace llvm {
-	
-	class Module;
-	
-}
-
 namespace Code {
 	
 	class Generator;
@@ -135,6 +129,7 @@ namespace Code {
 		
 		void addError(Lexical::Token *token, std::string msg);
 		
+		void addSyscalls();
 		void parseAST(AST::Blocks::Module *block);
 		
 		std::string getModuleName() const;

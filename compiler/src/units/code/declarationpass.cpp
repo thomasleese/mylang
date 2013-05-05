@@ -36,7 +36,17 @@ void DeclarationPass::parseGlobalImportStatement(std::string name) {
 	std::cout << "Parsing global import statement: " << name << std::endl;
 #endif
 	
+	if (this->module->getFunction("module_" + name)) {
+		return; // already imported
+	}
+	
 	llvm::Module *module = this->findModuleByName(name);
+	if (module == NULL) {
+		return; // an error must've occured above!
+	}
+	
+	// declare that I import this module
+	this->module->getOrInsertFunction("module_" + name, llvm::Type::getVoidTy(ctx), NULL);
 	
 	// go through every function inside the module and determine what should be declared into this module
 	for (llvm::Module::iterator i = module->begin(), e = module->end(); i != e; ++i) {
@@ -44,13 +54,11 @@ void DeclarationPass::parseGlobalImportStatement(std::string name) {
 		if (n.substr(0, 7) == "module_") {
 			this->parseGlobalImportStatement(n.substr(7));
 		} else if (n.substr(0, name.length() + 1) == name + "_") {
-			if (i->hasDefaultVisibility()) {
+			if (i->hasDefaultVisibility() && this->module->getFunction(n) == NULL) {
 				llvm::Function::Create(i->getFunctionType(), llvm::Function::ExternalLinkage, n, this->module);
 			}
 		}
 	}
-	
-	this->module->getOrInsertFunction("module_" + name, llvm::Type::getVoidTy(ctx), NULL);
 }
 
 void DeclarationPass::parseGlobalTypeDeclarationStatement(AST::Statements::TypeDeclaration *decl) {

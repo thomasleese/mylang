@@ -83,12 +83,6 @@ void Analyser::tokeniseBuffer(std::string filename) {
 					token->setColumn(col);
 					token->setFilename(filename);
 					
-#ifdef DEBUG
-					if (rule->getType() != Rule::Ignore) {
-						std::cout << "Found a lexical token: " << value << std::endl;
-					}
-#endif
-					
 					this->tokens.push_back(token);
 					pos += value.length();
 					found = true;
