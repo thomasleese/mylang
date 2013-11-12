@@ -3,14 +3,14 @@
 #include <iostream>
 #include <vector>
 
-#include <llvm/DerivedTypes.h>
+#include <llvm/IR/DerivedTypes.h>
 #include <llvm/PassManager.h>
-#include <llvm/LLVMContext.h>
-#include <llvm/GlobalValue.h>
-#include <llvm/DataLayout.h>
-#include <llvm/MDBuilder.h>
-#include <llvm/IRBuilder.h>
-#include <llvm/Module.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/GlobalValue.h>
+#include <llvm/IR/DataLayout.h>
+#include <llvm/IR/MDBuilder.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Module.h>
 #include <llvm/Pass.h>
 
 #include <llvm/Bitcode/ReaderWriter.h>
