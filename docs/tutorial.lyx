@@ -522,12 +522,22 @@ int64		a 64-bit integer
 
 \begin_layout Plain Layout
 
+int128		a 128-bit integer
+\end_layout
+
+\begin_layout Plain Layout
+
 float32		a 32-bit floating point number
 \end_layout
 
 \begin_layout Plain Layout
 
 float64		a 64-bit floating point number
+\end_layout
+
+\begin_layout Plain Layout
+
+float128		a 128-bit floating point number
 \end_layout
 
 \begin_layout Plain Layout
@@ -553,6 +563,11 @@ uint32		an unsigned version of int32
 \begin_layout Plain Layout
 
 uint64		an unsigned version of int64
+\end_layout
+
+\begin_layout Plain Layout
+
+uint128		an unsigned version of int128
 \end_layout
 
 \end_inset
